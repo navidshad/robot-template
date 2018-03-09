@@ -1,0 +1,21 @@
+{
+  "name": "robot-template",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "~1.18.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "express": "~4.15.5",
+    "moment-timezone": "^0.5.13",
+    "mongoose": "^4.7.2",
+    "morgan": "~1.9.0",
+    "node-telegram-bot-api": "*",
+    "pug": "2.0.0-beta11",
+    "request-promise": "^4.2.2",
+    "serve-favicon": "~2.4.5"
+  }
+}
