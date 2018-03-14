@@ -1,3 +1,41 @@
+var name = 'search';
+
+var checkRoute = function(option){
+
+    var btnsArr  = [ 
+        fn.mstr.search['name'],
+        fn.mstr.search['back']
+    ];
+
+    var result = {}
+    //check text message
+    if(option.text) btnsArr.forEach(btn => { 
+        if(option.text === btn) 
+        {
+            result.status = true; 
+            result.button = btn;
+            result.routting = routting;
+        }
+    });
+
+    //checl seperate section
+    if(option.speratedSection){
+        option.speratedSection.forEach(section => {
+            btnsArr.forEach(btn => 
+            { 
+                if(section === btn){
+                    result.status = true; 
+                    result.button = btn;
+                    result.routting = routting;
+                }
+            });
+        });
+    }
+
+    //return
+    return result;
+}
+
 var show = function(userid, newcat){
     var mName = fn.mstr.search['modulename'];
     var activationtext = '',
@@ -101,4 +139,4 @@ var routting = function(message, speratedSection){
 
 var user = require('./user');
 
-module.exports = { routting, user }
+module.exports = { name, checkRoute, routting, user }

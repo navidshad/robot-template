@@ -1,3 +1,38 @@
+var checkRoute = function(option){
+
+    var btnsArr  = [ 
+        fn.mstr.inbox['name'].lable
+    ];
+
+    var result = {}
+    //check text message
+    if(option.text) btnsArr.forEach(btn => { 
+        if(option.text === btn) 
+        {
+            result.status = true; 
+            result.button = btn;
+            result.routting = routting;
+        }
+    });
+
+    //checl seperate section
+    if(option.speratedSection){
+        option.speratedSection.forEach(section => {
+            btnsArr.forEach(btn => 
+            { 
+                if(section === btn){
+                    result.status = true; 
+                    result.button = btn;
+                    result.routting = routting;
+                }
+            });
+        });
+    }
+
+    //return
+    return result;
+}
+
 var alertToAmin = function(newMess){
     fn.db.user.find({'isAdmin': true}, 'userId').exec((e, admins) => {
         //user message
@@ -13,7 +48,7 @@ var alertToAmin = function(newMess){
     });
 }
 
-module.exports = function(message, speratedSection){
+var routting = function(message, speratedSection){
     var last = speratedSection.length-1;
     //ask to send massage to admin
     if (message.text === fn.mstr['inbox'].lable){
@@ -45,3 +80,5 @@ module.exports = function(message, speratedSection){
         });
     }
 }
+
+module.exports = { routting, checkRoute }

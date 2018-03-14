@@ -1,7 +1,3 @@
-///must be declear first
-var mstr                = require('./str/modulesStrings');
-var m                   = require('./moduls/moduls');
-
 //system
 var db                  = require('./base/db.js');
 var str                 = require('./str/staticStrings.js');
@@ -21,7 +17,7 @@ var userOper        = require('./user/userOperations.js');
 
 //admin
 var adminPanel      = require('./admin/adminPanel.js');
-var upload          = require('./admin/upload.js');
+var upload          = require('./routting/uploadRouting');
 
 var convertObjectToArray = function(object, option){
 
@@ -145,7 +141,7 @@ var queryStringMaker = function(parameter, list, condition){
 }
 
 var updateBotContent = function(callback){
-    m.category.get(() => { getMainMenuItems(); })
+    global.fn.m.category.get(() => { getMainMenuItems(); })
     if(callback) callback();
 }
 
@@ -163,9 +159,9 @@ var getModuleOption = function(mName){
 
 module.exports = {
     //system
-    db, str, mstr, time, telegramBot, generateKeyboard, convertObjectToArray, commands,
+    db, time, str, telegramBot, generateKeyboard, convertObjectToArray, commands,
     getMainMenuItems, getMenuItems, converAMenuItemsToArray, queryStringMaker,
-    checkValidMessage, saveTelegramFile, collector, freeStrings, m,
+    checkValidMessage, saveTelegramFile, collector, freeStrings,
     updateBotContent, events,
     //user
     userOper, 

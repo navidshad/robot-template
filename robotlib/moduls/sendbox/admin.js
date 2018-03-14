@@ -1,4 +1,36 @@
-/* send box admin section */
+var name = 'sendbox';
+
+var checkRoute = function(option){
+
+    var btnsArr  = [ fn.mstr.sendMessage['name'] ];
+    var result = {}
+    //check text message
+    if(option.text) btnsArr.forEach(btn => { 
+        if(option.text === btn) 
+        {
+            result.status = true; 
+            result.button = btn;
+            result.routting = routting;
+        }
+    });
+
+    //checl seperate section
+    if(option.speratedSection){
+        option.speratedSection.forEach(section => {
+            btnsArr.forEach(btn => 
+            { 
+                if(section === btn){
+                    result.status = true; 
+                    result.button = btn;
+                    result.routting = routting;
+                }
+            });
+        });
+    }
+
+    //return
+    return result;
+}
 
 var AdminMessageCreator = function (userId, mess, calbck) {
    //create callback keyboard
@@ -79,7 +111,7 @@ var showSendBoxsection = function(userid, txt){
     });
 }
 
-var analyze = function(message, speratedSection, fullname){
+var routting = function(message, speratedSection, user){
 
     //ask to sendBox section
     if (message.text === fn.mstr['sendMessage'].name){
@@ -124,4 +156,6 @@ var analyze = function(message, speratedSection, fullname){
     }
 }
 
-module.exports = {analyze, showSendBoxsection, editMessage, AdminMessageCreator}
+var query = require('./query');
+
+module.exports = { name, checkRoute, routting, query, showSendBoxsection, editMessage, AdminMessageCreator}

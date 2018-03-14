@@ -1,3 +1,38 @@
+var checkRoute = function(option){
+
+    var btnsArr  = [ 
+        fn.mstr.search['lable']
+    ];
+
+    var result = {}
+    //check text message
+    if(option.text) btnsArr.forEach(btn => { 
+        if(option.text === btn && option.text !== fn.mstr.category['backtoParent']) 
+        {
+            result.status = true; 
+            result.button = btn;
+            result.routting = routting;
+        }
+    });
+
+    //checl seperate section
+    if(option.speratedSection){
+        option.speratedSection.forEach(section => {
+            btnsArr.forEach(btn => 
+            { 
+                if(section === btn){
+                    result.status = true; 
+                    result.button = btn;
+                    result.routting = routting;
+                }
+            });
+        });
+    }
+
+    //return
+    return result;
+}
+
 var show = function(userid){
     var remarkup = fn.generateKeyboard({'section': fn.mstr.category['backtoParent']}, true);
     var detailMess = fn.mstr.search['getmess'];
@@ -48,4 +83,4 @@ var routting = function(message, speratedSection){
         showItem(message, text);
 }
 
-module.exports = { routting }
+module.exports = { routting, checkRoute }

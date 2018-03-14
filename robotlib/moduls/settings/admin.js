@@ -1,3 +1,41 @@
+var name = 'settings';
+
+var checkRoute = function(option){
+
+    var btnsArr  = [ 
+        fn.mstr.settings['name'],
+        fn.mstr.settings['back']
+    ];
+
+    var result = {}
+    //check text message
+    if(option.text) btnsArr.forEach(btn => { 
+        if(option.text === btn) 
+        {
+            result.status = true; 
+            result.button = btn;
+            result.routting = routting;
+        }
+    });
+
+    //checl seperate section
+    if(option.speratedSection){
+        option.speratedSection.forEach(section => {
+            btnsArr.forEach(btn => 
+            { 
+                if(section === btn){
+                    result.status = true; 
+                    result.button = btn;
+                    result.routting = routting;
+                }
+            });
+        });
+    }
+
+    //return
+    return result;
+}
+
 var show = function(userid, injectedtext){
     fn.userOper.setSection(userid, fn.mstr.settings['name'], true);
     var list = fn.convertObjectToArray(fn.mstr.settings['btns'], null);
@@ -28,4 +66,4 @@ var routting = function(message, speratedSection){
     }
 
 }
-module.exports = {routting, show}
+module.exports = { name, checkRoute, routting, show }

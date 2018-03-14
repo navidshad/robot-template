@@ -1,6 +1,4 @@
 module.exports.create = function(){
-    global.fn = require('./functions.js');
-    global.fn.strArr = global.fn.convertObjectToArray(fn.str, {'nested': true});
     var botObject = require('./base/botObject.js');
     
     //make the bot to be an object

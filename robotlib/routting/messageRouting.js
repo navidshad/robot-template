@@ -1,7 +1,7 @@
 fn = global.fn;
 menu = require('./menuItemsRouting');
 
-var analyze = function(message){
+var routting = function(message){
     //commands
     if(message.text && message.text === '/start')                   fn.commands.start(message);
     else if (message.text && message.text === '/getsection')        fn.commands.getsection(message);
@@ -25,22 +25,21 @@ var analyze = function(message){
             else if(user.isCompelet){
                 console.log('user profile is compelet');
                 //text message
-                if(message.text){
+                if(message.text)
+                {
                     var text = message.text;
                     //go to admin
                     if(text === fn.str.goToAdmin['name'] || text === fn.str.goToAdmin['back'] || speratedSection[1] === fn.str.goToAdmin['name'] && user.isAdmin){
-                        fn.adminPanel.routting(message, speratedSection);}
-                    //search 
-                    else if(text === fn.mstr.search['lable'] || fn.checkValidMessage(fn.mstr.search['name'], speratedSection) && text !== fn.mstr.category['backtoParent'])
-                        fn.m.search.user.routting(message, speratedSection);
+                        fn.adminPanel.routting(message, speratedSection, user);}
                     //menu items
                     else if(text === fn.mstr.category['backtoParent'] || fn.checkValidMessage(text, global.robot.menuItems) || fn.checkValidMessage(speratedSection[1], global.robot.menuItems))
                         menu(message, speratedSection, user);
                     //free message
                     else fn.freeStrings.routting(message, speratedSection, user);
                 }
+
                 //non text message
-                else fn.upload(message, speratedSection);
+                else fn.upload(message, speratedSection, user);
             }
             //user profile is not compelet
             else if (!isCompelet && message.text){
@@ -53,4 +52,4 @@ var analyze = function(message){
     }
 }
 
-module.exports = { analyze }
+module.exports = { routting }

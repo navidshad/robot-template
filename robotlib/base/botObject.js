@@ -19,13 +19,13 @@ module.exports = function(detail){
         global.robot.bot.on('message', (msg) => {
             //console.log(msg.text);
             console.log(msg.photo);
-            global.messageRouting.analyze(msg);
+            global.messageRouting.routting(msg);
         });
 
         //callback 
         global.robot.bot.on('callback_query', (query) => {
             //console.log(query);
-            global.queryRouting.analyze(query);
+            global.queryRouting.routting(query);
         });
 
         //error

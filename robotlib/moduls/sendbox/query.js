@@ -1,3 +1,38 @@
+var checkQuery = function(option){
+
+    var btnsArr  = [ 
+        fn.mstr.sendMessage['queryAdminSndMess']
+    ];
+
+    var result = {}
+    //check text message
+    if(option.text) btnsArr.forEach(btn => { 
+        if(option.text === btn) 
+        {
+            result.status = true; 
+            result.button = btn;
+            result.routting = routting;
+        }
+    });
+
+    //checl seperate section
+    if(option.speratedSection){
+        option.speratedSection.forEach(section => {
+            btnsArr.forEach(btn => 
+            { 
+                if(section === btn){
+                    result.status = true; 
+                    result.button = btn;
+                    result.routting = routting;
+                }
+            });
+        });
+    }
+
+    //return
+    return result;
+}
+
 var sendmessage = function(userid, sendboxid){
 
     global.fn.db.sendbox.findOne({'_id': sendboxid}, function(er, item){
@@ -27,7 +62,7 @@ var sendmessage = function(userid, sendboxid){
     });
 }
 
-module.exports = function(query, speratedQuery){
+routting = function(query, speratedQuery){
 
     //remove query message
     global.robot.bot.deleteMessage(query.message.chat.id, query.message.message_id);
@@ -51,3 +86,5 @@ module.exports = function(query, speratedQuery){
         sendmessage(query.from.id, speratedQuery[speratedQuery.length-1]);
     }
 }
+
+module.exports = { checkQuery, routting }

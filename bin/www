@@ -1,5 +1,8 @@
 #!/usr/bin/env node
-global.confige = require('../config');
+
+//lounch robot system
+require('../app_bot').settingUp();
+
 /**
  * Module dependencies.
  */
@@ -7,10 +10,6 @@ global.confige = require('../config');
 var app = require('../app');
 var debug = require('debug')('robot-template:server');
 var http = require('http');
-
-//robot
-var botApplication = require('../robotlib/main');
-botApplication.create();
 
 /**
  * Get port from environment and store in Express.
