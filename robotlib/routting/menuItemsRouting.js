@@ -22,7 +22,7 @@ module.exports = function(message, speratedSection, user){
 
     //back to uper level
     if(text === fn.mstr.category['backtoParent']){
-        console.log(speratedSection);
+        //console.log(speratedSection);
         var from = speratedSection.length-1
         var catname = speratedSection[speratedSection.length-2];
         speratedSection.splice(from, 1);
@@ -33,7 +33,7 @@ module.exports = function(message, speratedSection, user){
 
     //back to a category
     if(text.includes(fn.str['back']) && text.split(' - ')[1]){
-        console.log('back to category', text);
+        //console.log('back to category', text);
         var catname = text.split(' - ')[1];
         speratedSection.splice(last, 1);
         fn.userOper.setSection(message.from.id, catname, true);
@@ -42,20 +42,20 @@ module.exports = function(message, speratedSection, user){
 
     //go to category
     else if(fn.m.category.checkInValidCat(text)){
-        console.log('go to category', text);
+        //console.log('go to category', text);
         speratedSection.push(text);
         showCategoryDir(message.from.id, text, speratedSection);
     }
 
-    //contct with admin
-    else if (text === fn.mstr['inbox'].lable || speratedSection[last] === fn.mstr['inbox'].lable){
-        console.log('contact with admin');
-        fn.m.inbox.user(message, speratedSection);
-    }
+    // //contct with admin
+    // else if (text === fn.mstr['inbox'].lable || speratedSection[last] === fn.mstr['inbox'].lable){
+    //     //console.log('contact with admin');
+    //     fn.m.inbox.user(message, speratedSection);
+    // }
 
     //go to a post  
     else{
-        console.log('this is a post');
+        //console.log('this is a post');
         fn.m.post.user.show(message, message.text, user, 
             //exit and go to free message if item would no be a post 
             (user) => { fn.freeStrings.routting(message, speratedSection, user); 

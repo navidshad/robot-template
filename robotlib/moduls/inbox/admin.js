@@ -37,13 +37,13 @@ var checkRoute = function(option){
 
 var show = function(userid){
     console.log('got to inbox section');
-    var titles = [[
+    var titles = [
         fn.mstr.inbox['inboxDeleteAll'],
         fn.mstr.inbox['settings']
-    ]];
+    ];
 
     //get message list
-    fn.db.inbox.find({}).sort('-_id').exec(function(err, items){       
+    fn.db.inbox.find({}).sort('-_id').limit(30).exec(function(err, items){       
         if(items.length > 0){
             items.forEach(function(item) {
                 var readedSym = fn.mstr.inbox.readSym[0];
@@ -53,7 +53,7 @@ var show = function(userid){
             }, this);
         }
         //show list
-        var markup = fn.generateKeyboard({custom:true, list: titles, back:fn.str.goToAdmin['back']}, false);
+        var markup = fn.generateKeyboard({'custom':true, 'grid':true, 'list': titles, 'back':fn.str.goToAdmin['back']}, false);
         global.robot.bot.sendMessage(userid, fn.mstr['inbox'].name, markup);
         fn.userOper.setSection(userid, fn.mstr['inbox'].name, true);
     });

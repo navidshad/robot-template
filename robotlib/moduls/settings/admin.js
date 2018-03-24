@@ -4,7 +4,7 @@ var checkRoute = function(option){
 
     var btnsArr  = [ 
         fn.mstr.settings['name'],
-        fn.mstr.settings['back']
+        fn.mstr.settings['back'],
     ];
 
     var result = {}
@@ -54,9 +54,10 @@ var routting = function(message, speratedSection){
 
     //first message of robot
     else if (text === fn.mstr.settings.btns['firstmess']){
-        fn.userOper.setSection(message.from.id, fn.mstr.settings.btns['firstmess'], true);
+        var mess = fn.mstr.settings.btns['firstmess'];
         var replymarkup = fn.generateKeyboard({'section': fn.mstr.settings['back']}, true);
-        global.robot.bot.sendMessage(message.from.id, fn.mstr.settings.mess['firstmess'], replymarkup);  
+        global.robot.bot.sendMessage(message.from.id, mess, replymarkup);
+        fn.userOper.setSection(message.from.id, mess, true);
     }
     else if (speratedSection[3] === fn.mstr.settings.btns['firstmess']){
         if(text.length < 10) {global.robot.bot.sendMessage(message.from.id, fn.mstr.settings.mess['shorttext']); return;}
@@ -64,6 +65,6 @@ var routting = function(message, speratedSection){
         global.robot.save();
         show(message.from.id, fn.str['seccess']);
     }
-
 }
+
 module.exports = { name, checkRoute, routting, show }

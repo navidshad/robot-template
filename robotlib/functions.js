@@ -1,16 +1,15 @@
 //system
-var db                  = require('./base/db.js');
+var db                  = require('./base/db');
 var str                 = require('./str/staticStrings.js');
 var telegramBot         = require('node-telegram-bot-api');
 var generateKeyboard    = require('./base/generateKeyboard.js');
 var time                = require('../moduls/time.js');
-var collector           = require('../moduls/collector');
 var fs                  = require('fs');
 var request             = require('request');
 var path                = require('path');
 var commands            = require('./routting/commands');
 var freeStrings         = require('./routting/freeStrings');
-var events              = require('events');
+var request             = require('request');
 
 //user
 var userOper        = require('./user/userOperations.js');
@@ -19,8 +18,8 @@ var userOper        = require('./user/userOperations.js');
 var adminPanel      = require('./admin/adminPanel.js');
 var upload          = require('./routting/uploadRouting');
 
-var convertObjectToArray = function(object, option){
-
+var convertObjectToArray = function(object, option)
+{
     var chartData = [];
     for (var i in object) {
         var item = object[i];
@@ -45,7 +44,7 @@ var converAMenuItemsToArray = function(object){
         //check if the Item is a module setting 
         if(element.modulename){
             //check module statuse
-            if(global.confige.modules[element.modulename]) items.push(element.name);
+            if(global.config.modules[element.modulename]) items.push(element.name);
         }
         else items.push(element.name);
     }
@@ -70,12 +69,22 @@ var checkValidMessage = function(text, custom){
     return isvalid;
 }
 
-var saveTelegramFile = function(id, fileName, savePath, callback){
-    global.robot.bot.getFileLink(id).then((link) => {
-        request(link).pipe(fs.createWriteStream(savePath)).on('close', () =>{
-            console.log('new file has been created on', savePath);
-            if(callback) callback();
-        });
+var saveTelegramFile = async function(id, savePath, callback){
+    var link = await global.robot.bot.getFileLink(id).then();
+    var stream = fs.createWriteStream(savePath);
+    stream.on('close', (e) =>{
+        if(e) { console.log(e); return;}
+        console.log('new file has been created on', savePath);
+        if(callback) callback(id, savePath);
+    });
+
+    request(link).pipe(stream);
+}
+
+var removeFile = function(path, callback){
+    fs.unlink(path, (err) => { 
+        if(err) console.log(err);
+        if(callback) callback(true);
     });
 }
 
@@ -99,7 +108,15 @@ var getMenuItems = function(name, callback){
                         //if moudle has 1 btn
                         if(md.button) items.push({'name':md.button, 'order': order});
                         //if module has more than 1 btn
-                        else if(md.buttons) md.buttons.forEach(element => { items.push({'name':element, 'order': order}); });
+                        else if(md.buttons) {
+                            md.buttons.forEach(element => { items.push({'name':element, 'order': order}); });
+                            return;
+                        }
+
+                        //user route method
+                        var mRoute = getModuleRouteMethods(md.name);
+                        if(!mRoute.userRoute) return;
+                        mRoute.methods.getButtons().forEach(element => { items.push({'name':element, 'order': order}); });
                     }
                 }, this);
             }
@@ -124,10 +141,13 @@ var getMenuItems = function(name, callback){
 }
 
 var getMainMenuItems = function(){
-    getMenuItems(fn.mstr.category['maincategory'], (items) => { 
-        global.robot.menuItems = (items) ? items : [];
-        //items.push(fn.str.mainMenuItems['contact']);
-    });
+    return new Promise((resolve, reject) => {
+        getMenuItems(fn.mstr.category['maincategory'], (items) => { 
+            global.robot.menuItems = (items) ? items : [];
+            //items.push(fn.str.mainMenuItems['contact']);
+            resolve();
+        });
+    })
 }
 
 var queryStringMaker = function(parameter, list, condition){
@@ -145,28 +165,99 @@ var updateBotContent = function(callback){
     if(callback) callback();
 }
 
-var getModuleOption = function(mName){
-    moduleOption = null;
+var getModuleOption = function(mName, option){
+    var moduleOption = null;
+    var added = false;
+
     if (!global.robot.confige.moduleOptions) global.robot.confige.moduleOptions = [];
+    
     global.robot.confige.moduleOptions.forEach(function(element, i) {
         if(element.name === mName) {
             index = i;
             moduleOption = {'index':i, 'option':element};
+            added = true;
         }
     }, this);
+
+    //create
+    if(!added && option && option.create) {
+        var newmoduleOption = {};
+        if(option.setting) newmoduleOption = option.setting;
+        else newmoduleOption = {'name':mName, 'datas':[], 'btn_order':1};
+        global.robot.confige.moduleOptions.push(newmoduleOption);
+        //save configuration
+        global.robot.save();
+        moduleOption = {};
+        moduleOption.option = newmoduleOption;
+        moduleOption.index = global.robot.confige.moduleOptions.length-1;
+    }
+
     return moduleOption;
+}
+
+var getModuleData = function(mName, dName){
+    var data = null;
+    //get module detail and data
+    var moduleOption = getModuleOption(mName);
+    if(moduleOption) moduleOption.option.datas.forEach(element => {
+        if(element.name === dName) data = element;
+    });
+    //return
+    return data;
+}
+
+var putDatasToModuleOption = function (mName, datas, setting) {
+    //get module details
+    var ModuleOption = getModuleOption(mName, {'create': true, 'setting': setting});
+    var mdatas = ModuleOption.option.datas;
+    //add & update bot-config
+    datas.map(item => 
+        {
+            notadded = true;
+            //update
+            mdatas.forEach(element => {
+                if(element.name !== item.name) return;
+                if(item.value) element.value = item.value;
+                if(item.key) element.key = item.key;
+                notadded = false;
+            });
+            //add
+            if(!notadded) return;
+            mdatas.push(item);
+        }
+    );
+
+    //replace new datas
+    global.robot.confige.moduleOptions[ModuleOption.index].datas = mdatas;
+    global.robot.save();
+
+    //return
+    return ModuleOption;
+}
+
+var getModuleRouteMethods = function(mName){
+    //define query route
+    var mRouteMethods = { 'userRoute': false };
+    global.mRoutes.forEach(route => {
+        if(route.name !== mName) return;
+         mRouteMethods.methods = route;
+        //check user route method
+         if(route.getButtons) 
+            mRouteMethods.userRoute = true;
+    });
+    return mRouteMethods;
 }
 
 module.exports = {
     //system
     db, time, str, telegramBot, generateKeyboard, convertObjectToArray, commands,
     getMainMenuItems, getMenuItems, converAMenuItemsToArray, queryStringMaker,
-    checkValidMessage, saveTelegramFile, collector, freeStrings,
-    updateBotContent, events,
+    checkValidMessage, saveTelegramFile, removeFile, freeStrings,
+    updateBotContent, request, path, fs,
     //user
     userOper, 
     //admin
     adminPanel, upload,
     //tools
-    getModuleOption,
+    getModuleOption, putDatasToModuleOption, getModuleRouteMethods, getModuleData,
 }

@@ -2,12 +2,13 @@ var settingUp = async function()
 {
     //get approot path
     global.appRoot = __dirname;
-
-    global.confige = require('./config');
+    //get config
+    global.config = require('./config');
     //setting test run
-    if(global.confige.testRun){
-      global.confige.dbpath = global.confige.dbpath_test;
-      global.confige.token = global.confige.token_test;
+    if(global.config.testRun)
+    {
+      global.config.dbpath = global.config.dbpath_test;
+      global.config.token = global.config.token_test;
     }
     
     ///must be declear first
@@ -57,14 +58,21 @@ var getModuls = function(){
             list.forEach(m =>
             {
                 var emodule = require(m);
+                //console.log(emodule.name)
                 global.fn.m[emodule.name] = emodule;
                 
                 //get module route functions
                 var route = {}
-                route.admin = emodule.checkRoute;
-                route.user = (emodule.user) ? emodule.user.checkRoute : null;
-                route.upload = (emodule.upload) ? emodule.upload.checkUpload : null;
-                route.query = (emodule.query) ? emodule.query.checkQuery : null;
+                route.name      = emodule.name;
+                route.admin     = emodule.checkRoute;
+
+                if(emodule.user){
+                    route.user      = emodule.user.checkRoute;
+                    route.getButtons= (emodule.user.getButtons) ? emodule.user.getButtons : null;
+                }
+
+                route.upload    = (emodule.upload) ? emodule.upload.checkUpload : null;
+                route.query     = (emodule.query) ? emodule.query.checkQuery : null;
                 global.mRoutes.push(route);
             });
             resolve();
@@ -74,7 +82,8 @@ var getModuls = function(){
 
 var getFunctions = function(){
     return new Promise((resolve, reject) => {
-        global.fn = extend(global.fn, require('./robotlib/functions'));
+        var fn = require('./robotlib/functions');
+        global.fn = extend(global.fn, fn);
         resolve();
     });
 }

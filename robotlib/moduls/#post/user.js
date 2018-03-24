@@ -5,30 +5,29 @@ var show = function(message, postName, user, callback){
             var description = post.description + '\n @' +  global.robot.username;
             switch (post.type) {
                 case fn.mstr.post.types['text'].name:
+                    console.log('send text post');
                     global.robot.bot.sendMessage(message.from.id, description)
                     .then((msg) => {
                       snedAttachmentArray(message, post.attachments, 0);
                     });
                     break;
                 case fn.mstr.post.types['file'].name:
+                    console.log('send file post');
                     global.robot.bot.sendDocument(message.chat.id, post.fileid, {caption : description})
                     .then((msg) => {
                       snedAttachmentArray(message, post.attachments, 0);
                     });
                     break;
                 case fn.mstr.post.types['photo'].name:
-                    post.photoid.forEach((element, i) => {
-                        setTimeout(() => {
-                            global.robot.bot.sendPhoto(message.chat.id, element, {caption : description})
-                            .then((msg) => {
-                              if(i === post.photoid.length-1);
-                              snedAttachmentArray(message, post.attachments, 0);
-                            });
-                        }, 300);
+                    console.log('send photo post');
+                    global.robot.bot.sendPhoto(message.chat.id, post.photoid, {caption : description})
+                    .then((msg) => {
+                      snedAttachmentArray(message, post.attachments, 0);
                     });
                     break;
                     
                 case fn.mstr.post.types['sound'].name:
+                    console.log('send sound post');
                     global.robot.bot.sendAudio(message.chat.id,post.audioid, {caption : description})
                     .then((msg) => {
                       snedAttachmentArray(message, post.attachments, 0);
@@ -36,6 +35,7 @@ var show = function(message, postName, user, callback){
                     break;
         
                 case fn.mstr.post.types['video'].name:
+                    console.log('send video post');
                     global.robot.bot.sendVideo(message.chat.id,post.videoid, {caption : description})
                     .then((msg) => {
                       snedAttachmentArray(message, post.attachments, 0);

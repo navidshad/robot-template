@@ -1,7 +1,7 @@
 var checkRoute = function(option){
 
     var btnsArr  = [ 
-        fn.mstr.inbox['name'].lable
+        fn.mstr.inbox.lable
     ];
 
     var result = {}

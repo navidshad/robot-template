@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-mongoose.connect(global.confige.dbpath);
+mongoose.connect(global.config.dbpath);
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -34,21 +34,23 @@ var sendBoxSchema = new Schema({
   text        : String,
 });
 
+var data = new Schema({ 
+  name:String, 
+  value:String, 
+  key: Boolean,
+  more:[ {name:String, value:String, key: Boolean} ]
+});
+
 var ConfigSchema = new Schema({
   username      : String,
-  collectorlink : String,
-  modules :{
-    'settings':Boolean,
-    'ticket': Boolean,
-    'contacttousers': Boolean,
-    'shop': Boolean
-  },
+  firstmessage  : String,
   moduleOptions:[{
     name:String, 
     category:String, 
     active: Boolean, 
     button:String,
     btn_order:Number,
+    datas : [data]
   }]
 });
 
@@ -68,6 +70,7 @@ var attachment = new Schema({
 
 var postSchema = new Schema({
   name        :String,
+  isproduct     :{'type':Boolean, 'default':false},
   category    :String,
   order       :Number,
   date        :String,
@@ -75,7 +78,7 @@ var postSchema = new Schema({
 
   type        :String,
   fileid      :String,
-  photoid     :[String],
+  photoid     :String,
   audioid     :String,
   videoid     :String,
   thumbLink   :String,
@@ -83,12 +86,18 @@ var postSchema = new Schema({
   attachments :[ attachment ],
 });
 
+var wordSchema = new Schema({
+  userid: Number,
+  word: String,
+})
+
 var user      = mongoose.model('Users', UserSchema);
 var inbox     = mongoose.model('inbox', inboxSchema);
 var sendbox   = mongoose.model('sendBox', sendBoxSchema);
 var confige   = mongoose.model('confige', ConfigSchema);
 var category  = mongoose.model('categories', categorySchema);
 var post      = mongoose.model('posts', postSchema);
+var word      = mongoose.model('words', wordSchema);
 
 
-module.exports = {user, inbox, sendbox, confige, category, post};
+module.exports = {user, inbox, sendbox, confige, category, post, word};

@@ -1,6 +1,6 @@
 module.exports.settings = {
     modulename:'settings',
-    name : 'تنظیمات',
+    name : '⚙️ ' + 'تنظیمات',
     back : '⤴️ برگشت به تنظیمات',
     btns : {
         firstmess : 'پیغام ابتدایی',

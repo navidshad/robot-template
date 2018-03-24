@@ -26,12 +26,14 @@ module.exports = {
     NotPublished:'🚫',
 
     //query --------------------------------------------------------
-    queryUpload     :'upld',
-    queryAttach     :'atch',
-    queryRemoveAttach:'ratch',
-    queryDelete     :'dlte',
-    queryPublication:'publication',
-    queryOrder      :'order',
+    query:{
+        upload     :'upld',
+        attach     :'atch',
+        removeAttachment:'ratch',
+        delete     :'dlte',
+        delete:'publication',
+        queryOrder      :'order',
+    },
 
     //msc
     editOrder       :'اولویت',

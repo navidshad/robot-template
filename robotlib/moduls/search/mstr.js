@@ -1,6 +1,6 @@
 module.exports.search = {
     modulename:'search',
-    name : 'جستجو',
+    name : '🔎 ' + 'جستجو',
     back : '⤴️ برگشت به جستجو',
 
     //user

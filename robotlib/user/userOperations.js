@@ -1,47 +1,51 @@
-fn = global.fn;
+var fn = global.fn;
 
-var registerId = function(id, flag, regCallback){
-    fn.userOper.checkProfile(id, (user) => {
-        isAdmin = false;
-        var newAdminList = []
-        global.robot.adminWaitingList.forEach(function(admin) {
-            if(admin === flag.username)
-                isAdmin = true;
-            else{newAdminList.push(admin);}
-        }, this);
-        global.robot.adminWaitingList = newAdminList;
+var registerId = async function(id, flag, regCallback)
+{
+    //get user if exist
+    var user = await fn.userOper.checkProfile(id).then();
+    isAdmin = false;
 
-        if(!user){
-            var newuser = new fn.db.user({
-                userId  : id,
-                'username': flag.username,
-                'fullname': flag.fullname,
-                section : fn.str['mainMenu'],
-                'isAdmin': isAdmin,
-                isCompelet:true
-            });
-            //set invitor id
-            if(flag.invitor) newuser.invitorId = flag.invitor;
-            newuser.save(() => {
-                console.log('user has been registered');
-            });
-        }
-        else{
-            user.section = fn.str['mainMenu'];
-            user.isCompelet = true;
-            user.fullname = flag.fullname;
-            user.username = flag.username;
+    //check admin list
+    var newAdminList = []
+    global.robot.adminWaitingList.forEach(function(admin) {
+        if(admin === flag.username)
+            isAdmin = true;
+        else{newAdminList.push(admin);}
+    }, this);
+    global.robot.adminWaitingList = newAdminList;
 
-            if(user.isAdmin === true){
-                isAdmin = user.isAdmin;
-            }
-            else{
-                user.isAdmin = isAdmin;
-            }
-            user.save();
-        }
-        regCallback(isAdmin);
-    });
+    //create new user
+    if(!user)
+    {
+        var newuser = new fn.db.user({
+            userId  : id,
+            'username': flag.username,
+            'fullname': flag.fullname,
+            section : fn.str['mainMenu'],
+            'isAdmin': isAdmin,
+            isCompelet:true
+        });
+        //set invitor id
+        if(flag.invitor) newuser.invitorId = flag.invitor;
+        user = await newuser.save().then();
+        console.log('user has been registered');
+    }
+    //update exist user
+    else
+    {
+        user.section = fn.str['mainMenu'];
+        user.isCompelet = true;
+        user.fullname = flag.fullname;
+        user.username = flag.username;
+
+        if(user.isAdmin === true) isAdmin = user.isAdmin;
+        else user.isAdmin = isAdmin;
+        user.save();
+    }
+
+    //return user
+    regCallback(user);
 }
 
 var editUser = function(userId,profile,ssCallBack){
@@ -56,10 +60,35 @@ var editUser = function(userId,profile,ssCallBack){
     });
 }
 
-var checkProfile = function(id, callback){
-    fn.db.user.findOne({'userId':id}).exec((e, user) => {
-        if(user && callback) callback(user);
-        else if (callback) callback(null);
+var checkProfile = async function(id, callback)
+{
+    var user = await fn.db.user.findOne({'userId':id}).exec().then(); 
+    return new Promise((resolve, reject) => 
+    {
+        if(!user) {
+            if(callback) callback(null);
+            resolve(null);
+            return;
+        }
+
+        var isMember = false;
+        //when chanel checker is not active
+        // if(fn.m.chanelChecker.isActive())
+        // {
+        //     var status = 'non';
+        //     var chanel = await fn.m.chanelChecker.getUser(id);
+        //     //console.log('chanel status: ', chanel);
+        //     if(chanel) status = chanel.status;
+    
+        //     if(status === 'creator' || status === 'member')
+        //     {
+        //         isMember = true;
+        //     }
+        // }
+    
+        if(user) user.isMemberOfChannel = true; //isMember;
+        resolve(user);
+        if (callback) callback(user);
     });
 }
 

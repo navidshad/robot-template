@@ -35,14 +35,21 @@ module.exports.post = {
         ticket:'ticket'
     },
 
-    //post query
-    queryPost           :'pst',
-    queryPostText       :'format' + 'text',
-    queryPostFile       :'format' + 'file',
-    queryPostPhoto      :'format' + 'photo',
-    queryPostSound      :'format' + 'sound',
-    queryPostVideo      :'format' + 'video',
-    queryPostName       :'name',
-    queryPostCategory   :'category',
-    queryPostDescription:'description',  
+    query: {
+        post:'post',
+        admin:'a',
+        name:'name',
+        category:'cat',
+        description:'des',
+        caption:'cap',
+        attachment:'att',
+        removeAttachment:'ratt',
+        isproduct:'isproduct',
+
+        text       :'format' + 'text',
+        file       :'format' + 'file',
+        photo      :'format' + 'photo',
+        sound      :'format' + 'sound',
+        video      :'format' + 'video',
+    }
 }

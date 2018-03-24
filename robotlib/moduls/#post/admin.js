@@ -53,22 +53,23 @@ var showPostList = function(userid, injectedtext){
 var createpostMess = function(userId, post){
         //create callback keyboard
         var detailArr = [];
-        var fn_text     = fn.mstr.post['queryPost'] + '-' + fn.mstr.post['queryPostText'] + '-' + post._id;
-        var fn_file     = fn.mstr.post['queryPost'] + '-' + fn.mstr.post['queryPostFile'] + '-' + post._id;
-        var fn_photo    = fn.mstr.post['queryPost'] + '-' + fn.mstr.post['queryPostPhoto'] + '-' + post._id;
-        var fn_sound    = fn.mstr.post['queryPost'] + '-' + fn.mstr.post['queryPostSound'] + '-' + post._id;
-        var fn_video    = fn.mstr.post['queryPost'] + '-' + fn.mstr.post['queryPostVideo'] + '-' + post._id;
+        var querTag = fn.mstr.post.query;
+        var fn_text     = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['text'] + '-' + post._id;
+        var fn_file     = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['file'] + '-' + post._id;
+        var fn_photo    = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['photo'] + '-' + post._id;
+        var fn_sound    = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['sound'] + '-' + post._id;
+        var fn_video    = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['video'] + '-' + post._id;
         
-        var fn_attachment   = fn.mstr.post['queryPost'] + '-' + fn.str['queryAttach'] + '-' + post._id;
-        var fn_upload       = fn.mstr.post['queryPost'] + '-' + fn.str['queryUpload'] + '-' + post._id;
+        var fn_attachment   = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['attach'] + '-' + post._id;
+        var fn_upload       = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['upload'] + '-' + post._id;
         
-        var fn_name         = fn.mstr.post['queryPost'] + '-' + fn.mstr.post['queryPostName'] + '-' + post._id;
-        var fn_category     = fn.mstr.post['queryPost'] + '-' + fn.mstr.post['queryPostCategory'] + '-' + post._id;
-        var fn_description  = fn.mstr.post['queryPost'] + '-' + fn.mstr.post['queryPostDescription'] + '-' + post._id;
-        var fn_delete       = fn.mstr.post['queryPost'] + '-' + fn.str['queryDelete'] + '-' + post._id;
-        var fn_publication  = fn.mstr.post['queryPost'] + '-' + fn.str['queryPublication'] + '-' + post._id;
-        var fn_order        = fn.mstr.post['queryPost'] + '-' + fn.str['queryOrder'] + '-' + post._id;            
-        var fn_close        = fn.mstr.post['queryPost'] + '-close';
+        var fn_name         = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['name'] + '-' + post._id;
+        var fn_category     = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['category'] + '-' + post._id;
+        var fn_description  = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['description'] + '-' + post._id;
+        var fn_delete       = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['delete'] + '-' + post._id;
+        var fn_publication  = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['publication'] + '-' + post._id;
+        var fn_order        = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['order'] + '-' + post._id;            
+        var fn_close        = querTag['post'] + '-' + querTag['admin'] + '-close';
 
         var tx_text =fn.mstr.post.types['text'].icon,
         tx_file     =fn.mstr.post.types['file'].icon,
@@ -91,8 +92,15 @@ var createpostMess = function(userId, post){
         if(post.type === 'video' && post.videoid) tx_upload = 'آپلود' + fn.mstr.post.types['attached']; 
 
         //publication
-        var tx_publication = (post.publish) ? fn.str['Published'] +'منتشر شده' : fn.str['NotPublished'] +'منتشر نشده'
+        var tx_publication = (post.publish) ? fn.str['Published'] +'منتشر شده' : fn.str['NotPublished'] +'منتشر نشده';
 
+        //post or product
+        var fn_product = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['isproduct'] + '-' + post._id;;
+        var isProduct = (post.isproduct) ? '✅' : '◻️';
+        var tx_product = isProduct + ' یک محصول است';
+        detailArr.push([ {'text': tx_product , 'callback_data': fn_product} ]);
+
+        //type btns
         detailArr.push([
             {'text': tx_text, 'callback_data': fn_text},
             {'text': tx_file, 'callback_data': fn_file},    
@@ -101,6 +109,7 @@ var createpostMess = function(userId, post){
             {'text': tx_video, 'callback_data': fn_video}
         ]);
 
+        //upload btn
         if(post.type !== 'text') detailArr.push([{'text': tx_upload, 'callback_data': fn_upload}]);
         
         detailArr.push([ 
@@ -109,6 +118,7 @@ var createpostMess = function(userId, post){
             {'text': 'نام', 'callback_data': fn_name}
         ]);
 
+        //priority
         detailArr.push([{'text': 'اولویت', 'callback_data': fn_order}]);
 
         detailArr.push([
@@ -121,7 +131,7 @@ var createpostMess = function(userId, post){
         detailArr.push([{'text': 'پیوست', 'callback_data': fn_attachment}]);
         //attached fiels
         if(post.attachments) post.attachments.forEach((element, i) => {
-            var fn_removeAttchment = fn.mstr.post['queryPost'] + '-' + fn.str['queryRemoveAttach'] + '-' + post._id + '-' + i;
+            var fn_removeAttchment = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['removeAttachment'] + '-' + post._id + '-' + i;
             var row = [ {'text':'❌', 'callback_data':fn_removeAttchment},
                         {'text':element.name, 'callback_data':'nothing'} ];
             detailArr.push(row);
@@ -149,7 +159,7 @@ var createpostMess = function(userId, post){
        'ــــــــــــــــــــــــــــــــ' + '\n' + 
        '⚠️' + 'برای ویرایش مطلب از دکمه های پیوست شده استفاده کنید.';
    
-       //global.robot.bot.sendMessage(userId, fn.str['seccess'], fn.generateKeyboard({section:fn.str.goTopost[0]}, false));    
+       //global.robot.bot.sendMessage(userId, fn.str.query['seccess'], fn.generateKeyboard({section:fn.str.goTopost[0]}, false));    
        showPostList(userId);
        global.robot.bot.sendMessage(userId, text, {"reply_markup" : {"inline_keyboard" : detailArr}});
 }
@@ -164,7 +174,7 @@ var ceatePost = function(message){
         'publish': false
     });
     newpost.save(() => { 
-        showPostList(message.from.id, fn.str['seccess']); 
+        showPostList(message.from.id, fn.str.query['seccess']); 
         fn.updateBotContent();
     });
 }
@@ -200,25 +210,15 @@ var editpost = function(id, detail, userId, ecCallBack){
             if(detail.removeAttachment) post.attachments.splice(parseInt(detail.removeAttachment), 1);
 
             //albums
-            if(detail.clearalbum) {post.photoid = []; sendKey = false};
-            if(detail.photoid){
-                sendKey = false;
-                //create media album for first time
-                if(!post.photoid) post.photoid = [];
-                //add photo to album
-                var isnotadded = true;
-                post.photoid.forEach(element => {
-                    if(element === detail.photoid) isnotadded = false;
-                });
-                if(isnotadded) post.photoid.push(detail.photoid);
-            }
+            //if(detail.clearalbum) {post.photoid = []; sendKey = false};
+            if(detail.photoid) post.photoid = detail.photoid;
 
             post.save((e) => {
                 if(e) console.log(e);
-                if(!detail.clearalbum) global.robot.bot.sendMessage(userId, fn.str['seccess']);
+                if(!detail.clearalbum) global.robot.bot.sendMessage(userId, fn.str.query['seccess']);
                 if(sendKey) {
                     fn.userOper.setSection(userId, fn.mstr.post['name'], true);
-                    if(!detail.publish) createpostMess(userId, post);
+                    createpostMess(userId, post);
                 }
                 global.fn.updateBotContent();
                 if(ecCallBack) ecCallBack();
@@ -251,7 +251,7 @@ var routting = function(message, speratedSection){
     }
     else if(speratedSection[last] === fn.mstr.post.postOptions[1]){
         if(fn.m.category.checkInValidCat(text)) global.robot.bot.sendMessage(message.from.id, fn.mstr.post.scErrors[0]);
-        else if(fn.checkValidMessage(text)) global.robot.bot.sendMessage(message.from.id, fn.str['chooseOtherText']);
+        else if(fn.checkValidMessage(text)) global.robot.bot.sendMessage(message.from.id, fn.str.query['chooseOtherText']);
         else{
             fn.db.post.findOne({'name': text}).exec((e, post) => {
                 if(!post) ceatePost(message);
@@ -263,7 +263,7 @@ var routting = function(message, speratedSection){
     //edit name
     else if(speratedSection[last-1] === fn.mstr.post.edit['name']){
         if(fn.m.category.checkInValidCat(text)) global.robot.bot.sendMessage(message.from.id, fn.mstr.post.scErrors[0]);
-        else if(fn.checkValidMessage(text)) global.robot.bot.sendMessage(message.from.id, fn.str['chooseOtherText']);
+        else if(fn.checkValidMessage(text)) global.robot.bot.sendMessage(message.from.id, fn.str.query['chooseOtherText']);
         else{
             fn.db.post.findOne({'name': text}).exec((e, post) => {
                 if(!post) editpost(speratedSection[last], {'name': text}, message.from.id);
@@ -280,7 +280,7 @@ var routting = function(message, speratedSection){
     else if (speratedSection[last-1] === fn.mstr.post.edit['category']){
         var cat = text.split(' - ')[1];
         if(fn.m.category.checkInValidCat(cat)) editpost(speratedSection[last], {'category': cat}, message.from.id);
-        else global.robot.bot.sendMessage(message.from.id, fn.str['choosethisItems']);
+        else global.robot.bot.sendMessage(message.from.id, fn.str.query['choosethisItems']);
     }
 
     //edit order
@@ -306,7 +306,7 @@ var routting = function(message, speratedSection){
         var postname = text.split(' - ')[1];
         fn.db.post.findOne({'name': postname}).exec((e, post) => {
             if(post) createpostMess(message.from.id, post);
-            else global.robot.bot.sendMessage(message.from.id, fn.str['choosethisItems']);            
+            else global.robot.bot.sendMessage(message.from.id, fn.str.query['choosethisItems']);            
         });
     }
 }

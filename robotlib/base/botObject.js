@@ -13,12 +13,13 @@ module.exports = function(detail){
     this.start = function(){ 
         this.load();
         global.robot = this;
-        global.robot.bot = new global.fn.telegramBot(this.token, {polling: true});
+        var bot = new global.fn.telegramBot(this.token, {polling: true});
+        global.robot.bot = bot;
 
         //Message
         global.robot.bot.on('message', (msg) => {
             //console.log(msg.text);
-            console.log(msg.photo);
+            bot.sendChatAction(msg.chat.id, 'typing');
             global.messageRouting.routting(msg);
         });
 
@@ -28,52 +29,52 @@ module.exports = function(detail){
             global.queryRouting.routting(query);
         });
 
-        //error
-        global.robot.bot.on('error', (error) => {
-            console.log(error);
+        //channel post 
+        global.robot.bot.on('channel_post', (post) => {
+            console.log(post);
+            if(post.text === fn.mstr.chanelChecker['addChannelRegister'])
+                global.fn.m.chanelChecker.registerChannel(post.chat, post.message_id);
+            //global.queryRouting.analyze(query);
         });
     }
 
-    this.save = function(saveCalBack){
-        global.fn.db.confige.findOne({"username": this.username}, function(err, conf){
-            if(conf){
-                conf.username = global.robot.username,
-                conf.collectorlink = global.robot.confige.collectorlink,
-                conf.firstmessage = global.robot.confige.firstmessage,
-                conf.modules = global.robot.confige.modules,
-                conf.moduleOptions = global.robot.confige.moduleOptions
-                conf.save(() => {
-                    if(saveCalBack) saveCalBack();
-                });
-            }
-            else{
-                var conf = new global.fn.db.confige({
-                    "username": global.robot.username,
-                    "collectorlink": global.robot.confige.collectorlink,
-                    "firstmessage" : global.robot.confige.firstmessage,
-                    "modules": global.robot.confige.modules,
-                    "moduleOptions": global.robot.confige.moduleOptions
-                });
-                conf.save(() => {
-                    if(saveCalBack) saveCalBack();
-                });
-            }
-            //get main menu items
-            global.fn.getMainMenuItems();
-        });
+    this.save = async function(saveCalBack)
+    {
+        var conf = await global.fn.db.confige.findOne({"username": this.username}).exec().then();
+        if(conf)
+        {   //update
+            conf.username = global.robot.username,
+            conf.firstmessage = global.robot.confige.firstmessage,
+            conf.modules = global.robot.confige.modules,
+            conf.moduleOptions = global.robot.confige.moduleOptions
+        }
+        else
+        {   //create
+            var conf = new global.fn.db.confige({
+                "username": global.robot.username,
+                "firstmessage" : global.robot.confige.firstmessage,
+                "modules": global.robot.confige.modules,
+                "moduleOptions": global.robot.confige.moduleOptions
+            });
+        }
+
+        //save
+        await conf.save().then();
+        if(saveCalBack) saveCalBack();
+        //get main menu items
+        global.fn.getMainMenuItems();
     }
 
-    this.load = function(loadCalBack){
-        global.fn.db.confige.findOne({"username": this.username}, function(err, conf){
-            if(conf){
-                global.robot.confige.moduleOptions = conf.moduleOptions;
-                global.robot.confige.collectorlink = conf.collectorlink;
-                global.robot.confige.firstmessage = conf.firstmessage;
-                if(loadCalBack) loadCalBack();
-            }
-            else if(loadCalBack) loadCalBack();
-            //get main menu items
-            global.fn.updateBotContent();
-        });
+    this.load = async function(loadCalBack)
+    {
+        var conf = await global.fn.db.confige.findOne({"username": this.username}).exec().then();
+        if(conf){
+            global.robot.confige.moduleOptions = conf.moduleOptions;
+            global.robot.confige.firstmessage = conf.firstmessage;
+            if(loadCalBack) loadCalBack();
+        }
+        else if(loadCalBack) loadCalBack();
+        //get main menu items
+        global.fn.updateBotContent();
     }
 }
