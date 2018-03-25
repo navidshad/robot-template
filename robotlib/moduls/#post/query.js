@@ -87,7 +87,12 @@ var routting = function(query, speratedQuery){
     if(speratedQuery[2].includes('format')){
         var type = speratedQuery[2].replace('format', '').trim();
         console.log('format query', type);
-        fn.m.post.editpost(speratedQuery[speratedQuery.length-1], {'type': type, 'publish': fn.str.query['NotPublished']}, query.from.id);
+        fn.m.post.editpost(speratedQuery[speratedQuery.length-1], {'type': type, 'publish': fn.str['NotPublished']}, query.from.id);
+    }
+  
+      //is product
+    if(speratedQuery[2] === queryTag['isproduct']){
+        fn.m.post.editpost(speratedQuery[speratedQuery.length-1], {'isproduct': true, 'publish': fn.str['NotPublished']}, query.from.id);
     }
 
     //edit name

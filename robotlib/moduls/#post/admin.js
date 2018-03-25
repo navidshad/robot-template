@@ -95,7 +95,7 @@ var createpostMess = function(userId, post){
         var tx_publication = (post.publish) ? fn.str['Published'] +'منتشر شده' : fn.str['NotPublished'] +'منتشر نشده';
 
         //post or product
-        var fn_product = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['isproduct'] + '-' + post._id;;
+        var fn_product = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['isproduct'] + '-' + post._id;;
         var isProduct = (post.isproduct) ? '✅' : '◻️';
         var tx_product = isProduct + ' یک محصول است';
         detailArr.push([ {'text': tx_product , 'callback_data': fn_product} ]);
@@ -192,6 +192,7 @@ var editpost = function(id, detail, userId, ecCallBack){
             if(detail.audioid) post.audioid      = detail.audioid;
             if(detail.videoid) post.videoid      = detail.videoid;
             if(detail.thumbLink) post.thumbLink  = detail.thumbLink;
+            if(detail.isproduct) post.isproduct  = !post.isproduct;
             if(detail.publish){
                 if(detail.publish === fn.str['Published']) post.publish = true;
                 else if(detail.publish === 'switch') post.publish       = !post.publish;

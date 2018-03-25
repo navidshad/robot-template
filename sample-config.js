@@ -1,6 +1,6 @@
 module.exports = {
     //bot
-    dbpath      :'mongodb://127.0.0.1:27017/template',
+    dbpath      :'mongodb://rooot:123456789@ds113019.mlab.com:13019/template',
     token       :'',
     botusername :'',
     modules:{

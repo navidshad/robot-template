@@ -70,7 +70,8 @@ var attachment = new Schema({
 
 var postSchema = new Schema({
   name        :String,
-  isproduct     :{'type':Boolean, 'default':false},
+  isproduct   :{'type':Boolean, 'default':false},
+  price       :{'type':Number, 'default':1000},
   category    :String,
   order       :Number,
   date        :String,
