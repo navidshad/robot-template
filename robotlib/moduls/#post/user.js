@@ -20,11 +20,11 @@ var show = async function(message, postName, user, optionPrams, callback)
             detailArr.push([ {'text': 'افزودن به سبد', 'callback_data': fn_addToBag} ]);   
     }
 
+    var description = post.description + '\n @' +  global.robot.username;
     var markup = {'inline_keyboard': detailArr};
     var option = {'caption' : description, 'reply_markup': markup};
 
     //send post
-    var description = post.description + '\n @' +  global.robot.username;
     switch (post.type) {
         case fn.mstr.post.types['text'].name:
             console.log('send text post');
