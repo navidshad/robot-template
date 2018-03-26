@@ -56,7 +56,7 @@ module.exports = function(message, speratedSection, user){
     //go to a post  
     else{
         //console.log('this is a post');
-        fn.m.post.user.show(message, message.text, user, 
+        fn.m.post.user.show(message, message.text, user, {},
             //exit and go to free message if item would no be a post 
             (user) => { fn.freeStrings.routting(message, speratedSection, user); 
         });

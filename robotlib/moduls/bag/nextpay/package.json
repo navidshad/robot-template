@@ -1,0 +1,15 @@
+{
+  "name": "nextpay-nodejs-example-code",
+  "version": "1.0.0",
+  "description": "Nextpay Nodejs Example code",
+  "main": "nextpay.js",
+  "dependencies": {
+    "soap": "^0.11.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nextpay",
+  "license": "Nextpay"
+}

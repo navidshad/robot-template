@@ -45,7 +45,6 @@ module.exports = function(detail){
         {   //update
             conf.username = global.robot.username,
             conf.firstmessage = global.robot.confige.firstmessage,
-            conf.modules = global.robot.confige.modules,
             conf.moduleOptions = global.robot.confige.moduleOptions
         }
         else
@@ -53,7 +52,6 @@ module.exports = function(detail){
             var conf = new global.fn.db.confige({
                 "username": global.robot.username,
                 "firstmessage" : global.robot.confige.firstmessage,
-                "modules": global.robot.confige.modules,
                 "moduleOptions": global.robot.confige.moduleOptions
             });
         }

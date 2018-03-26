@@ -17,6 +17,7 @@ var settingUp = async function()
     await getMstrs().then();
     await getModuls().then();
     await getFunctions().then();
+    await getDbModels().then();
 
     // //function
     global.fn.strArr = global.fn.convertObjectToArray(fn.str, {'nested': true});
@@ -88,9 +89,28 @@ var getFunctions = function(){
     });
 }
 
+var getDbModels = function(){
+    return new Promise((resolve, reject) => {
+        var dir = require('path').join( global.appRoot , 'robotlib', 'moduls');
+        var option = {'filter':['.js'], 'name':'db'};
+        //get Mstr file paths
+        filWalker.walk(dir, option, (e, list) => {
+            if(e) reject(e);
+            //console.log(list);
+            list.forEach(db => {
+                var model = require(db);
+                global.fn.db = extend(global.fn.db, model);
+            });
+            resolve();
+        });
+
+    });
+}
+
 function extend(obj, src) {
     for (var key in src) {
-        if (src.hasOwnProperty(key)) obj[key] = src[key];
+        if (src.hasOwnProperty(key)) 
+            obj[key] = src[key];
     }
     return obj;
 }

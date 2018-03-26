@@ -51,117 +51,125 @@ var showPostList = function(userid, injectedtext){
 }
 
 var createpostMess = function(userId, post){
-        //create callback keyboard
-        var detailArr = [];
-        var querTag = fn.mstr.post.query;
-        var fn_text     = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['text'] + '-' + post._id;
-        var fn_file     = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['file'] + '-' + post._id;
-        var fn_photo    = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['photo'] + '-' + post._id;
-        var fn_sound    = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['sound'] + '-' + post._id;
-        var fn_video    = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['video'] + '-' + post._id;
-        
-        var fn_attachment   = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['attach'] + '-' + post._id;
-        var fn_upload       = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['upload'] + '-' + post._id;
-        
-        var fn_name         = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['name'] + '-' + post._id;
-        var fn_category     = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['category'] + '-' + post._id;
-        var fn_description  = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['description'] + '-' + post._id;
-        var fn_delete       = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['delete'] + '-' + post._id;
-        var fn_publication  = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['publication'] + '-' + post._id;
-        var fn_order        = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['order'] + '-' + post._id;            
-        var fn_close        = querTag['post'] + '-' + querTag['admin'] + '-close';
+    //create callback keyboard
+    var detailArr = [];
+    var querTag = fn.mstr.post.query;
+    var fn_text     = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['text'] + '-' + post._id;
+    var fn_file     = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['file'] + '-' + post._id;
+    var fn_photo    = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['photo'] + '-' + post._id;
+    var fn_sound    = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['sound'] + '-' + post._id;
+    var fn_video    = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['video'] + '-' + post._id;
 
-        var tx_text =fn.mstr.post.types['text'].icon,
-        tx_file     =fn.mstr.post.types['file'].icon,
-        tx_photo    =fn.mstr.post.types['photo'].icon, 
-        tx_sound    =fn.mstr.post.types['sound'].icon, 
-        tx_video    =fn.mstr.post.types['video'].icon;
-        
-        console.log(post.type)
-        if(post.type === 'text')       tx_text = tx_text + ' ' + fn.str['Published'];
-        else if(post.type === 'file')  tx_file = tx_file + ' ' + fn.str['Published'];
-        else if(post.type === 'photo') tx_photo = tx_photo + ' ' + fn.str['Published'];
-        else if(post.type === 'sound') tx_sound = tx_sound + ' ' + fn.str['Published'];
-        else if(post.type === 'video') tx_video = tx_video + ' ' + fn.str['Published'];
+    var fn_attachment   = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['attach'] + '-' + post._id;
+    var fn_upload       = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['upload'] + '-' + post._id;
 
-        //upload
-        var tx_upload = 'آپلود';
-        if(post.type === 'file'  && post.fileid)  tx_upload = 'آپلود' + fn.mstr.post.types['attached'];
-        if(post.type === 'photo' && post.photoid && post.photoid.length > 0) tx_upload = 'آپلود' + fn.mstr.post.types['attached'];
-        if(post.type === 'sound' && post.audioid) tx_upload = 'آپلود' + fn.mstr.post.types['attached'];
-        if(post.type === 'video' && post.videoid) tx_upload = 'آپلود' + fn.mstr.post.types['attached']; 
+    var fn_name         = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['name'] + '-' + post._id;
+    var fn_category     = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['category'] + '-' + post._id;
+    var fn_description  = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['description'] + '-' + post._id;
+    var fn_delete       = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['delete'] + '-' + post._id;
+    var fn_publication  = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['publication'] + '-' + post._id;
+    var fn_order        = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['order'] + '-' + post._id;            
+    var fn_close        = querTag['post'] + '-' + querTag['admin'] + '-close';
 
-        //publication
-        var tx_publication = (post.publish) ? fn.str['Published'] +'منتشر شده' : fn.str['NotPublished'] +'منتشر نشده';
+    var tx_text =fn.mstr.post.types['text'].icon,
+    tx_file     =fn.mstr.post.types['file'].icon,
+    tx_photo    =fn.mstr.post.types['photo'].icon, 
+    tx_sound    =fn.mstr.post.types['sound'].icon, 
+    tx_video    =fn.mstr.post.types['video'].icon;
 
-        //post or product
-        var fn_product = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['isproduct'] + '-' + post._id;;
-        var isProduct = (post.isproduct) ? '✅' : '◻️';
-        var tx_product = isProduct + ' یک محصول است';
-        detailArr.push([ {'text': tx_product , 'callback_data': fn_product} ]);
+    console.log(post.type)
+    if(post.type === 'text')       tx_text = tx_text + ' ' + fn.str['Published'];
+    else if(post.type === 'file')  tx_file = tx_file + ' ' + fn.str['Published'];
+    else if(post.type === 'photo') tx_photo = tx_photo + ' ' + fn.str['Published'];
+    else if(post.type === 'sound') tx_sound = tx_sound + ' ' + fn.str['Published'];
+    else if(post.type === 'video') tx_video = tx_video + ' ' + fn.str['Published'];
 
-        //type btns
-        detailArr.push([
-            {'text': tx_text, 'callback_data': fn_text},
-            {'text': tx_file, 'callback_data': fn_file},    
-            {'text': tx_photo, 'callback_data': fn_photo},
-            {'text': tx_sound, 'callback_data': fn_sound},
-            {'text': tx_video, 'callback_data': fn_video}
-        ]);
+    //upload
+    var tx_upload = 'آپلود';
+    if(post.type === 'file'  && post.fileid)  tx_upload = 'آپلود' + fn.mstr.post.types['attached'];
+    if(post.type === 'photo' && post.photoid && post.photoid.length > 0) tx_upload = 'آپلود' + fn.mstr.post.types['attached'];
+    if(post.type === 'sound' && post.audioid) tx_upload = 'آپلود' + fn.mstr.post.types['attached'];
+    if(post.type === 'video' && post.videoid) tx_upload = 'آپلود' + fn.mstr.post.types['attached']; 
 
-        //upload btn
-        if(post.type !== 'text') detailArr.push([{'text': tx_upload, 'callback_data': fn_upload}]);
-        
-        detailArr.push([ 
-            {'text': 'دسته بندی', 'callback_data': fn_category},
-            {'text': 'توضیح', 'callback_data': fn_description},
-            {'text': 'نام', 'callback_data': fn_name}
-        ]);
+    //publication
+    var tx_publication = (post.publish) ? fn.str['Published'] +'منتشر شده' : fn.str['NotPublished'] +'منتشر نشده';
 
-        //priority
-        detailArr.push([{'text': 'اولویت', 'callback_data': fn_order}]);
+    //post or product
+    var fn_isproduct = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['isproduct'] + '-' + post._id;;
+    var isProduct = (post.isproduct) ? '✅' : '◻️';
+    var tx_product = isProduct + ' یک محصول است';
+    var fn_price = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['price'] + '-' + post._id;
 
-        detailArr.push([
-            {'text': 'حذف', 'callback_data': fn_delete},
-            {'text': 'بستن', 'callback_data': fn_close},
-            {'text': tx_publication, 'callback_data': fn_publication}
-        ]);
+    var productRow = [];
+    productRow.push({'text': tx_product , 'callback_data': fn_isproduct});
+    if(post.isproduct) productRow.push({'text': 'قیمت' , 'callback_data': fn_price});
+    detailArr.push(productRow.reverse());
 
-        //attachment 
-        detailArr.push([{'text': 'پیوست', 'callback_data': fn_attachment}]);
-        //attached fiels
-        if(post.attachments) post.attachments.forEach((element, i) => {
-            var fn_removeAttchment = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['removeAttachment'] + '-' + post._id + '-' + i;
-            var row = [ {'text':'❌', 'callback_data':fn_removeAttchment},
-                        {'text':element.name, 'callback_data':'nothing'} ];
-            detailArr.push(row);
-        });
-   
-       //create message
-       var description='...', 
-       title    = post.name, 
-       category = post.category, 
-       order = post.order,
-       publish  = fn.str['NotPublished'] + ' منتشر نشده.';
+    //type btns
+    detailArr.push([
+        {'text': tx_text, 'callback_data': fn_text},
+        {'text': tx_file, 'callback_data': fn_file},    
+        {'text': tx_photo, 'callback_data': fn_photo},
+        {'text': tx_sound, 'callback_data': fn_sound},
+        {'text': tx_video, 'callback_data': fn_video}
+    ]);
 
-       if(post.description) description = post.description;
-       publish = (post.publish) ? fn.str['Published'] : fn.str['NotPublished'] + ' منتشر شده.';
-   
-       var text = 'اطلاعات مطلب' + '\n' +
-       'ــــــــــــــــــــــــــــــــ' + '\n' +
-       '⏺ ' + 'عنوان: ' + title + '\n' +
-       '⏺ ' + 'دسته بندی: ' + category + '\n' +
-       '⏺ ' + 'اولویت: ' + order + '\n' +
-       '⏺ ' + 'وضعیت: ' + publish + '\n' + 
-       'ــــــــــــــــــــــــــــــــ' + '\n' +
-       '⏺ ' + 'توضیحات: ' + '\n' +
-       description + '\n' + 
-       'ــــــــــــــــــــــــــــــــ' + '\n' + 
-       '⚠️' + 'برای ویرایش مطلب از دکمه های پیوست شده استفاده کنید.';
-   
-       //global.robot.bot.sendMessage(userId, fn.str.query['seccess'], fn.generateKeyboard({section:fn.str.goTopost[0]}, false));    
-       showPostList(userId);
-       global.robot.bot.sendMessage(userId, text, {"reply_markup" : {"inline_keyboard" : detailArr}});
+    //upload btn
+    if(post.type !== 'text') detailArr.push([{'text': tx_upload, 'callback_data': fn_upload}]);
+
+    detailArr.push([ 
+        {'text': 'دسته بندی', 'callback_data': fn_category},
+        {'text': 'توضیح', 'callback_data': fn_description},
+        {'text': 'نام', 'callback_data': fn_name}
+    ]);
+
+    //priority
+    detailArr.push([{'text': 'اولویت', 'callback_data': fn_order}]);
+
+    detailArr.push([
+        {'text': 'حذف', 'callback_data': fn_delete},
+        {'text': 'بستن', 'callback_data': fn_close},
+        {'text': tx_publication, 'callback_data': fn_publication}
+    ]);
+
+    //attachment 
+    detailArr.push([{'text': 'پیوست', 'callback_data': fn_attachment}]);
+    //attached fiels
+    if(post.attachments) post.attachments.forEach((element, i) => {
+        var fn_removeAttchment = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['removeAttachment'] + '-' + post._id + '-' + i;
+        var row = [ {'text':'❌', 'callback_data':fn_removeAttchment},
+                    {'text':element.name, 'callback_data':'nothing'} ];
+        detailArr.push(row);
+    });
+
+    //create message
+    var description='...', 
+    title    = post.name, 
+    category = post.category, 
+    order = post.order,
+    publish  = fn.str['NotPublished'] + ' منتشر نشده.';
+
+    if(post.description) description = post.description;
+    publish = (post.publish) ? fn.str['Published'] : fn.str['NotPublished'] + ' منتشر شده.';
+
+    var text = 'اطلاعات مطلب' + '\n' +
+    'ــــــــــــــــــــــــــــــــ' + '\n' +
+    '⏺ ' + 'عنوان: ' + title + '\n' +
+    '⏺ ' + 'دسته بندی: ' + category + '\n' +
+    '⏺ ' + 'اولویت: ' + order + '\n' +
+    '⏺ ' + 'وضعیت: ' + publish + '\n';
+
+    if(post.isproduct) text += '💶 ' + 'قیمت: ' + post.price + ' تومان \n';
+
+    text += 'ــــــــــــــــــــــــــــــــ' + '\n' +
+    '⏺ ' + 'توضیحات: ' + '\n' +
+    description + '\n' + 
+    'ــــــــــــــــــــــــــــــــ' + '\n' + 
+    '⚠️' + 'برای ویرایش مطلب از دکمه های پیوست شده استفاده کنید.';
+
+    //global.robot.bot.sendMessage(userId, fn.str.query['seccess'], fn.generateKeyboard({section:fn.str.goTopost[0]}, false));    
+    showPostList(userId);
+    global.robot.bot.sendMessage(userId, text, {"reply_markup" : {"inline_keyboard" : detailArr}});
 }
 
 var ceatePost = function(message){
@@ -179,55 +187,55 @@ var ceatePost = function(message){
     });
 }
 
-var editpost = function(id, detail, userId, ecCallBack){
+var editpost = async function(id, detail, userId, ecCallBack){
     var sendKey = true;
     //console.log('edit a post', id);
-    fn.db.post.findOne({"_id": id}, function(err, post){
-        if(post){
-            if(detail.name) post.name                       = detail.name;
-            if(detail.category) post.category               = detail.category;
-            if(detail.description) post.description         = detail.description;
-            if(detail.type) post.type            = detail.type;
-            if(detail.fileid) post.fileid        = detail.fileid;
-            if(detail.audioid) post.audioid      = detail.audioid;
-            if(detail.videoid) post.videoid      = detail.videoid;
-            if(detail.thumbLink) post.thumbLink  = detail.thumbLink;
-            if(detail.isproduct) post.isproduct  = !post.isproduct;
-            if(detail.publish){
-                if(detail.publish === fn.str['Published']) post.publish = true;
-                else if(detail.publish === 'switch') post.publish       = !post.publish;
-                else post.publish = false;
-            }
-            if(detail.order) post.order = detail.order;
+    var post = await fn.db.post.findOne({"_id": id}).exec().then();
+    if(!post) global.robot.bot.sendMessage(userId, 'این مطلب دیگر وجود ندارد');
 
-            //attachment
-            //add
-            if(detail.attachment) {
-                sendKey = false;
-                if(!post.attachments.length === 0) post.attachments = [];
-                post.attachments.push(detail.attachment);
-            }
-            //remove
-            if(detail.removeAttachment) post.attachments.splice(parseInt(detail.removeAttachment), 1);
+    if(detail.name) post.name                       = detail.name;
+    if(detail.category) post.category               = detail.category;
+    if(detail.description) post.description         = detail.description;
+    if(detail.type) post.type            = detail.type;
+    if(detail.fileid) post.fileid        = detail.fileid;
+    if(detail.audioid) post.audioid      = detail.audioid;
+    if(detail.videoid) post.videoid      = detail.videoid;
+    if(detail.thumbLink) post.thumbLink  = detail.thumbLink;
 
-            //albums
-            //if(detail.clearalbum) {post.photoid = []; sendKey = false};
-            if(detail.photoid) post.photoid = detail.photoid;
+    if(detail.isproduct) post.isproduct  = !post.isproduct;
+    if(detail.price) post.price      = detail.price;
 
-            post.save((e) => {
-                if(e) console.log(e);
-                if(!detail.clearalbum) global.robot.bot.sendMessage(userId, fn.str.query['seccess']);
-                if(sendKey) {
-                    fn.userOper.setSection(userId, fn.mstr.post['name'], true);
-                    createpostMess(userId, post);
-                }
-                global.fn.updateBotContent();
-                if(ecCallBack) ecCallBack();
-            });
+    if(detail.publish){
+        if(detail.publish === fn.str['Published']) post.publish = true;
+        else if(detail.publish === 'switch') post.publish       = !post.publish;
+        else post.publish = false;
+    }
+    if(detail.order) post.order = detail.order;
+
+    //attachment
+    //add
+    if(detail.attachment) {
+        sendKey = false;
+        if(!post.attachments.length === 0) post.attachments = [];
+        post.attachments.push(detail.attachment);
+    }
+    //remove
+    if(detail.removeAttachment) post.attachments.splice(parseInt(detail.removeAttachment), 1);
+
+    //albums
+    //if(detail.clearalbum) {post.photoid = []; sendKey = false};
+    if(detail.photoid) post.photoid = detail.photoid;
+
+    post.save((e) => {
+        if(e) console.log(e);
+        if(!detail.clearalbum) global.robot.bot.sendMessage(userId, fn.str.query['seccess']);
+        if(sendKey) {
+            var nSection = fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr.post['name'];
+            fn.userOper.setSection(userId, nSection, false);
+            createpostMess(userId, post);
         }
-        else{
-            global.robot.bot.sendMessage(userId, 'این مطلب دیگر وجود ندارد');
-        }
+        global.fn.updateBotContent();
+        if(ecCallBack) ecCallBack();
     });
 }
 
@@ -285,9 +293,18 @@ var routting = function(message, speratedSection){
     }
 
     //edit order
-    else if (speratedSection[last-1] === fn.mstr.post.edit['order']) 
-        if(parseFloat(text) || text === 0) editpost(speratedSection[last], {'order': text}, message.from.id);
-        else global.robot.bot.sendMessage(message.from.id, fn.mstr.post.edit['order']);                
+    else if (speratedSection[last-1] === fn.mstr.post.edit['order']) {
+        var order = parseInt(text);
+        if(!isNaN(order)) editpost(speratedSection[last], {'order': text}, message.from.id);
+        else global.robot.bot.sendMessage(message.from.id, fn.mstr.post.edit['order']); 
+    }  
+        
+    //edit price
+    else if (speratedSection[last-1] === fn.mstr.post.edit['price']) {
+        var price = parseInt(text);
+        if(!isNaN(price) && price > 99) editpost(speratedSection[last], {'price': text}, message.from.id);
+        else global.robot.bot.sendMessage(message.from.id, fn.mstr.post.edit['price']); 
+    }
 
     //end upload
     else if (speratedSection[last-1] === fn.mstr.post['endupload']){

@@ -27,6 +27,7 @@ module.exports = {
 
     //query --------------------------------------------------------
     query:{
+        publication:'public',
         upload     :'upld',
         attach     :'atch',
         removeAttachment:'ratch',

@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
 mongoose.connect(global.config.dbpath);
 
 var db = mongoose.connection;
@@ -49,6 +50,7 @@ var ConfigSchema = new Schema({
     category:String, 
     active: Boolean, 
     button:String,
+    buttons:[String],
     btn_order:Number,
     datas : [data]
   }]
