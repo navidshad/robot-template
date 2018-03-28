@@ -1,9 +1,10 @@
 var soap = require('soap');
-//var key = global.confige.nextpey_api_key;
-var callback_uri = global.config.nextpey_callback_uri;
 
 var GetToken = async function (order_id, amount, key) {
+    var port = global.config.port;
+    var callback_uri = global.robot.config.domain + ':' + port + '//returnback/nextpay';
     var url = 'https://api.nextpay.org/gateway/token.wsdl';
+    
     var payload = {
         'api_key': key,
         'order_id': order_id,
@@ -16,7 +17,8 @@ var GetToken = async function (order_id, amount, key) {
 };
 
 
-var VerifyPayment = async function(trans_id, order_id, amount, key){
+var VerifyPayment = async function(trans_id, order_id, amount, key)
+{
     // trans_id and order_id will POST to callback_uri
     var url = 'https://api.nextpay.org/gateway/verify.wsdl';
     var payload = {
@@ -26,30 +28,8 @@ var VerifyPayment = async function(trans_id, order_id, amount, key){
         'amount'    : amount
     };
 
-    // soap.createClient(url, function(err, client) {
-    //     client.PaymentVerification(payload, function(err, result) {
-    //         /*
-    //             if(result.PaymentVerificationResult.code == 0){
-    //                 console.log('Paied: ' + result.PaymentVerificationResult.code);
-    //                 return true;
-    //             }else {
-    //                 console.log('Not verified: ' + result.PaymentVerificationResult.code);
-    //                 return false;
-    //             }
-    //         */
-    //         if(callback) callback (result);
-    //     });
-    // });
-
     var client = await soap.createClientAsync(url).then();
-    client.TokenGenerator(payload, function(err, result) 
-    {
-        return new Promise((resolve, reject) => 
-        {
-            if(err) reject(err);
-            else resolve(result);
-        });
-    });
+    return client.TokenGeneratorAsync(payload).then();
 };
 
 var getPaylink = async function(fnumber, amount)
@@ -91,4 +71,4 @@ var getPaylink = async function(fnumber, amount)
         return 'https://api.nextpay.org/gateway/payment/***';
     });
 }
-module.exports = { GetToken, VerifyPayment, getPaylink }
+module.exports = { VerifyPayment, getPaylink }

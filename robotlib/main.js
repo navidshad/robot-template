@@ -5,7 +5,7 @@ module.exports.create = function(){
     var newBot = new botObject({
         token: global.config.token,
         username: global.config.botusername,
-        confige : {'modules':global.config.modules}
+        config : {'modules':global.config.modules}
     });
 
     //start bot

@@ -47,7 +47,7 @@ var show = function(userid, newcat){
     if(newcat) {
         moduleOption.option.category = newcat;
         moduleOption.option.buttons = fn.convertObjectToArray(fn.mstr.favorites.btns_user);
-        global.robot.confige.moduleOptions[moduleOption.index] = moduleOption.option;
+        global.robot.config.moduleOptions[moduleOption.index] = moduleOption.option;
         //save configuration
         global.robot.save();
         fn.updateBotContent( () => { show(userid); });
@@ -97,7 +97,7 @@ var routting = function(message, speratedSection){
         console.log('active deactive favorites');
         var key = (text === fn.str.activation.enable) ? true : false;
         var moduleOption = fn.getModuleOption(mName);
-        global.robot.confige.moduleOptions[moduleOption.index].active = key;
+        global.robot.config.moduleOptions[moduleOption.index].active = key;
         //save configuration
         global.robot.save();
         fn.updateBotContent( () => { show(message.from.id); });
@@ -123,7 +123,7 @@ var routting = function(message, speratedSection){
         if(!typeof order === 'number') global.robot.bot.sendMessage(message.from.id, fn.str['editOrder']);
 
         var moduleOption = fn.getModuleOption(fn.mstr.favorites['modulename']);
-        global.robot.confige.moduleOptions[moduleOption.index].btn_order = order;
+        global.robot.config.moduleOptions[moduleOption.index].btn_order = order;
         //save configuration
         global.robot.save();
         fn.updateBotContent( () => { show(message.from.id) });

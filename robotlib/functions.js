@@ -101,7 +101,7 @@ var getMenuItems = function(name, callback){
             if(catlist) catlist.forEach(function(element) { items.push({'name':element.name, 'order':element.order}) }, this); 
 
             //get modules
-            var modulsoptions = global.robot.confige.moduleOptions;
+            var modulsoptions = global.robot.config.moduleOptions;
             if(modulsoptions) {
                 modulsoptions.forEach(function(md) {
                     if(md.category && md.category === name && md.active){
@@ -170,9 +170,9 @@ var getModuleOption = function(mName, option){
     var moduleOption = null;
     var added = false;
 
-    if (!global.robot.confige.moduleOptions) global.robot.confige.moduleOptions = [];
+    if (!global.robot.config.moduleOptions) global.robot.config.moduleOptions = [];
     
-    global.robot.confige.moduleOptions.forEach(function(element, i) {
+    global.robot.config.moduleOptions.forEach(function(element, i) {
         if(element.name === mName) {
             index = i;
             moduleOption = {'index':i, 'option':element};
@@ -185,12 +185,12 @@ var getModuleOption = function(mName, option){
         var newmoduleOption = {};
         if(option.setting) newmoduleOption = option.setting;
         else newmoduleOption = {'name':mName, 'datas':[], 'btn_order':1};
-        global.robot.confige.moduleOptions.push(newmoduleOption);
+        global.robot.config.moduleOptions.push(newmoduleOption);
         //save configuration
         global.robot.save();
         moduleOption = {};
         moduleOption.option = newmoduleOption;
-        moduleOption.index = global.robot.confige.moduleOptions.length-1;
+        moduleOption.index = global.robot.config.moduleOptions.length-1;
     }
 
     return moduleOption;
@@ -229,7 +229,7 @@ var putDatasToModuleOption = function (mName, datas, setting) {
     );
 
     //replace new datas
-    global.robot.confige.moduleOptions[ModuleOption.index].datas = mdatas;
+    global.robot.config.moduleOptions[ModuleOption.index].datas = mdatas;
     global.robot.save();
 
     //return

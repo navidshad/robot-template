@@ -44,7 +44,7 @@ var show = function(userid, newcat){
     if(!moduleOption) {
         activationtext = 'enable';
         var option = {'name':mName,'active':false, 'button': fn.mstr.search['lable']};
-        global.robot.confige.moduleOptions.push(option);
+        global.robot.config.moduleOptions.push(option);
         moduleOption = fn.getModuleOption(mName);
     }
     
@@ -54,7 +54,7 @@ var show = function(userid, newcat){
     if(newcat) {
         moduleOption.option.category = newcat;
         moduleOption.option.button = fn.mstr.search['lable'];
-        global.robot.confige.moduleOptions[moduleOption.index] = moduleOption.option;
+        global.robot.config.moduleOptions[moduleOption.index] = moduleOption.option;
     }
 
     //save configuration
@@ -103,7 +103,7 @@ var routting = function(message, speratedSection){
         console.log('active deactive search');
         var key = (text === fn.str.activation.enable) ? true : false;
         var moduleOption = fn.getModuleOption(mName);
-        global.robot.confige.moduleOptions[moduleOption.index].active = key;
+        global.robot.config.moduleOptions[moduleOption.index].active = key;
         //save configuration
         global.robot.save();
         fn.updateBotContent(() => { show(message.from.id); });
@@ -130,7 +130,7 @@ var routting = function(message, speratedSection){
         if(!typeof order === 'number') global.robot.bot.sendMessage(message.from.id, fn.str['editOrder']);
 
         var moduleOption = fn.getModuleOption(fn.mstr.search['modulename']);
-        global.robot.confige.moduleOptions[moduleOption.index].btn_order = order;
+        global.robot.config.moduleOptions[moduleOption.index].btn_order = order;
         //save configuration
         global.robot.save();
         fn.updateBotContent(() => { show(message.from.id); });

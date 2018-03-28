@@ -70,7 +70,7 @@ var registerChannel = function(chat, messageid){
     var moduleOption = fn.getModuleOption('chanelChecker');
     var detail = [];
     detail.push({'name':chat.username, 'value':chat.id});
-    global.robot.confige.moduleOptions[moduleOption.index].datas = detail;
+    global.robot.config.moduleOptions[moduleOption.index].datas = detail;
     global.robot.save();
     global.robot.bot.deleteMessage(chat.id, messageid);
 }
@@ -115,7 +115,7 @@ var routting = function(message, speratedSection){
     else if(fn.checkValidMessage(text, [fn.str.activation.enable,fn.str.activation.disable])){
         console.log('active deactive chanelChecker');
         var key = (text === fn.str.activation.enable) ? true : false;
-        global.robot.confige.moduleOptions.forEach(function(element) {
+        global.robot.config.moduleOptions.forEach(function(element) {
             if(element.name === 'chanelChecker') 
                 element.active = key;
         }, this);

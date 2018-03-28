@@ -107,4 +107,8 @@ var routting = function(message, speratedSection){
         setting.routting(message, speratedSection);
 }
 
-module.exports = { name, checkRoute, routting, query, show, user, nextpay }
+var gates = {
+    'nextpay': require('./gates/nextpay'),
+}
+
+module.exports = { name, checkRoute, routting, query, show, user, nextpay, gates }

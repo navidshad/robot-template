@@ -85,7 +85,7 @@ module.exports = function(flag, onlyBack){
         var items = [];
         for (item in flag.list){
             var element = flag.list[item];
-            var key = global.robot.confige.modules[element.modulename];
+            var key = global.robot.config.modules[element.modulename];
             if(key) items.push(element.name);
         }
         return custome(items, true, keys);

@@ -45,6 +45,7 @@ var data = new Schema({
 var ConfigSchema = new Schema({
   username      : String,
   firstmessage  : String,
+  domain        : String,
   moduleOptions:[{
     name:String, 
     category:String, 
@@ -97,10 +98,10 @@ var wordSchema = new Schema({
 var user      = mongoose.model('Users', UserSchema);
 var inbox     = mongoose.model('inbox', inboxSchema);
 var sendbox   = mongoose.model('sendBox', sendBoxSchema);
-var confige   = mongoose.model('confige', ConfigSchema);
+var config   = mongoose.model('config', ConfigSchema);
 var category  = mongoose.model('categories', categorySchema);
 var post      = mongoose.model('posts', postSchema);
 var word      = mongoose.model('words', wordSchema);
 
 
-module.exports = {user, inbox, sendbox, confige, category, post, word};
+module.exports = {user, inbox, sendbox, config, category, post, word};

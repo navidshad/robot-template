@@ -6,7 +6,7 @@ module.exports = function(detail){
     this.token = detail.token;
     this.bot = {};
     this.adminWaitingList = [];
-    this.confige = detail.confige;
+    this.config = detail.config;
     this.category = [];
     this.menuItems = [];
 
@@ -40,19 +40,21 @@ module.exports = function(detail){
 
     this.save = async function(saveCalBack)
     {
-        var conf = await global.fn.db.confige.findOne({"username": this.username}).exec().then();
+        var conf = await global.fn.db.config.findOne({"username": this.username}).exec().then();
         if(conf)
         {   //update
-            conf.username = global.robot.username,
-            conf.firstmessage = global.robot.confige.firstmessage,
-            conf.moduleOptions = global.robot.confige.moduleOptions
+            conf.username       = global.robot.username;
+            conf.firstmessage   = global.robot.config.firstmessage;
+            conf.domain         = global.robot.config.domain;
+            conf.moduleOptions  = global.robot.config.moduleOptions;
         }
         else
         {   //create
-            var conf = new global.fn.db.confige({
+            var conf = new global.fn.db.config({
                 "username": global.robot.username,
-                "firstmessage" : global.robot.confige.firstmessage,
-                "moduleOptions": global.robot.confige.moduleOptions
+                "firstmessage"  : global.robot.config.firstmessage,
+                "domain"        : global.robot.config.domain,
+                "moduleOptions" : global.robot.config.moduleOptions
             });
         }
 
@@ -65,10 +67,11 @@ module.exports = function(detail){
 
     this.load = async function(loadCalBack)
     {
-        var conf = await global.fn.db.confige.findOne({"username": this.username}).exec().then();
+        var conf = await global.fn.db.config.findOne({"username": this.username}).exec().then();
         if(conf){
-            global.robot.confige.moduleOptions = conf.moduleOptions;
-            global.robot.confige.firstmessage = conf.firstmessage;
+            global.robot.config.moduleOptions  = conf.moduleOptions;
+            global.robot.config.firstmessage   = conf.firstmessage;
+            global.robot.config.domain         = conf.domain;
             if(loadCalBack) loadCalBack();
         }
         else if(loadCalBack) loadCalBack();

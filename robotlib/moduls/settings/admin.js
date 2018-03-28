@@ -48,20 +48,42 @@ var show = function(userid, injectedtext){
 var routting = function(message, speratedSection){
     var text = message.text;
     var last = speratedSection.length-1;
+    var btns = fn.mstr.settings.btns;
     
     //show root
     if(text === fn.mstr.settings['name'] || text === fn.mstr.settings['back']) show(message.from.id);
 
     //first message of robot
-    else if (text === fn.mstr.settings.btns['firstmess']){
-        var mess = fn.mstr.settings.btns['firstmess'];
+    else if (text === btns['firstmess'])
+    {
+        var mess = fn.mstr.settings.mess['firstmess'];
         var replymarkup = fn.generateKeyboard({'section': fn.mstr.settings['back']}, true);
         global.robot.bot.sendMessage(message.from.id, mess, replymarkup);
-        fn.userOper.setSection(message.from.id, mess, true);
+        fn.userOper.setSection(message.from.id, btns['firstmess'], true);
     }
-    else if (speratedSection[3] === fn.mstr.settings.btns['firstmess']){
-        if(text.length < 10) {global.robot.bot.sendMessage(message.from.id, fn.mstr.settings.mess['shorttext']); return;}
-        global.robot.confige.firstmessage = text;
+    else if (speratedSection[3] === btns['firstmess'])
+    {
+        if(text.length < 10) {
+            global.robot.bot.sendMessage(message.from.id, fn.mstr.settings.mess['shorttext']); 
+            return;
+        }
+
+        global.robot.config.firstmessage = text;
+        global.robot.save();
+        show(message.from.id, fn.str['seccess']);
+    }
+
+    //host address
+    else if (text === btns['domain'])
+    {
+        var mess = fn.mstr.settings.mess['getdomain'];
+        var replymarkup = fn.generateKeyboard({'section': fn.mstr.settings['back']}, true);
+        global.robot.bot.sendMessage(message.from.id, mess, replymarkup);
+        fn.userOper.setSection(message.from.id, btns['domain'], true);
+    }
+    else if (speratedSection[3] === btns['domain'])
+    {
+        global.robot.config.domain = text;
         global.robot.save();
         show(message.from.id, fn.str['seccess']);
     }

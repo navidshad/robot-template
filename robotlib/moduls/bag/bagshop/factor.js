@@ -200,7 +200,7 @@ var showFactor = async function(userid,  option)
         ]);
 
         //gates buttons
-        var nextpaylink = await gates.nextpay.getPaylink(factor.number, factor.amount);
+        var nextpaylink = await fn.m.bag.gates.nextpay.getPaylink(factor.number, factor.amount);
         detailArr.push([{'text': 'پرداخت با نکست پی', 'url': nextpaylink}]);
     }
     
@@ -234,10 +234,6 @@ var routting = function(message, speratedSection, user)
             else show(message.from.id,  fn.mstr.bag.mess['notafactor']);
         });
     }
-}
-
-var gates = {
-    'nextpay': require('../gates/nextpay/nextpay'),
 }
 
 module.exports = { routting, show, showFactor, create, showfactorItems, getPaied }

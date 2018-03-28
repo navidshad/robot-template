@@ -34,7 +34,7 @@ var backToMainMenu = async function(message, user, mess){
     var items = global.robot.menuItems;
     fn.userOper.setSection(message.from.id, fn.str['mainMenu'], false);
     remarkup = fn.generateKeyboard({'section':fn.str['mainMenu'], 'list':items, "isCompelet": user.isCompelet, "isAdmin": user.isAdmin}, false);
-    var texttosend = (mess) ? mess : global.robot.confige.firstmessage;
+    var texttosend = (mess) ? mess : global.robot.config.firstmessage;
     if(texttosend == null) texttosend = global.fn.str['mainMenuMess'];
     global.robot.bot.sendMessage(message.from.id, texttosend, remarkup);
 }
