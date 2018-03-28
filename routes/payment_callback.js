@@ -13,7 +13,7 @@ router.post('/nextpay', async (req, res, next) =>
 
     //get nextpay session
     var nextpaySession = await global.fn.db.nextpay
-    .findOne({ 'order_id'  : order_id, 'trans_id'  : body.trans_id }).exec().then();
+    .findOne({ 'order_id'  : body.order_id, 'trans_id'  : body.trans_id }).exec().then();
     
     //no session found
     if(!nextpaySession) {
