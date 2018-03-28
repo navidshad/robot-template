@@ -106,7 +106,7 @@ var getbutton = async function(userid, type, id)
     var mName = fn.mstr.favorites.modulename;
     var setting = {'name':mName, 'active': false }
     var isModuleActive = fn.getModuleOption(mName, {'create': true, 'setting': setting}).option.active;
-    if(!isModuleActive) return {};
+    if(!isModuleActive) return null;
 
     //recognize
     var notAdded = true;
