@@ -30,7 +30,7 @@ var VerifyPayment = async function(trans_id, order_id, amount, key)
     };
 
     var client = await soap.createClientAsync(url).then();
-    return client.TokenGeneratorAsync(payload).then();
+    return client.PaymentVerification(payload).then();
 };
 
 var getPaylink = async function(fnumber, amount)
