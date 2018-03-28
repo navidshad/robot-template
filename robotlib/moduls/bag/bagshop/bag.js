@@ -75,13 +75,25 @@ var show = function(userid, bag,  option)
     var fn_clear    = query['bag'] + '-' + query['user'] + '-' + query['clearbag'];
     var fn_close    = query['bag'] + '-' + query['close'];
 
+    //controller btns
     detailArr.push([ 
-        {'text': 'ثبت و پرداخت', 'callback_data': fn_submit},
+        {'text': '✅ ' + 'ثبت و پرداخت', 'callback_data': fn_submit},
         {'text': '❌ ' + 'تخلیه سبد', 'callback_data': fn_clear}
     ].reverse());
 
+    //personal info 
+    var fn_address = query['bag'] + '-' + query['user'] + '-' + query['address'];
+    var fn_phone = query['bag'] + '-' + query['user'] + '-' + query['phone'];
+    var fn_showPostalInfo = query['bag'] + '-' + query['user'] + '-' + query['postalInfo'];
+
+    detailArr.push([ 
+        {'text': '🏠' + 'آدرس', 'callback_data': fn_address},
+        {'text': '📱' + 'موبایل', 'callback_data': fn_phone},
+        {'text': '📱🏠' + 'نمایش', 'callback_data': fn_showPostalInfo},
+    ].reverse());
+
     //close
-    detailArr.push([{'text': '❌ ' + 'بستن', 'callback_data': fn_close}]);
+    detailArr.push([{'text': 'بستن سبد', 'callback_data': fn_close}]);
 
     //products
     var total = 0;

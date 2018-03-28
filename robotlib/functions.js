@@ -13,6 +13,7 @@ var request             = require('request');
 
 //user
 var userOper        = require('./user/userOperations.js');
+var menu            = require('./routting/menuItemsRouting');
 
 //admin
 var adminPanel      = require('./admin/adminPanel.js');
@@ -255,7 +256,7 @@ module.exports = {
     checkValidMessage, saveTelegramFile, removeFile, freeStrings,
     updateBotContent, request, path, fs,
     //user
-    userOper, 
+    userOper, menu,
     //admin
     adminPanel, upload,
     //tools

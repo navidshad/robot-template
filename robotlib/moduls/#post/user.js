@@ -20,6 +20,10 @@ var show = async function(message, postName, user, optionPrams, callback)
             detailArr.push([ {'text': 'افزودن به سبد', 'callback_data': fn_addToBag} ]);   
     }
 
+    //like button 
+    var like = await fn.m.favorites.user.getbutton(user.userId, 'post', post.id);
+    detailArr.push([like]);
+
     var description = post.description + '\n @' +  global.robot.username;
     var markup = {'inline_keyboard': detailArr};
     var option = {'caption' : description, 'reply_markup': markup};

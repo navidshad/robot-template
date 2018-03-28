@@ -14,14 +14,8 @@ var showCategoryDir = function(userid,catname, speratedSection){
     });
 }
 
-
-//routting
-module.exports = function(message, speratedSection, user){
-    var text = message.text;
-    var last = speratedSection.length-1;
-
-    //back to uper level
-    if(text === fn.mstr.category['backtoParent']){
+var backtoParent = function(message, speratedSection, user)
+{
         //console.log(speratedSection);
         var from = speratedSection.length-1
         var catname = speratedSection[speratedSection.length-2];
@@ -29,7 +23,17 @@ module.exports = function(message, speratedSection, user){
         
         if(catname === fn.str['mainMenu']) fn.commands.backToMainMenu(message, user);
         else showCategoryDir(message.from.id, catname, speratedSection);
-    }
+}
+
+
+//routting
+var routting = function(message, speratedSection, user){
+    var text = message.text;
+    var last = speratedSection.length-1;
+
+    //back to uper level
+    if(text === fn.mstr.category['backtoParent'])
+        backtoParent(message, speratedSection, user);
 
     //back to a category
     if(text.includes(fn.str['back']) && text.split(' - ')[1]){
@@ -58,7 +62,10 @@ module.exports = function(message, speratedSection, user){
         //console.log('this is a post');
         fn.m.post.user.show(message, message.text, user, {},
             //exit and go to free message if item would no be a post 
-            (user) => { fn.freeStrings.routting(message, speratedSection, user); 
-        });
+            (user) => { 
+                fn.freeStrings.routting(message, speratedSection, user); 
+            });
     }
 }
+
+module.exports = { routting, backtoParent }

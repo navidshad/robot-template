@@ -53,6 +53,26 @@ var routting = async function(message, speratedSection, user){
     //ask to myProducts
     else if (checkRouteText.button === userButtons['myProducts'] || speratedSection[last] === userButtons['myProducts'])
         myProducts.routting(message, speratedSection, user);
+
+    //get address
+    else if (speratedSection[last] === fn.mstr.bag.mess['getAddress']){
+        var userbag = await bag.get(message.from.id);
+        userbag.address = text;
+        await userbag.save().then();
+        bag.show(message.from.id, userbag);
+    }
+
+    //get phone
+    else if (speratedSection[last] === fn.mstr.bag.mess['getPhone'] && message.contact){
+        var userbag = await bag.get(message.from.id);
+        userbag.phone = message.contact.phone_number;
+        await userbag.save().then();
+        bag.show(message.from.id, userbag);
+        
+        //rim section to be prepare for parent category
+        speratedSection.splice(last-1, 1);
+        fn.menu.backtoParent (message, speratedSection, user);
+    }
 }
 
 var query = async function(query, speratedQuery, user){
@@ -74,6 +94,40 @@ var query = async function(query, speratedQuery, user){
     else if(speratedQuery[2] === querytag['submitbag']) {
         var userBag = await bag.get(user.userId);
         factor.create(query.from.id, userBag.items);
+    }
+
+    //get address
+    else if(speratedQuery[2] === querytag['address']) 
+    {
+        var mess = fn.mstr.bag.mess['getAddress'];
+        var nSection = fn.str['mainMenu'] + '/' + fn.mstr.bag.btns_user['bagshop'] + '/' + mess;
+        var markup = fn.generateKeyboard({'section' : fn.str['backToMenu']}, true);
+
+        fn.userOper.setSection(query.from.id, nSection, false);
+        global.robot.bot.sendMessage(query.from.id, mess, markup);
+    }
+
+    //get phone
+    else if(speratedQuery[2] === querytag['phone']) 
+    {
+        var list = [
+            {'text':'📱 ' + 'ارسال شماره موبایل', 'request_contact':true}
+        ]
+        var mess = fn.mstr.bag.mess['getPhone'];
+        var nSection = fn.str['mainMenu'] + '/' + fn.mstr.bag.btns_user['bagshop'] + '/' + mess;
+        var markup = fn.generateKeyboard({'custom': true, 'grid':true, 'list': list}, false);
+        fn.userOper.setSection(query.from.id, nSection, false);
+        global.robot.bot.sendMessage(query.from.id, mess, markup);
+    }
+
+    //postalInfo
+    else if (speratedQuery[2] === querytag['postalInfo']){
+        var userBag = await bag.get(query.from.id);
+        var address = (userBag.address) ? userBag.address   : '...', 
+        phone       = (userBag.phone)   ? userBag.phone     : '...';
+
+        var mess = '🚚 ' + 'مشخصات پستی شما \n\n' + '📱 ' + phone + '\n' + '🏠 ' + address;
+        global.robot.bot.sendMessage(query.from.id, mess);
     }
 
     //show factor Items detail

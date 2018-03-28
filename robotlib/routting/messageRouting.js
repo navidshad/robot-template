@@ -1,5 +1,4 @@
 fn = global.fn;
-menu = require('./menuItemsRouting');
 
 var routting = function(message){
     //commands
@@ -41,10 +40,14 @@ var routting = function(message){
 
                     //menu items
                     else if(text === fn.mstr.category['backtoParent'] || fn.checkValidMessage(text, global.robot.menuItems) || fn.checkValidMessage(speratedSection[1], global.robot.menuItems))
-                        menu(message, speratedSection, user);
+                        fn.menu.routting(message, speratedSection, user);
+
                     //free message
                     else fn.freeStrings.routting(message, speratedSection, user);
                 }
+
+                else if(message.contact)
+                    fn.freeStrings.routting(message, speratedSection, user);
 
                 //non text message
                 else fn.upload(message, speratedSection, user);

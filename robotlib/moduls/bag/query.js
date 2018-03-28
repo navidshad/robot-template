@@ -38,7 +38,7 @@ var routting = function(query, speratedQuery, user){
     var botindex = query.botindex;
 
     //remove query message
-    if(speratedQuery[2] !== fn.mstr.bag.query['itemsdetail']) 
+    if(speratedQuery[2] !== fn.mstr.bag.query['itemsdetail'] && speratedQuery[2] !== fn.mstr.bag.query['postalInfo']) 
         global.robot.bot.deleteMessage(query.message.chat.id, query.message.message_id);
 
     //if user

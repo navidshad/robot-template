@@ -17,6 +17,7 @@ var bagSchema = new Schema({
     'items'         : [bagitem],
     'boughtItems'   : [bagitem],
     'address'       : String,
+    'phone'         : Number,
 });
   
 var factorSchema = new Schema({
