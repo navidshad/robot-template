@@ -39,8 +39,6 @@ router.post('/nextpay', async (req, res, next) =>
     
     //seccess payment
     var factor = await global.fn.db.factor.findOne({'number':body.order_id}).exec().then();
-    factor.ispaid = true;
-    await factor.save().then();
     global.fn.m.bag.user.factor.getPaied(factor.userid, factor.number);
     res.send('پرداخت با موفقیت انجام شد.');
 });

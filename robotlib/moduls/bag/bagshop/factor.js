@@ -114,7 +114,7 @@ var getPaied = async function(userid,  fid)
     //add product to myProduct array
     var bag = await fn.m.bag.user.bag.get(userid);
     factor.products.forEach(product => { bag.boughtItems.push(product) });
-    await bag.save();
+    await bag.save().then();
 
     //show factor
     showFactor(userid,  {'factor': factor});
