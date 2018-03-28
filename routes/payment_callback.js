@@ -4,6 +4,7 @@ var router = express.Router();
 /* GET home page. */
 router.post('/nextpay', async (req, res, next) =>
 {
+    console.log('a request to nextpay callback', req.body);
     var body = req.body;
     if(!body.trans_id || !body.order_id) {
         res.send('اطلاعات محصول اشتباه است.');
