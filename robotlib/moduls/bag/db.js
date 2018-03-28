@@ -29,9 +29,14 @@ var factorSchema = new Schema({
     'amount'    : Number,
     'message_id': Number,
     'chatid'    : Number,
+    'ispaid'    : Boolean,
+});
+
+var nextpaySchema = new Schema({
+    'amount'    : Number,
+    'order_id'  : Number,
     'trans_id'  : String,
     'code'      : String,
-    'ispaid'    : Boolean,
 });
 
 var fNumberSchema = new Schema({
@@ -41,3 +46,4 @@ var fNumberSchema = new Schema({
 module.exports.bag     = mongoose.model('bags', bagSchema);
 module.exports.factor  = mongoose.model('factors', factorSchema);
 module.exports.fnumber  = mongoose.model('fNumber', fNumberSchema);
+module.exports.nextpay  = mongoose.model('nextpay', nextpaySchema);

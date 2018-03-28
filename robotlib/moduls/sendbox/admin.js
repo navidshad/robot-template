@@ -14,7 +14,7 @@ var checkRoute = function(option){
         }
     });
 
-    //checl seperate section
+    //check seperate section
     if(option.speratedSection){
         option.speratedSection.forEach(section => {
             btnsArr.forEach(btn => 

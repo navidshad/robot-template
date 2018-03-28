@@ -176,7 +176,6 @@ var showFactor = async function(userid,  option)
     //peyment
     var query = fn.mstr.bag.query;
     var peyLink = 'https://nextpay.ir/';
-    var fn_delete = query['bag'] + '-' + query['user'] + '-' + query['deletefactor'] + '-' + option.factor.id;
     var fn_detail = query['bag'] + '-' + query['user'] + '-' + query['itemsdetail'] + '-' + option.factor.id;
     var detailArr = [];
 
@@ -189,15 +188,20 @@ var showFactor = async function(userid,  option)
     var mess = factor.desc + '\n\n' + paidText;
     mess += '\n\n @' + botusername;
 
-    if(!factor.ispaid){
-        //peyment buttons
-        detailArr.push([ 
-            //{'text': 'پرداخت آنلاین', 'url': peyLink},
+    //gates
+    if(!factor.ispaid)
+    {
+        //controller
+        var fn_getpaid = query['bag'] + '-' + query['user'] + '-' + query['getpaid'] + '-' + option.factor.id;
+        var fn_delete = query['bag'] + '-' + query['user'] + '-' + query['deletefactor'] + '-' + option.factor.id;
+        detailArr.push([
+            {'text': 'پرداخت آزمایشی', 'callback_data': fn_getpaid},
             {'text': 'حذف فاکتور', 'callback_data': fn_delete}
         ]);
-        //get this factor paid //only for test
-        var fn_getpaid = query['bag'] + '-' + query['user'] + '-' + query['getpaid'] + '-' + option.factor.id;
-        detailArr.push([ {'text': 'پرداخت آزمایشی', 'callback_data': fn_getpaid} ]);
+
+        //gates buttons
+        var nextpaylink = await gates.nextpay.getPaylink(factor.number, factor.amount);
+        detailArr.push([{'text': 'پرداخت با نکست پی', 'url': nextpaylink}]);
     }
     
     //sned
@@ -230,6 +234,10 @@ var routting = function(message, speratedSection, user)
             else show(message.from.id,  fn.mstr.bag.mess['notafactor']);
         });
     }
+}
+
+var gates = {
+    'nextpay': require('../gates/nextpay/nextpay'),
 }
 
 module.exports = { routting, show, showFactor, create, showfactorItems, getPaied }
