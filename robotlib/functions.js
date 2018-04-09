@@ -113,7 +113,6 @@ var getMenuItems = function(name, callback){
                             md.buttons.forEach(element => { items.push({'name':element, 'order': order}); });
                             return;
                         }
-
                         //user route method
                         var mRoute = getModuleRouteMethods(md.name);
                         if(!mRoute.userRoute) return;
@@ -199,7 +198,7 @@ var getModuleOption = function(mName, option){
 var getModuleData = function(mName, dName){
     var data = null;
     //get module detail and data
-    var moduleOption = getModuleOption(mName);
+    var moduleOption = getModuleOption(mName, {'create': true});
     if(moduleOption) moduleOption.option.datas.forEach(element => {
         if(element.name === dName) data = element;
     });

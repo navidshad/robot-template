@@ -63,63 +63,68 @@ var editUser = function(userId,profile,ssCallBack){
 var checkProfile = async function(id, callback)
 {
     var user = await fn.db.user.findOne({'userId':id}).exec().then(); 
-    return new Promise((resolve, reject) => 
-    {
-        if(!user) {
-            if(callback) callback(null);
-            resolve(null);
-            return;
-        }
 
-        var isMember = false;
-        //when chanel checker is not active
-        // if(fn.m.chanelChecker.isActive())
-        // {
-        //     var status = 'non';
-        //     var chanel = await fn.m.chanelChecker.getUser(id);
-        //     //console.log('chanel status: ', chanel);
-        //     if(chanel) status = chanel.status;
-    
-        //     if(status === 'creator' || status === 'member')
-        //     {
-        //         isMember = true;
-        //     }
-        // }
-    
-        if(user) user.isMemberOfChannel = true; //isMember;
-        resolve(user);
-        if (callback) callback(user);
-    });
+    if(!user) {
+        if(callback) callback(null);
+        resolve(null);
+        return;
+    }
+
+    var isMember = false;
+    //when chanel checker is not active
+    // if(fn.m.chanelChecker.isActive())
+    // {
+    //     var status = 'non';
+    //     var chanel = await fn.m.chanelChecker.getUser(id);
+    //     //console.log('chanel status: ', chanel);
+    //     if(chanel) status = chanel.status;
+
+    //     if(status === 'creator' || status === 'member')
+    //     {
+    //         isMember = true;
+    //     }
+    // }
+
+    if(user) user.isMemberOfChannel = true; //isMember;
+    if (callback) callback(user);
+    return user;
 }
 
-var setSection = function(userId, section, additiveKey, ssCallBack){
-    fn.userOper.checkProfile(userId, (user) => {
-        if(!user || !section) return;
-        else if(additiveKey){
-            if(user.section.includes(section)){
-                //console.log('section added already');
-                var sperateSection = user.section.split('/');
-                var newSections = '';
-                for(var i=0; i<sperateSection.length; i++){
-                    if(i>0)
-                        newSections += '/';
-                    newSections += sperateSection[i];
-                    if(sperateSection[i] === section)
-                        break;
-                }
-                user.section = newSections;
-            }
-            else{
-                //console.log('section wasnt added already', section);
-                user.section += '/' + section;
-            }
-        }
-        else{user.section = section;}
-        user.save(() => {
-            if(ssCallBack) 
-                ssCallBack();
+var setSection = async function(userId, section, additiveKey, ssCallBack)
+{
+    section = section.toString();
+    var user = await fn.userOper.checkProfile(userId);
+
+    if(!user || !section == null) return;
+    else if(additiveKey)
+    {
+        var existe = false;
+        var sperateSection = user.section.split('/');
+        sperateSection.forEach(element => {
+            if(element === section) existe = true;
         });
-    });
+
+        if(existe)
+        {
+            //console.log('section added already');
+            var newSections = '';
+            for(var i=0; i<sperateSection.length; i++){
+                if(i>0)
+                    newSections += '/';
+                newSections += sperateSection[i];
+                if(sperateSection[i] === section)
+                    break;
+            }
+            user.section = newSections;
+        }
+        else{
+            //console.log('section wasnt added already', section);
+            user.section += '/' + section;
+        }
+    }
+    else{user.section = section;}
+    await user.save().then();
+    if(ssCallBack) ssCallBack();
 }
 
 var addAdminToWaintingList = function(username){

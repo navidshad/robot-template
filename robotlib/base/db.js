@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
+//mongoose.set('debug', true);
 mongoose.connect(global.config.dbpath);
 
 var db = mongoose.connection;
@@ -17,22 +18,6 @@ var UserSchema = new Schema({
     fullname    : String,
     phone       : Number,
     section     : String,
-});
-
-var inboxSchema = new Schema({
-  readed      : Boolean,
-  messId      : String,
-  date        : String,
-  userId      : Number,
-  username    : String,
-  fullname    : String,
-  message     : String,
-});
-
-var sendBoxSchema = new Schema({
-  date        : String,
-  title       : String,
-  text        : String,
 });
 
 var data = new Schema({ 
@@ -57,51 +42,7 @@ var ConfigSchema = new Schema({
   }]
 });
 
-var categorySchema = new Schema({
-  name:String,
-  parent:String,
-  description: String,
-  order:Number
-});
-
-var attachment = new Schema({
-  'name':String, 
-  'type':String, 
-  'id':String,
-  'caption':String,
-});
-
-var postSchema = new Schema({
-  name        :String,
-  isproduct   :{'type':Boolean, 'default':false},
-  price       :{'type':Number, 'default':1000},
-  category    :String,
-  order       :Number,
-  date        :String,
-  description :String,
-
-  type        :String,
-  fileid      :String,
-  photoid     :String,
-  audioid     :String,
-  videoid     :String,
-  thumbLink   :String,
-  publish     :Boolean,
-  attachments :[ attachment ],
-});
-
-var wordSchema = new Schema({
-  userid: Number,
-  word: String,
-})
-
-var user      = mongoose.model('Users', UserSchema);
-var inbox     = mongoose.model('inbox', inboxSchema);
-var sendbox   = mongoose.model('sendBox', sendBoxSchema);
+var user     = mongoose.model('Users', UserSchema);
 var config   = mongoose.model('config', ConfigSchema);
-var category  = mongoose.model('categories', categorySchema);
-var post      = mongoose.model('posts', postSchema);
-var word      = mongoose.model('words', wordSchema);
 
-
-module.exports = {user, inbox, sendbox, config, category, post, word};
+module.exports = {user, config};

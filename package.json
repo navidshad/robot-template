@@ -16,8 +16,11 @@
     "musicmetadata": "^2.0.5",
     "node-telegram-bot-api": "*",
     "pug": "2.0.0-beta11",
+    "query-string": "^6.0.0",
     "request-promise": "^4.2.2",
     "serve-favicon": "~2.4.5",
-    "soap": "^0.23.0"
+    "soap": "^0.23.0",
+    "striptags": "^3.1.1",
+    "woocommerce-api": "^1.4.2"
   }
 }

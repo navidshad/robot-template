@@ -21,7 +21,7 @@ var backtoParent = function(message, speratedSection, user)
         var catname = speratedSection[speratedSection.length-2];
         speratedSection.splice(from, 1);
         
-        if(catname === fn.str['mainMenu']) fn.commands.backToMainMenu(message, user);
+        if(catname == fn.str['mainMenu'] || !catname) fn.commands.backToMainMenu(message, user);
         else showCategoryDir(message.from.id, catname, speratedSection);
 }
 

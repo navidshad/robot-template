@@ -37,15 +37,21 @@ var checkRoute = function(option){
 }
 
 //primarly
-var get  = function(callback){
-    fn.db.category.find({}).exec((er, cats) => {
-        global.robot.category = [{'name':fn.mstr.category.maincategory, 'parent':'.'}];
-        if(cats) cats.forEach(function(element) {
-           global.robot.category.push({'name':element.name, 'parent': element.parent, 'order':element.order});
-       }, this); 
+var get  = async function(callback)
+{
+    global.robot.category = [{'name':fn.mstr.category.maincategory, 'parent':'.'}];
+    
+    var cats = await fn.db.category.find({}).exec().then();
+    cats.forEach(function(element) 
+    {
+        global.robot.category.push({
+            'name':element.name,
+            'parent': element.parent,
+            'order':element.order
+        });
+    }, this);
 
-       if(callback) callback();
-    });
+    if(callback) callback();
 }
 
 var checkInValidCat = function(text, custom){

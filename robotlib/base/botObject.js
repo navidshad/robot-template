@@ -40,31 +40,61 @@ module.exports = function(detail){
 
     this.save = async function(saveCalBack)
     {
-        var conf = await global.fn.db.config.findOne({"username": this.username}).exec().then();
-        if(conf)
-        {   //update
-            conf.username       = global.robot.username;
-            conf.firstmessage   = global.robot.config.firstmessage;
-            conf.domain         = global.robot.config.domain;
-            conf.moduleOptions  = global.robot.config.moduleOptions;
-        }
-        else
-        {   //create
-            var conf = new global.fn.db.config({
-                "username": global.robot.username,
-                "firstmessage"  : global.robot.config.firstmessage,
-                "domain"        : global.robot.config.domain,
-                "moduleOptions" : global.robot.config.moduleOptions
-            });
+        var updated = false;
+        var options = {
+            //update
+            'username'    : global.robot.username,
+            'firstmessage' : global.robot.config.firstmessage,
+            'moduleOptions': global.robot.config.moduleOptions
         }
 
-        //save
-        await conf.save().then();
-        if(saveCalBack) saveCalBack();
+        var conf = await global.fn.db.config.findOne({"username": this.username}).exec()
+        .then().catch(e => { console.log(e) });
+
+        if(conf)
+        {
+            updated = true;
+            conf.username = options.username;
+            conf.firstmessage = options.firstmessage;
+            conf.moduleOptions = options.moduleOptions;
+            await conf.save().then();
+        }
+
+        if(!updated)
+        {
+            //create
+            await new global.fn.db.config({
+                "username": global.robot.username,
+                "firstmessage" : global.robot.config.firstmessage,
+                "moduleOptions": global.robot.config.moduleOptions
+            }).save();
+        }
+
+        // if(conf)
+        // {   //update
+        //     conf.username = global.robot.username,
+        //     conf.collectorlink = global.robot.config.collectorlink,
+        //     conf.firstmessage = global.robot.config.firstmessage,
+        //     conf.modules = global.robot.config.modules,
+        //     conf.moduleOptions = global.robot.config.moduleOptions
+        // }
+
+        // else
+        // {   
+        // }
+
+        // //save
+        // await conf.save().then()
+        // .catch(e => {
+        //     console.log(e);
+        // });
+
+        // if(saveCalBack) saveCalBack();
+
         //get main menu items
         global.fn.getMainMenuItems();
     }
-
+ 
     this.load = async function(loadCalBack)
     {
         var conf = await global.fn.db.config.findOne({"username": this.username}).exec().then();

@@ -10,9 +10,9 @@ var routting = function(query){
 
         //define query route
         global.mRoutes.forEach(route => {
-            var result = (route.query) ? route.query({'speratedSection': speratedQuery}) : {'status': false};
+            var result = (route.query) ? route.query({'mName': route.name, 'speratedSection': speratedQuery}) : {'status': false};
             if(result.status) {
-                result.routting(query, speratedQuery, user);
+                result.routting(query, speratedQuery, user, route.name);
                 nothingToRoute = false;
                 return;
             }
