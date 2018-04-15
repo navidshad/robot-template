@@ -268,7 +268,7 @@ var routting = async function(message, speratedSection, user, mName)
     else if(text == back)
     {
         //backup to botcat
-        if(speratedSection[last] == button)
+        if(speratedSection[last-1] == button)
         {
             var splicedSection = speratedSection.splice(last-1, 1);
             fn.menu.backtoParent(message, splicedSection, user);
