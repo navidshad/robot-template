@@ -42,6 +42,26 @@ var checkRoute = function(option)
     return result;
 }
 
+var getWooCommerceAPI = function(userid)
+{
+    var mName = 'woocommerce';
+    var url = fn.getModuleData(mName, 'url');
+    var consumerKey = fn.getModuleData(mName, 'consumerKey');
+    var consumerSecret = fn.getModuleData(mName, 'consumerSecret');
+
+    if(!url || !consumerKey || !consumerSecret) {
+        global.robot.bot.sendMessage(userid, fn.mstr[mName].mess['neddOption']);
+        return;
+    }
+
+    WooCommerceOption.url = url.value;
+    WooCommerceOption.consumerKey = consumerKey.value;
+    WooCommerceOption.consumerSecret = consumerSecret.value;
+
+    var WooCommerce = new WooCommerceAPI(WooCommerceOption);
+    return WooCommerce;
+}
+
 var parametersToString = function(parameters){
     const queryString = require('query-string');
     var query = '?' + queryString.stringify(parameters);
@@ -54,23 +74,25 @@ var parametersToString = function(parameters){
     return query;
 }
 
-var getFromWoocom = async function(userid, WooCommerce, endPoint, parameters)
+var getFromWoocom = async function(userid, endPoint, parameters)
 {
     var tempEndpoint = endPoint;
     if(parameters) tempEndpoint += parametersToString(parameters);
 
+    var WooCommerce = getWooCommerceAPI(userid);
     var result = await WooCommerce.getAsync(tempEndpoint).then();
     var body = JSON.parse(result.body);
 
     //404 is missing or dosint exist
     if(body.code != 404 && body.message) global.robot.bot.sendMessage(userid, body.message);
+    else if(body.errors) global.robot.bot.sendMessage(userid, JSON.stringify(body.errors));
     else return body;
 }
 
-var getCategories = async function(userid, WooCommerce, optionparam)
+var getCategories = async function(userid, optionparam)
 {
     var option = (optionparam) ? optionparam : {};
-    var categories = await getFromWoocom(userid, WooCommerce, 'products/categories');
+    var categories = await getFromWoocom(userid, 'products/categories');
     categories = categories.product_categories;
     var result = [];
     categories.forEach(cat => 
@@ -99,10 +121,10 @@ var getCategories = async function(userid, WooCommerce, optionparam)
     return result;
 }
 
-var getProducts = async function(userid, WooCommerce, paramenters, optionparam)
+var getProducts = async function(userid, paramenters, optionparam)
 {
     var option = (optionparam) ? optionparam : {};
-    var products = await getFromWoocom(userid, WooCommerce, 'products', paramenters);
+    var products = await getFromWoocom(userid, 'products', paramenters);
     products = products.products;
 
     var result = [];
@@ -123,7 +145,7 @@ var getProducts = async function(userid, WooCommerce, paramenters, optionparam)
     return result;
 }
 
-var showDirectory = async function(userid, WooCommerce, category, optionparam)
+var showDirectory = async function(userid, category, optionparam)
 {
     var option = (optionparam) ? optionparam : {};
 
@@ -133,17 +155,17 @@ var showDirectory = async function(userid, WooCommerce, category, optionparam)
     var categoryid = catDistnation.id;
 
     //get subcats
-    var categories = await getCategories(userid, WooCommerce, {'parentid':categoryid});
+    var categories = await getCategories(userid, {'parentid':categoryid});
     
     //get subproducts
     //main cat is 0, if request is for main cat, products will not be used
     var products = [];
     if(categoryid !== 0) 
-        products = await getProducts(userid, WooCommerce, {'filter[category]': catDistnation.name}, {'cateogryid':catDistnation.id});
+        products = await getProducts(userid, {'filter[category]': catDistnation.name}, {'cateogryid':catDistnation.id});
 
     var list = [];
     categories.forEach(cat => { list.push(cat.name); });
-    products.forEach(pro => { list.push(pro.title); });
+    products.forEach(pro => { list.push(pro.title + ' ' + pro.id); });
 
     if(list.length == 0)
     {
@@ -159,36 +181,76 @@ var showDirectory = async function(userid, WooCommerce, category, optionparam)
     fn.userOper.setSection(userid, categoryid, true);
 }
 
-var showMain = async function(userid, WooCommerce, button)
+var showMain = async function(userid, button)
 {
     await fn.userOper.setSection(userid, button, true);
-    showDirectory(userid, WooCommerce, 0, {'main': button});
+    showDirectory(userid, 0, {'main': button});
 }
 
-var showProduct = async function(userid, WooCommerce, categoryid, text)
+var showProduct = async function(userid, mName, categoryid, text)
 {
+    var pid = text.split(' ');
+    pid = pid[pid.length-1];
+
+    var product = await getFromWoocom (userid, 'products/' + pid);
+    product = product.product;
+    if(!product) return;
+
+    //get sale type 
+    var saletype = fn.getModuleData('woocommerce', 'saletype');
+    if(!saletype) saletype = 'show';
+
+    var detailArr = [];
+    if(saletype.value == 'show') 
+    {
+        var linkbtn = [{'text': 'نمایش و خرید در سایت', 'url': product.permalink}];
+        detailArr.push(linkbtn);
+    }
+
+    else if(saletype.value == 'sale') 
+    {
+        var qt = fn.mstr[mName].query;
+        var fx_buy = qt[mName] + '-' + qt['user'] + '-' + qt['salemode'] + '-' + qt['buy'] + '-' + product.id;
+        var buy = [{'text': 'خرید', 'callback_data': fx_buy}];
+        detailArr.push(buy);
+    }
+
+    //mess
+    var mess = getProductDetail(product, {'image':true});
+
+    //send
+    var op = {"reply_markup" : {"inline_keyboard" : detailArr}};
+    global.robot.bot.sendMessage(userid, mess, op);
+}
+
+var getProductDetail = function(product, optionparams)
+{
+    var option = (optionparams) ? optionparams : {};
     var striptags = require('striptags');
-    var pCat = await getFromWoocom (userid, WooCommerce, 'products/categories/' + categoryid);
-    pCat = pCat.product_category;
 
-    var products = await getProducts(userid, WooCommerce, {'filter[category]': pCat.name}, {'categoryid':categoryid});
-    if(!products) return;
-
+    //get currentcy
     var currencyData = fn.getModuleData('woocommerce', 'currency');
     var currency = (currencyData.value) ? currencyData.value : 'تومان';
 
-    products.forEach(product => 
-    {
-        var mess = striptags(product.title);
-        mess += '\n' + striptags(product.short_description);
-        mess += '\n قیمت: ' + product.price + ' ' + currency;
-        //image
-        if(product.images.length > 0) mess += '\n\n' + product.images[0].src;
-
-        var linkbtn = {'text': 'نمایش و خرید در سایت', 'url': product.permalink};
-        var op = {"reply_markup" : {"inline_keyboard" : [[linkbtn]]}};
-        global.robot.bot.sendMessage(userid, mess, op);
+    //atrrs
+    var atrrsDetail = '';
+    product.attributes.forEach(atrr => {
+        atrrsDetail = '✴️ ' + atrr.name + ': ' + atrr.options + '\n';
     });
+
+    //mess
+    var title = '☸️ ' + striptags(product.title);
+    var id = '🆔 ' + product.id;
+    var description = '🔶 ' + striptags(product.short_description);
+    var mess = title;
+    mess += '\n' + description.trim();
+    mess += '\n' + atrrsDetail;
+    mess += '💵 قیمت: ' + product.price + ' ' + currency;
+    mess += '\n' + id;
+    //image
+    if(option.image && product.images.length > 0) mess += '\n\n' + product.images[0].src;
+
+    return mess;
 }
 
 var routting = async function(message, speratedSection, user, mName)
@@ -197,25 +259,10 @@ var routting = async function(message, speratedSection, user, mName)
     var last = speratedSection.length-1;
     var userid = message.from.id;
     var button = fn.getModuleData(mName, 'menuItem').value;
-    var url = fn.getModuleData(mName, 'url');
-    var consumerKey = fn.getModuleData(mName, 'consumerKey');
-    var consumerSecret = fn.getModuleData(mName, 'consumerSecret');
-
     var back = fn.mstr['category']['backtoParent'];
 
-    if(!url || !consumerKey || !consumerSecret) {
-        global.robot.bot.sendMessage(userid, fn.mstr[mName].mess['neddOption']);
-        return;
-    }
-
-    WooCommerceOption.url = url.value;
-    WooCommerceOption.consumerKey = consumerKey.value;
-    WooCommerceOption.consumerSecret = consumerSecret.value;
-
-    var WooCommerce = new WooCommerceAPI(WooCommerceOption);
-
     //show main
-    if (message.text === button) showMain(userid, WooCommerce, button);
+    if (message.text === button) showMain(userid, button);
 
     //back
     else if(text == back)
@@ -229,23 +276,31 @@ var routting = async function(message, speratedSection, user, mName)
         }
 
         //back up to parent Woocat
-        var upid = (speratedSection[last] == button) ? 0 : parseInt(speratedSection[last]);
+        var upid = (speratedSection[last-1] == button) ? 0 : parseInt(speratedSection[last-1]);
         var op = (upid == 0) ? {'main': button} : {};
-        var upcat = await getFromWoocom (userid, WooCommerce, 'products/categories/' + upid);
+        
+        var upcat = {};
+        if(upid !== 0) upcat = await getFromWoocom (userid, 'products/categories/' + upid);
+        
         upcat = upcat.product_category;
-        showDirectory(userid, WooCommerce, upcat, op);
+        showDirectory(userid, upcat, op);
     }
 
     //choose
     else
     {
         var parentid = (speratedSection[last] == button) ? 0 : parseInt(speratedSection[last]);
-        var categories = await getCategories(userid, WooCommerce, {'name': text, 'parentid':parentid});
+        var categories = await getCategories(userid, {'name': text, 'parentid':parentid});
 
-        if(categories.length > 0) showDirectory(userid, WooCommerce, categories[0]);
-        //else if(categories.length == 0) showMain(userid, WooCommerce, button);
-        else showProduct(userid, WooCommerce, parentid, text);
+        if(categories.length > 0) showDirectory(userid, categories[0]);
+        else showProduct(userid, mName, parentid, text);
     }
 }
 
-module.exports = { routting, checkRoute }
+var salemode = require('./salemode');
+
+module.exports = { 
+    routting, checkRoute, 
+    salemode, getProductDetail,
+    getFromWoocom, getCategories, getProducts
+ }

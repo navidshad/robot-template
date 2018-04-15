@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
-//mongoose.set('debug', true);
+mongoose.set('debug', false);
 mongoose.connect(global.config.dbpath);
 
 var db = mongoose.connection;

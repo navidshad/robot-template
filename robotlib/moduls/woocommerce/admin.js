@@ -51,7 +51,7 @@ var show = function(userid){
 var routting = function(message, speratedSection, user)
 {
     //show section
-    if(message.text === fn.mstr[name]['name'] || message.text === fn.mstr['inbox'].back)
+    if(message.text === fn.mstr[name]['name'] || message.text === fn.mstr[name]['back'])
         show(message.from.id);
     
     //show setting
@@ -60,8 +60,6 @@ var routting = function(message, speratedSection, user)
 
     else if(speratedSection[3] === fn.mstr[name].btns['settings']) 
         settings.routting(message, speratedSection, user, name);
-
-
 }
 
 var settings = require('./settings');

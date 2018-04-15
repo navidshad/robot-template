@@ -48,7 +48,7 @@ var additem = async function(userid,  item, option, callback)
     });
 }
 
-var addToBag = async function(userid, type, productid){
+var addToBag = async function(userid, type, productid, datas){
     var bag = await get(userid);
     var product = null
     var item = {};
@@ -59,7 +59,8 @@ var addToBag = async function(userid, type, productid){
             'name'  :product.name, 
             'id'    :productid, 
             'price' :product.price, 
-            'type'  :'post'
+            'type'  :'post',
+            'data'  : datas,
         };
     }
 

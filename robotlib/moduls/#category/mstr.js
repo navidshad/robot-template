@@ -8,7 +8,7 @@ module.exports.category = {
     maincategory: 'دسته اصلی',  //don't change it, it has been stored in categories collection
     categoryoptions: ['📝 ویرایش دسته های فعلی', '✏️ افزودن دسته'],
     
-    backtoParent:'⤴️ برگشت به بالا',
+    backtoParent:'🔙 برگشت به بالا',
     edit:{
         name:'لطفا نام جدید دسته بندی را ارسال کنید.',
         parent:'لطفا دسته بندی مادر را انتخاب کنید.',

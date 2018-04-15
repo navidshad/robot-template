@@ -84,7 +84,6 @@ var show = function(userid, mName, newcat)
     + '⚙️';
 
     global.robot.bot.sendMessage(userid, detailMess, messOption);
-    fn.userOper.setSection(userid, fn.mstr[mName]['settings'], true);
 }
 
 var routting = function(message, speratedSection, user, mName)
@@ -92,8 +91,8 @@ var routting = function(message, speratedSection, user, mName)
     var text = message.text;
     var last = speratedSection.length-1;
     //show inbox setting
-    if (text === fn.mstr[mName]['settings'] || text === fn.mstr[mName]['back'])
-        show(message.from.id);
+    if (text === fn.mstr[mName]['settings'])
+        show(message.from.id, mName);
 
 
     //set category
@@ -135,7 +134,25 @@ var routting = function(message, speratedSection, user, mName)
 
         if(!key) return;
 
-        var datas = [{'name': speratedSection[last], 'value':text}];
+        var itemSection = speratedSection[last];
+        var dataOption = fn.mstr[mName].datas[itemSection];
+
+        var key = true;
+        var value = text;
+        if(dataOption.items)
+        {
+            key = false;
+            dataOption.items.forEach(element => {
+                if(element.lable === text) {
+                    key = true;
+                    value = element.name;
+                }
+            });
+        }
+
+        if(!key) return;
+
+        var datas = [{'name': itemSection, 'value':value}];
         fn.putDatasToModuleOption(mName, datas);
         
         global.robot.save();
@@ -200,9 +217,16 @@ var query = function(query, speratedQuery, user, mName)
         if(!key) return;
 
         var itemSection = speratedQuery[3];
-        var mess = fn.mstr[mName].datas[itemSection].mess;
+        var dataOption = fn.mstr[mName].datas[itemSection];
+
+        var list = [];
+        var back = fn.mstr[mName]['back'];
+
+        if(dataOption.items) dataOption.items.forEach(element => { list.push(element.lable) });
+
+        var mess = dataOption.mess;
         var nSection = fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr[mName]['name'] + '/' + fn.mstr[mName].btns['settings'] + '/' + itemSection;
-        var remarkup = fn.generateKeyboard({'section': fn.mstr[mName]['back']}, true);
+        var remarkup = fn.generateKeyboard({'custom': true, 'grid':false, 'list': list, 'back':back}, false);
 
         global.robot.bot.sendMessage(query.from.id, mess, remarkup);
         fn.userOper.setSection(query.from.id, nSection, false);

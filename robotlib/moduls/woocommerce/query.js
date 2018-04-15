@@ -35,6 +35,10 @@ var routting = function(query, speratedQuery, user, mName)
     //admin settings
     if(speratedQuery[1] === queryTag['admin'] && speratedQuery[2] === queryTag['settings'])
         fn.m[mName].settings.query(query, speratedQuery, user, mName);
+
+    //user buy
+    else if (speratedQuery[2] === queryTag['salemode'])
+        fn.m[mName].user.salemode.query(query, speratedQuery, user, mName);
 }
 
 module.exports = { routting, checkQuery }

@@ -16,13 +16,16 @@ var showCategoryDir = function(userid,catname, speratedSection){
 
 var backtoParent = function(message, speratedSection, user)
 {
-        //console.log(speratedSection);
-        var from = speratedSection.length-1
-        var catname = speratedSection[speratedSection.length-2];
-        speratedSection.splice(from, 1);
-        
-        if(catname == fn.str['mainMenu'] || !catname) fn.commands.backToMainMenu(message, user);
-        else showCategoryDir(message.from.id, catname, speratedSection);
+    //console.log(speratedSection);
+    var from = speratedSection.length-1
+    var catname = speratedSection[speratedSection.length-2];
+    nsperatedSection = []
+    nsperatedSection = nsperatedSection.concat(speratedSection);
+    nsperatedSection.splice(from, 1);
+    
+    if(catname == fn.str['mainMenu'] || !catname) fn.commands.backToMainMenu(message, user);
+    else if(fn.m.category.checkInValidCat(catname)) 
+        showCategoryDir(message.from.id, catname, nsperatedSection);
 }
 
 

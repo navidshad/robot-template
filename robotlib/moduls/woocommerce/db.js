@@ -1,8 +1,11 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-// var newSchema = new Schema({
-//   userid : Number,
-// });
+var attribute = new Schema({'name': String, 'value': String});
+var wooSubmiterSchema = new Schema({
+  userid    : Number,
+  productid : Number,
+  attributes: [attribute],
+});
 
-// module.exports.newSchema = mongoose.model('', newSchema);
+module.exports.wooSubmiter = mongoose.model('wooSubmiters', wooSubmiterSchema);
