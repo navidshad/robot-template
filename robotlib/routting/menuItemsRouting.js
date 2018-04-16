@@ -1,4 +1,38 @@
-//additional
+// var checkRoute = function(option){
+
+//     var btnsArr  = [ 
+//         fn.mstr.inbox.lable
+//     ];
+
+//     var result = {}
+//     //check text message
+//     if(option.text) btnsArr.forEach(btn => { 
+//         if(option.text === btn) 
+//         {
+//             result.status = true; 
+//             result.button = btn;
+//             result.routting = routting;
+//         }
+//     });
+
+//     //check seperate section
+//     if(option.speratedSection){
+//         option.speratedSection.forEach(section => {
+//             btnsArr.forEach(btn => 
+//             { 
+//                 if(section === btn){
+//                     result.status = true; 
+//                     result.button = btn;
+//                     result.routting = routting;
+//                 }
+//             });
+//         });
+//     }
+
+//     //return
+//     return result;
+// }
+
 var showCategoryDir = function(userid,catname, speratedSection){
     fn.getMenuItems(catname, (items, des, noitem) => {
 
@@ -53,12 +87,6 @@ var routting = function(message, speratedSection, user){
         speratedSection.push(text);
         showCategoryDir(message.from.id, text, speratedSection);
     }
-
-    // //contct with admin
-    // else if (text === fn.mstr['inbox'].lable || speratedSection[last] === fn.mstr['inbox'].lable){
-    //     //console.log('contact with admin');
-    //     fn.m.inbox.user(message, speratedSection);
-    // }
 
     //go to a post  
     else{

@@ -130,16 +130,18 @@ var getProducts = async function(userid, paramenters, optionparam)
     var result = [];
     products.forEach(product => 
     {
-        // //retrive by name
-        // var catKey = (option.categoryid) ? false : true;
-        // if(!catKey) product.categories.forEach(id => { if( id == categoryid) catKey = true; });
+        //scape products which are not subCat
+        var cindex = product.categories.length-1;
+        var keycat = (paramenters['filter[category]']) ? false : true;
+        if(product.categories[cindex] == paramenters['filter[category]'])
+            keycat = true;
 
         //retrive by name
         var keynam = (option.name) ? false : true;
         if(!keynam && product.name == option.name) keynam = true;
 
         //join to result
-        if(keynam) result.push(product);
+        if(keycat && keynam) result.push(product);
     });
 
     return result;
@@ -162,7 +164,7 @@ var showDirectory = async function(userid, category, optionparam)
     var products = [];
     console.log('categoryid', categoryid);
     if(categoryid !== 0){
-        products = await getProducts(userid, {'filter[category]': catDistnation.name}, {'cateogryid':catDistnation.id});
+        products = await getProducts(userid, {'filter[category]': catDistnation.name});
         console.log(products);
     }
 
