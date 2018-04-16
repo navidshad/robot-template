@@ -3,8 +3,8 @@ var WooCommerceOption = {
     url: 'https://example.com',
     consumerKey: 'consumer_key',
     consumerSecret: 'consumer_secret',
-    //wpAPI: true,
-    version: 'v3'
+    wpAPI: true,
+    version: 'wc/v2'
 };
 
 var checkRoute = function(option)
@@ -70,7 +70,6 @@ var parametersToString = function(parameters){
     //     queryString += key + '=' + parameters[key];
     //     if(i < parametersArr.length-1) queryString+= '&';
     // });
-
     return query;
 }
 
@@ -89,20 +88,19 @@ var getFromWoocom = async function(userid, endPoint, parameters)
     else return body;
 }
 
-var getCategories = async function(userid, optionparam)
+var getCategories = async function(userid, paramenters, optionparam)
 {
     var option = (optionparam) ? optionparam : {};
-    var categories = await getFromWoocom(userid, 'products/categories');
-    categories = categories.product_categories;
+    var categories = await getFromWoocom(userid, 'products/categories', paramenters);
     var result = [];
     categories.forEach(cat => 
     {
         //if(cat.parent == parentid) result.push(cat);
 
         //retrive by parentid
-        var parentKey = (option.parentid == null) ? true : false;
-        if(!parentKey && cat.parent == option.parentid) 
-            parentKey = true;
+        // var parentKey = (paramenters.parent == null) ? true : false;
+        // if(!parentKey && cat.parent == paramenters.parent) 
+        //     parentKey = true;
 
         //retive by catid
         var catidKey = (option.categoryid == null) ? true : false;
@@ -115,7 +113,7 @@ var getCategories = async function(userid, optionparam)
             keynam = true;
 
         //join to result
-        if(parentKey && catidKey && keynam) result.push(cat);
+        if(catidKey && keynam) result.push(cat);
     });
     
     return result;
@@ -125,15 +123,14 @@ var getProducts = async function(userid, paramenters, optionparam)
 {
     var option = (optionparam) ? optionparam : {};
     var products = await getFromWoocom(userid, 'products', paramenters);
-    products = products.products;
 
     var result = [];
     products.forEach(product => 
     {
         //scape products which are not subCat
         var cindex = product.categories.length-1;
-        var keycat = (paramenters['filter[category]']) ? false : true;
-        if(product.categories[cindex] == paramenters['filter[category]'])
+        var keycat = (paramenters['category']) ? false : true;
+        if(product.categories[cindex].id == paramenters['category'])
             keycat = true;
 
         //retrive by name
@@ -157,23 +154,23 @@ var showDirectory = async function(userid, category, optionparam)
     var categoryid = catDistnation.id;
 
     //get subcats
-    var categories = await getCategories(userid, {'parentid':categoryid});
+    var categories = await getCategories(userid, {'parent':categoryid});
     
     //get subproducts
     //main cat is 0, if request is for main cat, products will not be used
     var products = [];
     console.log('categoryid', categoryid);
     if(categoryid !== 0)
-        products = await getProducts(userid, {'filter[category]': catDistnation.name});
+        products = await getProducts(userid, {'category': catDistnation.id});
 
     var list = [];
     categories.forEach(cat => { list.push(cat.name); });
-    products.forEach(pro => { list.push(pro.title + ' ' + pro.id); });
+    products.forEach(pro => { list.push(pro.name + ' ' + pro.id); });
 
     if(list.length == 0)
     {
         global.robot.bot.sendMessage(userid, 'هیچ محصولی در این دسته بندی اضافه نشده است.');
-        return
+        return;
     }
 
     var back = fn.mstr['category']['backtoParent'];
@@ -196,7 +193,6 @@ var showProduct = async function(userid, mName, categoryid, text)
     pid = pid[pid.length-1];
 
     var product = await getFromWoocom (userid, 'products/' + pid);
-    product = product.product;
     if(!product) return;
 
     //get sale type 
@@ -286,7 +282,6 @@ var routting = async function(message, speratedSection, user, mName)
         var upcat = {};
         if(upid !== 0) upcat = await getFromWoocom (userid, 'products/categories/' + upid);
         
-        upcat = upcat.product_category;
         showDirectory(userid, upcat, op);
     }
 
@@ -295,7 +290,7 @@ var routting = async function(message, speratedSection, user, mName)
     {
         console.log('choose item woo')
         var parentid = (speratedSection[last] == button) ? 0 : parseInt(speratedSection[last]);
-        var categories = await getCategories(userid, {'name': text, 'parentid':parentid});
+        var categories = await getCategories(userid, {'parent':parentid}, {'name': text});
 
         if(categories.length > 0) showDirectory(userid, categories[0]);
         else showProduct(userid, mName, parentid, text);

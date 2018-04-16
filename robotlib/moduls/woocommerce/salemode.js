@@ -16,7 +16,6 @@ var getwooSubmiter = async function(userid, productid)
 var addRemoveAttr = async function(userid, mName, productid, attrindex, optionindex)
 {
     var product = await fn.m.woocommerce.user.getFromWoocom(userid, 'products/' + productid);
-    product = product.product;
     if(!product) return;
 
     //get wooSubmiter
@@ -109,7 +108,6 @@ var showAttributes = async function(userid, mName, productid, optionparams)
 {
     var option = (optionparams) ? optionparams : {};
     var product = await fn.m.woocommerce.user.getFromWoocom(userid, 'products/' + productid);
-    product = product.product;
     if(!product) return;
 
     //get wooSubmiter
@@ -171,7 +169,6 @@ var query = async function(query, speratedQuery, user, mName)
     else if (speratedQuery[3] === queryTag['addtobag'])
     {
         var product = await fn.m.woocommerce.user.getFromWoocom(userid, 'products/' + speratedQuery[last]);
-        product = product.product;
         if(!product) return;
         
         //get wooSubmiter
@@ -183,7 +180,7 @@ var query = async function(query, speratedQuery, user, mName)
         });
 
         var productItem = {
-            'name'  :product.title + ' ' + product.id, 
+            'name'  :product.name + ' ' + product.id, 
             'id'    :product.id, 
             'price' :product.price, 
             'type'  :mName,
