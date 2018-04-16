@@ -270,6 +270,7 @@ var routting = async function(message, speratedSection, user, mName)
     //back
     else if(text == back)
     {
+        console.log('back to upcat woo')
         //backup to botcat
         if(speratedSection[last-1] == button)
         {
@@ -292,6 +293,7 @@ var routting = async function(message, speratedSection, user, mName)
     //choose
     else
     {
+        console.log('choose item woo')
         var parentid = (speratedSection[last] == button) ? 0 : parseInt(speratedSection[last]);
         var categories = await getCategories(userid, {'name': text, 'parentid':parentid});
 
