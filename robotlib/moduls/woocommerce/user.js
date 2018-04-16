@@ -160,8 +160,10 @@ var showDirectory = async function(userid, category, optionparam)
     //get subproducts
     //main cat is 0, if request is for main cat, products will not be used
     var products = [];
-    if(categoryid !== 0) 
+    if(categoryid !== 0){
         products = await getProducts(userid, {'filter[category]': catDistnation.name}, {'cateogryid':catDistnation.id});
+        console.log(products);
+    }
 
     var list = [];
     categories.forEach(cat => { list.push(cat.name); });
