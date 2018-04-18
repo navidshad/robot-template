@@ -34,7 +34,7 @@ var checkRoute = function(option){
 }
 
 var alertToAmin = function(newMess){
-    fn.db.user.find({'isAdmin': true}, 'userId').exec((e, admins) => {
+    fn.db.user.find({'isAdmin': true}, 'userid').exec((e, admins) => {
         //user message
         inboxMess = 'پیام از طرف ' + '@' + newMess.username +
         '\n' + 'ــــــــــــــــــــ' + '\n' + newMess.message +
@@ -43,7 +43,7 @@ var alertToAmin = function(newMess){
 
         //send to admins
         admins.forEach(admin => {
-            global.robot.bot.sendMessage(admin.userId, inboxMess);
+            global.robot.bot.sendMessage(admin.userid, inboxMess);
         });
     });
 }
@@ -70,7 +70,7 @@ var routting = function(message, speratedSection){
                 'readed'      : false,
                 'messId'      : message.message_id,
                 'date'        : time,
-                'userId'      : user.userId,
+                'userid'      : user.userid,
                 'username'    : user.username,
                 'message'     : message.text
             });

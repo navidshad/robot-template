@@ -15,13 +15,13 @@ var show = async function(message, postName, user, optionPrams, callback)
     var fn_addToBag = query['bag'] + '-' + query['user'] + '-' + query['addToBag'] + '-' + 'post' + '-' + post.id;
     
     if(post.isproduct) {
-        var isbought = await fn.m.bag.user.bag.checkBoughtItem(user.userId, post.id);
+        var isbought = await fn.m.bag.user.bag.checkBoughtItem(user.userid, post.id);
         if(!isbought) 
             detailArr.push([ {'text': 'افزودن به سبد', 'callback_data': fn_addToBag} ]);   
     }
 
     //like button 
-    var like = await fn.m.favorites.user.getbutton(user.userId, 'post', post.id);
+    var like = await fn.m.favorites.user.getbutton(user.userid, 'post', post.id);
     if(like) detailArr.push([like]);
 
     var description = post.description + '\n @' +  global.robot.username;

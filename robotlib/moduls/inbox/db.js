@@ -5,7 +5,7 @@ var inboxSchema = new Schema({
   readed      : Boolean,
   messId      : String,
   date        : String,
-  userId      : Number,
+  userid      : Number,
   username    : String,
   fullname    : String,
   message     : String,

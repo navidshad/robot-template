@@ -43,7 +43,7 @@ var routting = async function(message, speratedSection, user){
     //ask to show bag
     if(checkRouteText.button === userButtons['bagshop']) {
         var userbag = await bag.get(message.from.id);
-        bag.show(user.userId, userbag);
+        bag.show(user.userid, userbag);
     }
 
     //ask to factor section
@@ -87,12 +87,12 @@ var query = async function(query, speratedQuery, user){
     if(speratedQuery[2] === querytag['addToBag']) {
         var type = speratedQuery[last-1];
         var productid = speratedQuery[last];
-        bag.addToBag(user.userId, type, productid);
+        bag.addToBag(user.userid, type, productid);
     }
 
     //submit
     else if(speratedQuery[2] === querytag['submitbag']) {
-        var userBag = await bag.get(user.userId);
+        var userBag = await bag.get(user.userid);
         factor.create(query.from.id, userBag.items);
     }
 

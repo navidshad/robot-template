@@ -1,15 +1,12 @@
 //start bot
-var start = function(message){
+var start = async function(message){
     //collect 
     var form = Object(message.from);
     form.bot = global.robot.username;
 
-    var id=message.from.id,
-    username = message.from.username, fullname= message.from.first_name + ' ' + message.from.last_name;
-    fn.userOper.registerId(id, {'username':username, 'fullname':fullname}, (user) => {
-        backToMainMenu(message, user);
-        if(isAdmin) global.robot.bot.sendMessage(message.from.id, fn.str['youareadmin']);
-    });
+    var newuser = await fn.userOper.registerId(message.from);
+    backToMainMenu(message, newuser);
+    if(newuser.isAdmin) global.robot.bot.sendMessage(message.from.id, fn.str['youareadmin']);
 }
 
 //get user's section

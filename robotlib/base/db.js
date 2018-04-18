@@ -11,12 +11,15 @@ db.once('open', function() { console.log('db was connected'); });
 var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
-    userId      : Number,
+    userid      : Number,
     username    : String,
+    is_bot      : String,
+    first_name	: String,
+    last_name	  : String,
+    language_code:String,
+
     isAdmin     : Boolean,
     isCompelet  : Boolean,
-    fullname    : String,
-    phone       : Number,
     section     : String,
 });
 

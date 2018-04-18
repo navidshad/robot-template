@@ -32,7 +32,7 @@ var checkRoute = function(option){
     return result;
 }
 
-var AdminMessageCreator = function (userId, mess, calbck) {
+var AdminMessageCreator = function (userid, mess, calbck) {
    //create callback keyboard
    var detailArr = [];
    var fn_editTitle = fn.mstr.sendMessage['queryAdminSndMess'] + '-' + fn.mstr.sendMessage['queryAdminSndMessEditTitle'] + '-' + mess._id;
@@ -52,7 +52,7 @@ var AdminMessageCreator = function (userId, mess, calbck) {
    mess.text + '\n' + '\n' +
    'لطفا برای تنظیمات و ارسال نهایی از گزینه های زیر استفاده کنید.';
  
-   global.robot.bot.sendMessage(userId, text, {"reply_markup" : {"inline_keyboard" : detailArr}});   
+   global.robot.bot.sendMessage(userid, text, {"reply_markup" : {"inline_keyboard" : detailArr}});   
 
    if(calbck) calbck();
 }

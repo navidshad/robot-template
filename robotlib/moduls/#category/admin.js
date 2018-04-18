@@ -115,7 +115,7 @@ var createcategory = function(name, speratedSection, userid){
 
 var deleteCategory = require('./delete');
 
-var createcategoryMess = function(userId, category, option){
+var createcategoryMess = function(userid, category, option){
     //create callback keyboard
     var detailArr = [];
     
@@ -160,20 +160,20 @@ var createcategoryMess = function(userId, category, option){
    'ــــــــــــــــــــــــــــــــ' + '\n' + 
    '⚠️' + 'برای ویرایش مطلب از دکمه های پیوست شده استفاده کنید.';
 
-   //global.robot.bot.sendMessage(userId, fn.str['seccess'], fn.generateKeyboard({section:fn.str.goTocategory[0]}, false));    
-   //showcategoryList(userId);
-   global.robot.bot.sendMessage(userId, text, {"reply_markup" : {"inline_keyboard" : detailArr}});
+   //global.robot.bot.sendMessage(userid, fn.str['seccess'], fn.generateKeyboard({section:fn.str.goTocategory[0]}, false));    
+   //showcategoryList(userid);
+   global.robot.bot.sendMessage(userid, text, {"reply_markup" : {"inline_keyboard" : detailArr}});
 }
 
 updatePostCategory = function(oldCat, newCat){
     fn.db.post.update({'category': oldCat}, {'category': newCat}, {'multi': true}).exec();
 }
 
-var editcategory = async function(id, detail, userId, speratedSection, ecCallBack){
+var editcategory = async function(id, detail, userid, speratedSection, ecCallBack){
     //console.log('edit a category', id);
     fn.db.category.findOne({"_id": id}, function(err, category)
     {
-        fn.userOper.setSection(userId, fn.str.maincategory, true);
+        fn.userOper.setSection(userid, fn.str.maincategory, true);
         if(category)
         {
             if(detail.name) {
@@ -188,15 +188,15 @@ var editcategory = async function(id, detail, userId, speratedSection, ecCallBac
             category.save(() => {
                 //get new category
                 global.fn.updateBotContent(() => {
-                    createcategoryMess(userId, category);
-                    showCategoryDir(userId, category.parent, speratedSection); 
+                    createcategoryMess(userid, category);
+                    showCategoryDir(userid, category.parent, speratedSection); 
                 });
                               
                 if(ecCallBack) ecCallBack();
             });
         }
         else{
-            global.robot.bot.sendMessage(userId, 'این دسته بندی دیگر وجود ندارد', fn.generateKeyboard({section:fn.str['goTocategory']}));
+            global.robot.bot.sendMessage(userid, 'این دسته بندی دیگر وجود ندارد', fn.generateKeyboard({section:fn.str['goTocategory']}));
         }
     });
 }

@@ -96,7 +96,7 @@ var answertoMessage = function(message, messid){
             answer += message.text + '\n';
             answer += '\n @' + global.robot.username;
             global.robot.bot.sendMessage(message.from.id, answer);
-            global.robot.bot.sendMessage(item.userId, answer).catch((error) => {
+            global.robot.bot.sendMessage(item.userid, answer).catch((error) => {
                 console.log(error.code);  // => 'ETELEGRAM'
                 console.log(error.response.body); // => { ok: false, error_code: 400, description: 'Bad Request: chat not found' }
                 if(error.response.statusCode === 403) global.robot.bot.sendMessage(message.from.id, 'این کاربر ربات را block کرده است.'); 

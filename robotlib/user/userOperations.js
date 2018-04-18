@@ -1,14 +1,15 @@
 var fn = global.fn;
 
-var registerId = async function(id, flag, regCallback)
+var registerId = async function(flag, regCallback)
 {
     //get user if exist
-    var user = await fn.userOper.checkProfile(id).then();
+    var user = await checkProfile(flag.id);
     isAdmin = false;
 
     //check admin list
     var newAdminList = []
-    global.robot.adminWaitingList.forEach(function(admin) {
+    global.robot.adminWaitingList.forEach(admin =>
+    {
         if(admin === flag.username)
             isAdmin = true;
         else{newAdminList.push(admin);}
@@ -18,38 +19,35 @@ var registerId = async function(id, flag, regCallback)
     //create new user
     if(!user)
     {
-        var newuser = new fn.db.user({
-            userId  : id,
-            'username': flag.username,
-            'fullname': flag.fullname,
-            section : fn.str['mainMenu'],
-            'isAdmin': isAdmin,
-            isCompelet:true
-        });
-        //set invitor id
-        if(flag.invitor) newuser.invitorId = flag.invitor;
-        user = await newuser.save().then();
+        flag.userid = flag.id;
+        flag.isAdmin = isAdmin;
+        flag.isCompelet = true;
+        flag.section = fn.str['mainMenu'];
+        user = await new fn.db.user(flag).save().then();
         console.log('user has been registered');
     }
     //update exist user
     else
     {
+        user.username = flag.username;
         user.section = fn.str['mainMenu'];
         user.isCompelet = true;
-        user.fullname = flag.fullname;
-        user.username = flag.username;
+        user.first_name = flag.first_name;
+        user.last_name = flag.first_name;
+        user.language_code = flag.first_name;
 
         if(user.isAdmin === true) isAdmin = user.isAdmin;
         else user.isAdmin = isAdmin;
-        user.save();
+
+        await user.save().then();
     }
 
     //return user
-    regCallback(user);
+    return user;
 }
 
-var editUser = function(userId,profile,ssCallBack){
-    fn.userOper.checkProfile(userId, (user) => {
+var editUser = function(userid,profile,ssCallBack){
+    fn.userOper.checkProfile(userid, (user) => {
         if(profile.isCompelet) user.isCompelet = true;
         if(profile.fullname) user.fullname = profile.fullname;
         if(profile.phone) user.phone = profile.phone;
@@ -62,11 +60,10 @@ var editUser = function(userId,profile,ssCallBack){
 
 var checkProfile = async function(id, callback)
 {
-    var user = await fn.db.user.findOne({'userId':id}).exec().then(); 
+    var user = await fn.db.user.findOne({'userid':id}).exec().then(); 
 
     if(!user) {
         if(callback) callback(null);
-        resolve(null);
         return;
     }
 
@@ -90,10 +87,10 @@ var checkProfile = async function(id, callback)
     return user;
 }
 
-var setSection = async function(userId, section, additiveKey, ssCallBack)
+var setSection = async function(userid, section, additiveKey, ssCallBack)
 {
     section = section.toString();
-    var user = await fn.userOper.checkProfile(userId);
+    var user = await fn.userOper.checkProfile(userid);
 
     if(!user || !section == null) return;
     else if(additiveKey)

@@ -50,7 +50,7 @@ var showPostList = function(userid, injectedtext){
     });
 }
 
-var createpostMess = function(userId, post){
+var createpostMess = function(userid, post){
     //create callback keyboard
     var detailArr = [];
     var querTag = fn.mstr.post.query;
@@ -167,9 +167,9 @@ var createpostMess = function(userId, post){
     'ــــــــــــــــــــــــــــــــ' + '\n' + 
     '⚠️' + 'برای ویرایش مطلب از دکمه های پیوست شده استفاده کنید.';
 
-    //global.robot.bot.sendMessage(userId, fn.str.query['seccess'], fn.generateKeyboard({section:fn.str.goTopost[0]}, false));    
-    showPostList(userId);
-    global.robot.bot.sendMessage(userId, text, {"reply_markup" : {"inline_keyboard" : detailArr}});
+    //global.robot.bot.sendMessage(userid, fn.str.query['seccess'], fn.generateKeyboard({section:fn.str.goTopost[0]}, false));    
+    showPostList(userid);
+    global.robot.bot.sendMessage(userid, text, {"reply_markup" : {"inline_keyboard" : detailArr}});
 }
 
 var ceatePost = function(message){
@@ -187,11 +187,11 @@ var ceatePost = function(message){
     });
 }
 
-var editpost = async function(id, detail, userId, ecCallBack){
+var editpost = async function(id, detail, userid, ecCallBack){
     var sendKey = true;
     //console.log('edit a post', id);
     var post = await fn.db.post.findOne({"_id": id}).exec().then();
-    if(!post) global.robot.bot.sendMessage(userId, 'این مطلب دیگر وجود ندارد');
+    if(!post) global.robot.bot.sendMessage(userid, 'این مطلب دیگر وجود ندارد');
 
     if(detail.name) post.name                       = detail.name;
     if(detail.category) post.category               = detail.category;
@@ -228,11 +228,11 @@ var editpost = async function(id, detail, userId, ecCallBack){
 
     post.save((e) => {
         if(e) console.log(e);
-        if(!detail.clearalbum) global.robot.bot.sendMessage(userId, fn.str.query['seccess']);
+        if(!detail.clearalbum) global.robot.bot.sendMessage(userid, fn.str.query['seccess']);
         if(sendKey) {
             var nSection = fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr.post['name'];
-            fn.userOper.setSection(userId, nSection, false);
-            createpostMess(userId, post);
+            fn.userOper.setSection(userid, nSection, false);
+            createpostMess(userid, post);
         }
         global.fn.updateBotContent();
         if(ecCallBack) ecCallBack();
