@@ -144,37 +144,46 @@ var getProducts = async function(userid, paramenters, optionparam)
     return result;
 }
 
-var showDirectory = async function(userid, category, optionparam)
+var showDirectory = async function(userid, category, page, optionparam)
 {
     var option = (optionparam) ? optionparam : {};
 
     var catDistnation = null;
-    if(option.main) catDistnation = {'name': option.main, 'description':'', 'id':0};
+    if(option.main || !category) catDistnation = {'name': option.main, 'description':'', 'id':0};
     else catDistnation = category;
+
     var categoryid = catDistnation.id;
 
     //get subcats
-    var categories = await getCategories(userid, {'parent':categoryid});
+    var categories = await getCategories(userid, {'parent':categoryid, 'page': page, 'per_page': 10});
     
     //get subproducts
     //main cat is 0, if request is for main cat, products will not be used
     var products = [];
     console.log('categoryid', categoryid);
     if(categoryid !== 0)
-        products = await getProducts(userid, {'category': catDistnation.id});
+        products = await getProducts(userid, {'category': catDistnation.id, 'page': page, 'per_page': 10});
 
     var list = [];
     categories.forEach(cat => { list.push(cat.name); });
     products.forEach(pro => { list.push(pro.name + ' ' + pro.id); });
 
-    if(list.length == 0)
+    var totalitems = categories.length + products.length;
+    if(totalitems == 0)
     {
-        global.robot.bot.sendMessage(userid, 'هیچ محصولی در این دسته بندی اضافه نشده است.');
+        global.robot.bot.sendMessage(userid, 'هیچ محصولی پیدا نشد.');
         return;
     }
 
     var back = fn.mstr['category']['backtoParent'];
     var remarkup = fn.generateKeyboard({'custom':true, 'grid':true, 'list':list, 'back':back}, false);
+
+    //navigator
+    var next = page + 1;
+    var back = page -1;
+    var navigator = ['⬅️ ' + ' صفحه ' + next];
+    if(back > 0) navigator.push(back + ' صفحه ' + '➡️');
+    remarkup.reply_markup.keyboard.push(navigator);
 
     var mess = (catDistnation.description.length > 0) ? catDistnation.description : catDistnation.name;
     global.robot.bot.sendMessage(userid, mess, remarkup);
@@ -184,7 +193,7 @@ var showDirectory = async function(userid, category, optionparam)
 var showMain = async function(userid, button)
 {
     await fn.userOper.setSection(userid, button, true);
-    showDirectory(userid, 0, {'main': button});
+    showDirectory(userid, 0, 1, {'main': button});
 }
 
 var showProduct = async function(userid, mName, categoryid, text)
@@ -282,17 +291,36 @@ var routting = async function(message, speratedSection, user, mName)
         var upcat = {};
         if(upid !== 0) upcat = await getFromWoocom (userid, 'products/categories/' + upid);
         
-        showDirectory(userid, upcat, op);
+        showDirectory(userid, upcat, 1, op);
     }
 
-    //choose
-    else
+    //navigator
+    else if(text.includes(' صفحه ') && text.includes('⬅️') || text.includes('➡️'))
     {
+        var page = 1;
+        var split = text.split(' ');
+        var slast = split.length-1;
+        var back = parseInt(split[0]);
+        var next = parseInt(split[slast]);
+        
+        if(!isNaN(back)) page = back;
+        else if (!isNaN(next)) page = next;
+
+        console.log('navigate woo ' + page);
+        var upid = parseInt(speratedSection[last]);
+        var category = await getFromWoocom (userid, 'products/categories/' + upid);
+
+        showDirectory(userid, category, page);
+    }
+
+    //choose item
+    else
+    {   
         console.log('choose item woo')
         var parentid = (speratedSection[last] == button) ? 0 : parseInt(speratedSection[last]);
         var categories = await getCategories(userid, {'parent':parentid}, {'name': text});
 
-        if(categories.length > 0) showDirectory(userid, categories[0]);
+        if(categories.length > 0) showDirectory(userid, categories[0], 1);
         else showProduct(userid, mName, parentid, text);
     }
 }
