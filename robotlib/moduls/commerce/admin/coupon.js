@@ -1,4 +1,4 @@
-var create = async function(userid, option)
+var create = async function(option)
 {
     //option must contains:
     //endDate, consumption, discountmode, amount, percent
@@ -6,12 +6,12 @@ var create = async function(userid, option)
 
     //create
     var number = Date.today().getTime() / 1000;
-    var code = `${userid}-${number}`;
+    var code = `${option.userid}-${number}`;
     var coupon = new fn.db.coupon({
         'code'          : code,
-        'userid'        : userid,
-        'startDate'     : (option.startDate)    ? option.startDate      : Date.toDay(),
-        'endDate'       : (option.endDate)      ? option.endDate        : Date.toDay().addDays(2),
+        'userid'        : option.userid,
+        'startDate'     : (option.startDate)    ? option.startDate      : Date.today(),
+        'endDate'       : (option.endDate)      ? option.endDate        : new Date().addDays(2),
         'consumption'   : (option.consumption)  ? option.consumption    : 1,
         'discountmode'  : (option.discountmode) ? option.discountmode   : 'amount',
         'amount'        : (option.amount)       ? option.amount         : 5000,

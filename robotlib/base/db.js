@@ -10,6 +10,13 @@ db.once('open', function() { console.log('db was connected'); });
 //create schemas
 var Schema = mongoose.Schema;
 
+var data = new Schema({ 
+  name:String, 
+  value:String, 
+  key: Boolean,
+  more:[ {name:String, value:String, key: Boolean} ]
+});
+
 var UserSchema = new Schema({
     userid      : Number,
     username    : String,
@@ -21,13 +28,7 @@ var UserSchema = new Schema({
     isAdmin     : Boolean,
     isCompelet  : Boolean,
     section     : String,
-});
-
-var data = new Schema({ 
-  name:String, 
-  value:String, 
-  key: Boolean,
-  more:[ {name:String, value:String, key: Boolean} ]
+    datas       : [data],
 });
 
 var ConfigSchema = new Schema({

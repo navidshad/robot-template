@@ -42,7 +42,7 @@ var show = function(userid, newcat){
 var category = function (message, speratedQuery){
     console.log('set categori for bag');
     fn.userOper.setSection(message.from.id,  fn.mstr['category'].asoption, true);
-    var back = fn.mstr['bag']['back'];
+    var back = fn.mstr.commerce['back'];
     var list = [];
     global.robot.category.forEach((element) => {
         list.push(element.parent + ' - ' + element.name);

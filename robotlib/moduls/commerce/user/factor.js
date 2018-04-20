@@ -180,7 +180,7 @@ var showFactor = async function(userid,  option)
     //peyment
     var query = fn.mstr.commerce.query;
     var peyLink = 'https://nextpay.ir/';
-    var fn_detail = query['bag'] + '-' + query['user'] + '-' + query['itemsdetail'] + '-' + option.factor.id;
+    var fn_detail = query['commerce'] + '-' + query['user'] + '-' + query['itemsdetail'] + '-' + option.factor.id;
     var detailArr = [];
 
 
@@ -196,8 +196,8 @@ var showFactor = async function(userid,  option)
     if(!factor.ispaid)
     {
         //controller
-        var fn_getpaid = query['bag'] + '-' + query['user'] + '-' + query['getpaid'] + '-' + option.factor.id;
-        var fn_delete = query['bag'] + '-' + query['user'] + '-' + query['deletefactor'] + '-' + option.factor.id;
+        var fn_getpaid = query['commerce'] + '-' + query['user'] + '-' + query['getpaid'] + '-' + option.factor.id;
+        var fn_delete = query['commerce'] + '-' + query['user'] + '-' + query['deletefactor'] + '-' + option.factor.id;
         detailArr.push([
             {'text': 'پرداخت آزمایشی', 'callback_data': fn_getpaid},
             {'text': 'حذف فاکتور', 'callback_data': fn_delete}
@@ -240,4 +240,32 @@ var routting = function(message, speratedSection, user)
     }
 }
 
+global.fn.eventEmitter.on('successPeyment', async (factor) => 
+{
+    var user = await global.fn.userOper.checkProfile(factor.userid);
+
+    //++successPeyment of user
+    var index = null;
+    user.datas.forEach((data, i) => {
+        if(data.name === 'successPeyment') 
+            index = i;
+    });
+
+    //add if sp doesn't exist
+    if(index === null)
+    {
+        user.datas.push({'name': 'successPeyment', 'value': 0});
+        index = user.datas.length-1;
+    }
+
+    //++
+    var counter = parseInt(user.datas[index].value);
+    counter += 1;
+    user.datas[index].value = counter;
+
+    //save
+    await user.save().then();
+    //emit after
+    global.fn.eventEmitter.emit('affterSuccessPeyment', factor);
+});
 module.exports = { routting, show, showFactor, create, showfactorItems, getPaied }

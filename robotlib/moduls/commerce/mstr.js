@@ -1,8 +1,8 @@
 module.exports.commerce = {
     modulename:'commerce',
     //admin
-    name:'🏷💰 ' + 'لیست فاکتور ها', 
-    back:'🔙 برگشت به لیست فاکتور ها',
+    name:'🏷💰 ' + 'تجارت', 
+    back:'🔙 برگشت به تجارت',
     readSym: ['📪','📭'],
     settings : '⚙️' + ' - ' + 'تنظیمات',
     backsetting: '🔙 برگشت به ' + '⚙️' + ' - ' + 'تنظیمات',
@@ -17,7 +17,6 @@ module.exports.commerce = {
 
     btns: {
         nextpay:'کلید api نکست پی',
-        
         couponGenerators        :'🏷 ' + 'بن ساز ها',
         couponGeneratorsBack    :'🔙 ' + 'بن ساز ها',
         addgenerator            :'➕ ' + 'افزودن بن ساز',

@@ -73,8 +73,8 @@ var showFactor = function(message){
     fn.db.bag.findOne({'date':date, 'bot':botusername}, function(ee, item){
         if(item){
             var detailArr = [];
-            var fn_answer = fn.mstr.commerce.query['bag'] + '-' + fn.mstr.commerce.query['answer'] + '-' + item._id;
-            var fn_delete = fn.mstr.commerce.query['bag'] + '-' + fn.mstr.commerce.query['delete'] + '-' + item._id;
+            var fn_answer = fn.mstr.commerce.query['commerce'] + '-' + fn.mstr.commerce.query['answer'] + '-' + item._id;
+            var fn_delete = fn.mstr.commerce.query['commerce'] + '-' + fn.mstr.commerce.query['delete'] + '-' + item._id;
             detailArr.push([ 
                 {'text': 'ارسال پاسخ', 'callback_data': fn_answer},
                 {'text': 'حذف', 'callback_data': fn_delete}

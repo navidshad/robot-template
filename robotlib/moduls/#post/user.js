@@ -12,7 +12,7 @@ var show = async function(message, postName, user, optionPrams, callback)
     //inline buttuns
     var detailArr = [];
     var query = fn.mstr.commerce.query;
-    var fn_addToBag = query['bag'] + '-' + query['user'] + '-' + query['addToBag'] + '-' + 'post' + '-' + post.id;
+    var fn_addToBag = query['commerce'] + '-' + query['user'] + '-' + query['addToBag'] + '-' + 'post' + '-' + post.id;
     
     if(post.isproduct) {
         var isbought = await fn.m.commerce.user.bag.checkBoughtItem(user.userid, post.id);

@@ -189,6 +189,80 @@ var query = async function(query, speratedQuery)
     }
 }
 
+//#region successPeymentData
+var getGentemp = async function(userid, name)
+{
+    var gentemp = await global.fn.db.gentemp.findOne({'userid': userid}).exec().then();
+    if(!gentemp) gentemp = await new global.fn.db.gentemp({'userid': userid}).save().then();
+    return gentemp;
+}
+
+var generateCoupon = async function(userid, generator, gentemp)
+{
+    var sessions = generator.sessions;
+    //get buy mode detail
+    var temp = null
+    var tindex = null
+    gentemp.generators.forEach((gen, i) => 
+    { 
+        if(gen.name === generator.name) temp = gen; 
+        tindex=i; 
+    });
+
+    //add if doesn't exsit
+    if(!temp){
+        temp = {'name': generator.name, 'counter': 0};
+        gentemp.generators.push(temp);
+        tindex = gentemp.length-1;
+    }
+
+    //add to counter
+    temp.counter += 1;
+
+    //update gentemp
+    gentemp[tindex] = temp;
+    await gentemp.save().then();
+
+    //generate coupons
+    if(temp.counter < sessions) return;
+
+    //reset session counter
+    gentemp.generators[tindex].counter = 0;
+    await gentemp.save().then();
+    
+    var coupon = {
+        'userid'        : userid,
+        'startDate'     : new Date(),
+        'endDate'       : new Date().addDays(generator.days).addHours(generator.hours),
+        'consumption'   : generator.consumption,
+        'discountmode'  : generator.discountmode,
+        'amount'        : generator.amount,
+        'percent'       : generator.percent,
+    }
+    global.fn.eventEmitter.emit('createCoupon', coupon);
+}
+
+global.fn.eventEmitter.on('affterSuccessPeyment', async (factor) => 
+{
+    var mode = 'buy';
+    var generators = await global.fn.db.generator.find({'mode': mode}).exec().then();
+    var user = await global.fn.userOper.checkProfile(factor.userid);
+    var gentemp = await getGentemp(user.userid, generators.name);
+
+    //++successPeyment of user
+    var successPeyments = 0;
+    user.datas.forEach((data, i) => { 
+        if(data.name === 'successPeyment') 
+            successPeyments = parseInt(data.value) 
+    });
+
+    //each generator
+    generators.forEach(element => { 
+        generateCoupon (user.userid, element, gentemp) 
+    });
+});
+//#endregion
+
 module.exports = {
     routting, query
 }

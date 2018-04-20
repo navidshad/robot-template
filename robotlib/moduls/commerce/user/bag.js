@@ -72,9 +72,9 @@ var show = function(userid, bag,  option)
 {
     var detailArr = [];
     var query = fn.mstr.commerce.query;
-    var fn_submit   = query['bag'] + '-' + query['user'] + '-' + query['submitbag'];
-    var fn_clear    = query['bag'] + '-' + query['user'] + '-' + query['clearbag'];
-    var fn_close    = query['bag'] + '-' + query['close'];
+    var fn_submit   = query['commerce'] + '-' + query['user'] + '-' + query['submitbag'];
+    var fn_clear    = query['commerce'] + '-' + query['user'] + '-' + query['clearbag'];
+    var fn_close    = query['commerce'] + '-' + query['close'];
 
     //controller btns
     detailArr.push([ 
@@ -83,9 +83,9 @@ var show = function(userid, bag,  option)
     ].reverse());
 
     //personal info 
-    var fn_address = query['bag'] + '-' + query['user'] + '-' + query['address'];
-    var fn_phone = query['bag'] + '-' + query['user'] + '-' + query['phone'];
-    var fn_showPostalInfo = query['bag'] + '-' + query['user'] + '-' + query['postalInfo'];
+    var fn_address = query['commerce'] + '-' + query['user'] + '-' + query['address'];
+    var fn_phone = query['commerce'] + '-' + query['user'] + '-' + query['phone'];
+    var fn_showPostalInfo = query['commerce'] + '-' + query['user'] + '-' + query['postalInfo'];
 
     detailArr.push([ 
         {'text': '🏠' + 'آدرس', 'callback_data': fn_address},

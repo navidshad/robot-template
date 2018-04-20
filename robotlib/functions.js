@@ -1,4 +1,7 @@
 //system
+require('datejs');
+Date.i18n.setLanguage('fa-IR');
+
 var fs                  = require('fs');
 var request             = require('request');
 var path                = require('path');
