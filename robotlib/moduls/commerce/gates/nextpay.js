@@ -42,7 +42,7 @@ var getPaylink = async function(fnumber, amount)
     else session.amount = amount;
 
     //get nextpay api key
-    var nextpayapikey = fn.getModuleData(fn.mstr.bag['modulename'], 'nextpayapikey');
+    var nextpayapikey = fn.getModuleData(fn.mstr.commerce['modulename'], 'nextpayapikey');
     nextpayapikey = (nextpayapikey) ? nextpayapikey.value : '...';
 
     //get new token

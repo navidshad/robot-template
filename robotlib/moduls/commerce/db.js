@@ -32,6 +32,34 @@ var factorSchema = new Schema({
     'ispaid'    : Boolean,
 });
 
+var couponSchema = new Schema({
+    code        : String,
+    userid      : Number,
+
+    startDate   : Date,
+    endDate     : Date,
+    consumption : {type:Number, default:1},
+
+    discountmode: {type:String, default:'amount'},
+    amount      : Number,
+    percent     : Number,
+});
+
+var couponGenaratorSchema = new Schema({
+    name        : String,
+    allowEdit   : {type:Boolean, default: true},
+    status      : {type:Boolean, default: false},
+
+    mode       : {type:String, default:'buy'},
+    discountmode: {type:String, default:'amount'},
+    amount      : {type:Number, default:5000},
+    percent     : Number,
+
+    days        : {type:Number, default:1},
+    hours       : {type:Number, default:0},
+    consumption : {type:Number, default:1},
+});
+
 var nextpaySchema = new Schema({
     'amount'    : Number,
     'order_id'  : Number,
@@ -43,7 +71,11 @@ var fNumberSchema = new Schema({
     'last': {'type': Number, default: 100}
 })
 
-module.exports.bag     = mongoose.model('bags', bagSchema);
-module.exports.factor  = mongoose.model('factors', factorSchema);
+module.exports.bag      = mongoose.model('bags', bagSchema);
+module.exports.factor   = mongoose.model('factors', factorSchema);
 module.exports.fnumber  = mongoose.model('fNumber', fNumberSchema);
+
+module.exports.coupon  = mongoose.model('coupons', couponSchema);
+module.exports.generator  = mongoose.model('couponGenarators', couponGenaratorSchema);
+
 module.exports.nextpay  = mongoose.model('nextpay', nextpaySchema);

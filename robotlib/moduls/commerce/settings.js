@@ -1,5 +1,5 @@
 var show = function(userid, newcat){
-    var mName = fn.mstr.bag['modulename'];
+    var mName = fn.mstr.commerce['modulename'];
     var activationtext = '',
     moduleOption = fn.getModuleOption(mName,  {'create': true});
     
@@ -8,7 +8,7 @@ var show = function(userid, newcat){
     //defin new category
     if(newcat) {
         moduleOption.option.category = newcat;
-        moduleOption.option.buttons = fn.convertObjectToArray(fn.mstr.bag.btns_user);
+        moduleOption.option.buttons = fn.convertObjectToArray(fn.mstr.commerce.btns_user);
         global.robot.config.moduleOptions[moduleOption.index] = moduleOption.option;
         //save configuration
         global.robot.save();
@@ -23,9 +23,9 @@ var show = function(userid, newcat){
         fn.mstr['category'].asoption, 
         fn.str.activation[activationtext],
         fn.str['editOrder'],
-        fn.mstr.bag.btns['nextpay'],
+        fn.mstr.commerce.btns['nextpay'],
     ],
-    back = fn.mstr.bag['back'],
+    back = fn.mstr.commerce['back'],
     remarkup = fn.generateKeyboard({'custom': true, 'grid':true, 'list': list, 'back':back}, false);
     
     var detailMess = 'اطلاعات افزونه' + '\n'
@@ -36,7 +36,7 @@ var show = function(userid, newcat){
     + 'کلید api نکست پی: ' + nextpayapikey;
 
     global.robot.bot.sendMessage(userid, detailMess, remarkup);
-    fn.userOper.setSection(userid,  fn.mstr.bag['settings'], true);    
+    fn.userOper.setSection(userid,  fn.mstr.commerce['settings'], true);    
 }
 
 var category = function (message, speratedQuery){
@@ -52,12 +52,12 @@ var category = function (message, speratedQuery){
 }
 
 var routting = function(message, speratedSection){
-    var mName = fn.mstr.bag['modulename'];
+    var mName = fn.mstr.commerce['modulename'];
     var text = message.text;
     var last = speratedSection.length-1;
 
     //show bag setting
-    if (text === fn.mstr.bag['settings'] || text === fn.mstr.bag['back'])
+    if (text === fn.mstr.commerce['settings'] || text === fn.mstr.commerce['back'])
         show(message.from.id);
 
     //active or deactive
@@ -83,7 +83,7 @@ var routting = function(message, speratedSection){
     //change order
     else if (text === fn.str['editOrder']){
         var mess = fn.str['editOrderMess'];
-        var remarkup = fn.generateKeyboard({'section': fn.mstr.bag['backsetting']}, true);
+        var remarkup = fn.generateKeyboard({'section': fn.mstr.commerce['backsetting']}, true);
         global.robot.bot.sendMessage(message.from.id, mess, remarkup);
         fn.userOper.setSection(message.from.id,  fn.str['editOrder'], true);
     }
@@ -91,7 +91,7 @@ var routting = function(message, speratedSection){
         var order = parseInt(text);
         if(!typeof order === 'number') global.robot.bot.sendMessage(message.from.id, fn.str['editOrder']);
 
-        var moduleOption = fn.getModuleOption(fn.mstr.bag['modulename']);
+        var moduleOption = fn.getModuleOption(fn.mstr.commerce['modulename']);
         global.robot.config.moduleOptions[moduleOption.index].btn_order = order;
         //save configuration
         global.robot.save();
@@ -99,14 +99,14 @@ var routting = function(message, speratedSection){
     }
 
     //get nextpy api key
-    else if (text === fn.mstr.bag.btns['nextpay'])
+    else if (text === fn.mstr.commerce.btns['nextpay'])
     {
-        var mess = fn.mstr.bag.mess['getnextpayapikey'];
-        var markup = fn.generateKeyboard({'section': fn.mstr.bag['backsetting']}, true);
+        var mess = fn.mstr.commerce.mess['getnextpayapikey'];
+        var markup = fn.generateKeyboard({'section': fn.mstr.commerce['backsetting']}, true);
         global.robot.bot.sendMessage(message.from.id, mess, markup);
-        fn.userOper.setSection(message.from.id,  fn.mstr.bag.btns['nextpay'], true);
+        fn.userOper.setSection(message.from.id,  fn.mstr.commerce.btns['nextpay'], true);
     }
-    else if(speratedSection[last] === fn.mstr.bag.btns['nextpay'])
+    else if(speratedSection[last] === fn.mstr.commerce.btns['nextpay'])
     {
         var nextpayapikey = text;
         var datas = [{'name': 'nextpayapikey', 'value': nextpayapikey}];

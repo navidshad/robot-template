@@ -65,13 +65,13 @@ var addToBag = async function(userid, type, productid, datas){
     }
 
     var result = await additem(userid, item, {'showbag':true}).then();
-    if(!result.status) global.robot.bot.sendMessage(userid, fn.mstr.bag.mess['alreadyAdded']);
+    if(!result.status) global.robot.bot.sendMessage(userid, fn.mstr.commerce.mess['alreadyAdded']);
 }
 
 var show = function(userid, bag,  option)
 {
     var detailArr = [];
-    var query = fn.mstr.bag.query;
+    var query = fn.mstr.commerce.query;
     var fn_submit   = query['bag'] + '-' + query['user'] + '-' + query['submitbag'];
     var fn_clear    = query['bag'] + '-' + query['user'] + '-' + query['clearbag'];
     var fn_close    = query['bag'] + '-' + query['close'];
@@ -111,7 +111,7 @@ var show = function(userid, bag,  option)
     'ـــــــــــــــــ' + '\n' +
     'جمع قیمت: ' + total + ' تومان' + '\n' +
     'ـــــــــــــــــ</code>' + '\n' +
-    fn.mstr.bag.mess['editbag'];
+    fn.mstr.commerce.mess['editbag'];
 
     var showBag = true;
     if(option && option.show != null) showBag = option.show;

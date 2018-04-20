@@ -1,20 +1,10 @@
 var checkQuery = function(option){
 
     var btnsArr  = [ 
-        fn.mstr.bag.query['bag']
+        fn.mstr.commerce.query['commerce']
     ];
 
     var result = {}
-    //check text message
-    if(option.text) btnsArr.forEach(btn => { 
-        if(option.text === btn) 
-        {
-            result.status = true; 
-            result.button = btn;
-            result.routting = routting;
-        }
-    });
-
     //check seperate section
     if(option.speratedSection){
         option.speratedSection.forEach(section => {
@@ -33,16 +23,22 @@ var checkQuery = function(option){
     return result;
 }
 
-var routting = function(query, speratedQuery, user){
+var routting = function(query, speratedQuery, user)
+{
     var last = speratedQuery.length-1;
-    var botindex = query.botindex;
+    var qt = fn.mstr.commerce.query;
 
     //remove query message
-    if(speratedQuery[2] !== fn.mstr.bag.query['itemsdetail'] && speratedQuery[2] !== fn.mstr.bag.query['postalInfo']) 
+    if(speratedQuery[2] !== qt['itemsdetail'] && speratedQuery[2] !== qt['postalInfo']) 
         global.robot.bot.deleteMessage(query.message.chat.id, query.message.message_id);
 
+    //admin generator
+    if (speratedQuery[2] === qt['generator']) 
+        fn.m.commerce.couponGenerator.query(query, speratedQuery);
+
     //if user
-    if(speratedQuery[1] === fn.mstr.bag.query['user']) fn.m.bag.user.query(query, speratedQuery, user);
+    if(speratedQuery[1] === qt['user']) 
+        fn.m.commerce.user.query(query, speratedQuery, user);
 }
 
 module.exports = { checkQuery, routting }

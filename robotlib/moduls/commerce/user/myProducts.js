@@ -3,7 +3,7 @@ var show = async function(userid,  injectedText){
     var botusername = global.robot.username;
     var titles = [];
     
-    var bag = await fn.m.bag.user.bag.get(userid);
+    var bag = await fn.m.commerce.user.bag.get(userid);
 
     if(bag.boughtItems == 0) {
         global.robot.bot.sendMessage(userid, 'اکنون هیچ خریدی برای شما ثبت نشده است.');
@@ -14,7 +14,7 @@ var show = async function(userid,  injectedText){
         titles.push(item.name);
     });
     
-    var mess = (injectedText) ? injectedText : fn.mstr.bag.btns_user['myProducts'];
+    var mess = (injectedText) ? injectedText : fn.mstr.commerce.btns_user['myProducts'];
     var back = fn.mstr.category['backtoParent'];
     var remarkup = global.fn.generateKeyboard({'custom': true, 'grid':false, 'list': titles, 'back':back}, false);
     global.robot.bot.sendMessage(userid, mess, remarkup);
@@ -24,7 +24,7 @@ var show = async function(userid,  injectedText){
 var showProduct = async function(message, user)
 {
     var name = message.text;
-    var bag = await fn.m.bag.user.bag.get(message.from.id);
+    var bag = await fn.m.commerce.user.bag.get(message.from.id);
     var boughtItem = null;
     bag.boughtItems.forEach(item => {
         if(item.name === name) boughtItem = item;
@@ -41,7 +41,7 @@ var routting = async function(message, speratedSection, user){
     var text = message.text;
 
     //show list
-    if(text === fn.mstr.bag.btns_user['myProducts']) show(message.from.id);
+    if(text === fn.mstr.commerce.btns_user['myProducts']) show(message.from.id);
 
     //show a product
     else showProduct(message, user);

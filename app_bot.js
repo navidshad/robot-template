@@ -12,8 +12,10 @@ var settingUp = async function()
     }
     
     ///must be declear first
-    global.fn = {};
+    events = require('events');
+    global.fn = { eventEmitter: new events.EventEmitter() };
     global.mRoutes = [];
+
     await getMstrs().then();
     await getModuls().then();
     await getFunctions().then();
@@ -98,6 +100,7 @@ var getDbModels = function(){
             if(e) reject(e);
             //console.log(list);
             list.forEach(db => {
+                //console.log(db)
                 var model = require(db);
                 global.fn.db = extend(global.fn.db, model);
             });

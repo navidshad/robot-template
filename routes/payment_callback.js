@@ -22,11 +22,11 @@ router.post('/nextpay', async (req, res, next) =>
     }
 
     //get nextpay api key
-    var nextpayapikey = fn.getModuleData(fn.mstr.bag['modulename'], 'nextpayapikey');
+    var nextpayapikey = fn.getModuleData(fn.mstr.commerce['modulename'], 'nextpayapikey');
     nextpayapikey = (nextpayapikey) ? nextpayapikey.value : '...';
 
     //validate purchase
-    var validate = await global.fn.m.bag.gates.nextpay
+    var validate = await global.fn.m.commerce.gates.nextpay
     .VerifyPayment(body.trans_id, body.order_id, nextpaySession.amount, nextpayapikey);
     console.log('validate', validate);
     var code = validate.PaymentVerificationResult.code; 
@@ -39,7 +39,7 @@ router.post('/nextpay', async (req, res, next) =>
     
     //seccess payment
     var factor = await global.fn.db.factor.findOne({'number':body.order_id}).exec().then();
-    global.fn.m.bag.user.factor.getPaied(factor.userid, factor.id);
+    global.fn.m.commerce.user.factor.getPaied(factor.userid, factor.id);
     res.send('پرداخت با موفقیت انجام شد.');
 });
 

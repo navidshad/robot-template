@@ -1,11 +1,11 @@
-var bag = require('./bagshop/bag');
-var factor = require('./bagshop/factor');
-var myProducts = require('./bagshop/myProducts');
+var bag = require('./user/bag');
+var factor = require('./user/factor');
+var myProducts = require('./user/myProducts');
 
 var checkRoute = function(option){
-    var mName = fn.mstr.bag['modulename'];
+    var mName = fn.mstr.commerce['modulename'];
     var btnsArr  = [];
-    Object.values(fn.mstr.bag.btns_user).map((value) => { btnsArr.push(value); });
+    Object.values(fn.mstr.commerce.btns_user).map((value) => { btnsArr.push(value); });
     var result = {}
 
     //check text message
@@ -38,7 +38,7 @@ var routting = async function(message, speratedSection, user){
     var last = speratedSection.length-1;
     var checkRouteText = checkRoute({'text':text});
     var checkRouteSection = checkRoute({'speratedSection':speratedSection});
-    var userButtons = fn.mstr.bag.btns_user;
+    var userButtons = fn.mstr.commerce.btns_user;
 
     //ask to show bag
     if(checkRouteText.button === userButtons['bagshop']) {
@@ -55,7 +55,7 @@ var routting = async function(message, speratedSection, user){
         myProducts.routting(message, speratedSection, user);
 
     //get address
-    else if (speratedSection[last] === fn.mstr.bag.mess['getAddress']){
+    else if (speratedSection[last] === fn.mstr.commerce.mess['getAddress']){
         var userbag = await bag.get(message.from.id);
         userbag.address = text;
         await userbag.save().then();
@@ -63,7 +63,7 @@ var routting = async function(message, speratedSection, user){
     }
 
     //get phone
-    else if (speratedSection[last] === fn.mstr.bag.mess['getPhone'] && message.contact){
+    else if (speratedSection[last] === fn.mstr.commerce.mess['getPhone'] && message.contact){
         var userbag = await bag.get(message.from.id);
         userbag.phone = message.contact.phone_number;
         await userbag.save().then();
@@ -78,7 +78,7 @@ var routting = async function(message, speratedSection, user){
 var query = async function(query, speratedQuery, user){
     var last = speratedQuery.length-1;
     var botusername = global.robot.username;
-    var querytag = fn.mstr.bag.query;
+    var querytag = fn.mstr.commerce.query;
 
     //clear bag
     if(speratedQuery[2] === querytag['clearbag']) bag.clear(query.from.id);
@@ -99,8 +99,8 @@ var query = async function(query, speratedQuery, user){
     //get address
     else if(speratedQuery[2] === querytag['address']) 
     {
-        var mess = fn.mstr.bag.mess['getAddress'];
-        var nSection = fn.str['mainMenu'] + '/' + fn.mstr.bag.btns_user['bagshop'] + '/' + mess;
+        var mess = fn.mstr.commerce.mess['getAddress'];
+        var nSection = fn.str['mainMenu'] + '/' + fn.mstr.commerce.btns_user['bagshop'] + '/' + mess;
         var markup = fn.generateKeyboard({'section' : fn.str['backToMenu']}, true);
 
         fn.userOper.setSection(query.from.id, nSection, false);
@@ -113,8 +113,8 @@ var query = async function(query, speratedQuery, user){
         var list = [
             {'text':'📱 ' + 'ارسال شماره موبایل', 'request_contact':true}
         ]
-        var mess = fn.mstr.bag.mess['getPhone'];
-        var nSection = fn.str['mainMenu'] + '/' + fn.mstr.bag.btns_user['bagshop'] + '/' + mess;
+        var mess = fn.mstr.commerce.mess['getPhone'];
+        var nSection = fn.str['mainMenu'] + '/' + fn.mstr.commerce.btns_user['bagshop'] + '/' + mess;
         var markup = fn.generateKeyboard({'custom': true, 'grid':true, 'list': list}, false);
         fn.userOper.setSection(query.from.id, nSection, false);
         global.robot.bot.sendMessage(query.from.id, mess, markup);

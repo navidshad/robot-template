@@ -1,15 +1,16 @@
 //system
+var fs                  = require('fs');
+var request             = require('request');
+var path                = require('path');
+var request             = require('request');
+
 var db                  = require('./base/db');
 var str                 = require('./str/staticStrings.js');
 var telegramBot         = require('node-telegram-bot-api');
 var generateKeyboard    = require('./base/generateKeyboard.js');
 var time                = require('../moduls/time.js');
-var fs                  = require('fs');
-var request             = require('request');
-var path                = require('path');
 var commands            = require('./routting/commands');
 var freeStrings         = require('./routting/freeStrings');
-var request             = require('request');
 
 //user
 var userOper        = require('./user/userOperations.js');
@@ -70,7 +71,8 @@ var checkValidMessage = function(text, custom){
     return isvalid;
 }
 
-var saveTelegramFile = async function(id, savePath, callback){
+var saveTelegramFile = async function(id, savePath, callback)
+{
     var link = await global.robot.bot.getFileLink(id).then();
     var stream = fs.createWriteStream(savePath);
     stream.on('close', (e) =>{
@@ -82,14 +84,16 @@ var saveTelegramFile = async function(id, savePath, callback){
     request(link).pipe(stream);
 }
 
-var removeFile = function(path, callback){
+var removeFile = function(path, callback)
+{
     fs.unlink(path, (err) => { 
         if(err) console.log(err);
         if(callback) callback(true);
     });
 }
 
-var getMenuItems = function(name, callback){
+var getMenuItems = function(name, callback)
+{
     var items = [];
     var noitem = false;
     fn.db.post.find({'category': name, 'publish': true}).limit(20).exec((e, postlist) => {
@@ -140,7 +144,8 @@ var getMenuItems = function(name, callback){
     });
 }
 
-var getMainMenuItems = function(){
+var getMainMenuItems = function()
+{
     return new Promise((resolve, reject) => {
         getMenuItems(fn.mstr.category['maincategory'], (items) => { 
             global.robot.menuItems = (items) ? items : [];
@@ -150,7 +155,8 @@ var getMainMenuItems = function(){
     })
 }
 
-var queryStringMaker = function(parameter, list, condition){
+var queryStringMaker = function(parameter, list, condition)
+{
     var query = '';
     var count = list.length;
     list.forEach(function(element, i) {
@@ -160,12 +166,14 @@ var queryStringMaker = function(parameter, list, condition){
     return query;
 }
 
-var updateBotContent = function(callback){
+var updateBotContent = function(callback)
+{
     global.fn.m.category.get(() => { getMainMenuItems(); })
     if(callback) callback();
 }
 
-var getModuleOption = function(mName, option){
+var getModuleOption = function(mName, option)
+{
     var moduleOption = null;
     var added = false;
 
@@ -195,7 +203,8 @@ var getModuleOption = function(mName, option){
     return moduleOption;
 }
 
-var getModuleData = function(mName, dName){
+var getModuleData = function(mName, dName)
+{
     var data = null;
     //get module detail and data
     var moduleOption = getModuleOption(mName, {'create': true});
@@ -206,7 +215,8 @@ var getModuleData = function(mName, dName){
     return data;
 }
 
-var putDatasToModuleOption = function (mName, datas, setting) {
+var putDatasToModuleOption = function (mName, datas, setting) 
+{
     //get module details
     var ModuleOption = getModuleOption(mName, {'create': true, 'setting': setting});
     var mdatas = ModuleOption.option.datas;
@@ -235,7 +245,8 @@ var putDatasToModuleOption = function (mName, datas, setting) {
     return ModuleOption;
 }
 
-var getModuleRouteMethods = function(mName){
+var getModuleRouteMethods = function(mName)
+{
     //define query route
     var mRouteMethods = { 'userRoute': false };
     global.mRoutes.forEach(route => {
@@ -253,7 +264,7 @@ module.exports = {
     db, time, str, telegramBot, generateKeyboard, convertObjectToArray, commands,
     getMainMenuItems, getMenuItems, converAMenuItemsToArray, queryStringMaker,
     checkValidMessage, saveTelegramFile, removeFile, freeStrings,
-    updateBotContent, request, path, fs,
+    updateBotContent, request, path, fs, 
     //user
     userOper, menu,
     //admin

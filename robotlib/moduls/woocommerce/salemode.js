@@ -186,7 +186,7 @@ var query = async function(query, speratedQuery, user, mName)
             'type'  :mName,
             'data'  :datas,
         }
-        fn.m.bag.user.bag.additem(userid, productItem, {'showbag':true});
+        fn.m.commerce.user.bag.additem(userid, productItem, {'showbag':true});
     }
 
 }

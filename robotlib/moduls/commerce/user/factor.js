@@ -11,12 +11,12 @@ var show = async function(userid, injectedText)
     }
 
     factors.forEach(element => {
-        var sym = (element.ispaid) ? fn.mstr.bag['f_peied'] : fn.mstr.bag['f_notpaid'];
+        var sym = (element.ispaid) ? fn.mstr.commerce['f_peied'] : fn.mstr.commerce['f_notpaid'];
         titles.push(sym + ' - ' + element.number);
     });
     
-    fn.userOper.setSection(userid,  fn.mstr.bag.btns_user['factor'], true);  
-    var mess = (injectedText) ? injectedText : fn.mstr.bag.btns_user['factor'];
+    fn.userOper.setSection(userid,  fn.mstr.commerce.btns_user['factor'], true);  
+    var mess = (injectedText) ? injectedText : fn.mstr.commerce.btns_user['factor'];
     var back = fn.mstr.category['backtoParent'];
     var remarkup = global.fn.generateKeyboard({'custom': true, 'grid':false, 'list': titles, 'back':back}, false);
     global.robot.bot.sendMessage(userid, mess, remarkup);
@@ -99,7 +99,7 @@ var create = async function(userid,  items, optionPram)
         'amount'    : totalAmount,
     }).save((e, factor) => {
         if(e) console.log(e);
-        fn.m.bag.user.bag.clear(userid);
+        fn.m.commerce.user.bag.clear(userid);
         showFactor(userid,  {'factor': factor});
     });
 }
@@ -113,17 +113,20 @@ var getPaied = async function(userid,  fid)
 
     //add product to myProduct array
     console.log('add product to myProduct array');
-    var bag = await fn.m.bag.user.bag.get(userid);
+    var bag = await fn.m.commerce.user.bag.get(userid);
     factor.products.forEach(product => { bag.boughtItems.push(product) });
     await bag.save().then();
 
     //show factor
     showFactor(userid,  {'factor': factor});
 
+    //emite success peyment
+    fn.eventEmitter.emit('successPeyment', factor);
+
     // //send payment messages
     // factor.products.forEach(element => {
     //     //peform specyfic action after peyment according to product type
-    //     var types = fn.mstr.bag.factorTypes;
+    //     var types = fn.mstr.commerce.factorTypes;
     //     //bot subscription
     //     if(element.type === types['post']){
 
@@ -175,7 +178,7 @@ var showFactor = async function(userid,  option)
     if(!factor) return;
     
     //peyment
-    var query = fn.mstr.bag.query;
+    var query = fn.mstr.commerce.query;
     var peyLink = 'https://nextpay.ir/';
     var fn_detail = query['bag'] + '-' + query['user'] + '-' + query['itemsdetail'] + '-' + option.factor.id;
     var detailArr = [];
@@ -201,7 +204,7 @@ var showFactor = async function(userid,  option)
         ]);
 
         //gates buttons
-        var nextpaylink = await fn.m.bag.gates.nextpay.getPaylink(factor.number, factor.amount);
+        var nextpaylink = await fn.m.commerce.gates.nextpay.getPaylink(factor.number, factor.amount);
         detailArr.push([{'text': 'پرداخت با نکست پی', 'url': nextpaylink}]);
     }
     
@@ -217,7 +220,7 @@ var routting = function(message, speratedSection, user)
     var text = message.text;
 
     //show list
-    if(text === fn.mstr.bag.btns_user['factor']) show(message.from.id);
+    if(text === fn.mstr.commerce.btns_user['factor']) show(message.from.id);
 
     //show a factor
     else {
@@ -228,11 +231,11 @@ var routting = function(message, speratedSection, user)
             
         }
         
-        if(!fnumber) {show(message.from.id,  fn.mstr.bag.mess['notafactor']); return;}
+        if(!fnumber) {show(message.from.id,  fn.mstr.commerce.mess['notafactor']); return;}
 
         fn.db.factor.findOne({'number': fnumber}).exec((e, factor) => {
             if(factor) showFactor(message.from.id,  {'factor': factor});
-            else show(message.from.id,  fn.mstr.bag.mess['notafactor']);
+            else show(message.from.id,  fn.mstr.commerce.mess['notafactor']);
         });
     }
 }

@@ -1,10 +1,10 @@
-var name = 'bag';
+var name = 'commerce';
 
 var checkRoute = function(option){
 
     var btnsArr  = [ 
-        fn.mstr.bag['name'],
-        fn.mstr.bag['back']
+        fn.mstr.commerce['name'],
+        fn.mstr.commerce['back']
     ];
 
     var result = {}
@@ -40,23 +40,24 @@ var show = async function(userid)
 {
     var botusername = global.robot.username;    
     var titles = [];
-    titles.push(fn.mstr.bag['settings']);
+    titles.push(fn.mstr.commerce['settings']);
+    titles.push(fn.mstr.commerce.btns['couponGenerators']);
 
     var factors = await fn.db.factor.find({'bot':botusername, 'ispied': true})
     .sort('-_id').exec().then();
-    
+
     factors.forEach(function(item) {
-        var readedSym = fn.mstr.bag.readSym[0];
-        if(item.readed)  readedSym = fn.mstr.bag.readSym[1];
+        var readedSym = fn.mstr.commerce.readSym[0];
+        if(item.readed)  readedSym = fn.mstr.commerce.readSym[1];
         var title = 'ـ ' + readedSym + ' ' + item.username + ' | ' + item.date;
         titles.push(title);
     }, this);
 
     //show list
     if(titles.length > 0){
-        var markup = fn.generateKeyboard({custom:true, list: titles, back:fn.str.goToAdmin['back']}, false);
-        global.robot.bot.sendMessage(userid, fn.mstr['bag'].name, markup);
-        fn.userOper.setSection(userid, fn.mstr['bag'].name, true);
+        var markup = fn.generateKeyboard({custom:true, list:titles, grid:true, back:fn.str.goToAdmin['back']}, false);
+        global.robot.bot.sendMessage(userid, fn.mstr[name].name, markup);
+        fn.userOper.setSection(userid, fn.mstr[name].name, true);
     }
     else global.robot.bot.sendMessage(userid, 'هنوز هیچ فاکتوری ثبت نشده است.');
 }
@@ -72,8 +73,8 @@ var showFactor = function(message){
     fn.db.bag.findOne({'date':date, 'bot':botusername}, function(ee, item){
         if(item){
             var detailArr = [];
-            var fn_answer = fn.mstr.bag.query['bag'] + '-' + fn.mstr.bag.query['answer'] + '-' + item._id;
-            var fn_delete = fn.mstr.bag.query['bag'] + '-' + fn.mstr.bag.query['delete'] + '-' + item._id;
+            var fn_answer = fn.mstr.commerce.query['bag'] + '-' + fn.mstr.commerce.query['answer'] + '-' + item._id;
+            var fn_delete = fn.mstr.commerce.query['bag'] + '-' + fn.mstr.commerce.query['delete'] + '-' + item._id;
             detailArr.push([ 
                 {'text': 'ارسال پاسخ', 'callback_data': fn_answer},
                 {'text': 'حذف', 'callback_data': fn_delete}
@@ -89,26 +90,32 @@ var showFactor = function(message){
     });
 }
 
-var setting = require('./settings');
-var user    = require('./user');
-var nextpay = ''; //require('./nextpay/nextpay');
-var query = require('./query');
-
-var routting = function(message, speratedSection){
+var routting = function(message, speratedSection, user)
+{
     var text = message.text;
     var last = speratedSection.length-1;
-
+    var couponGenerators = fn.mstr.commerce.btns['couponGenerators'];
+    
     //show factor list
-    if(text === fn.mstr['bag'].name || text === fn.mstr['bag'].back)
+    if(text === fn.mstr[name].name || text === fn.mstr[name].back)
         show(message.from.id);
     
     //setting
-    else if(text === fn.mstr['bag'].settings || speratedSection[3] === fn.mstr['bag'].settings) 
+    else if(text === fn.mstr[name].settings || speratedSection[3] === fn.mstr[name].settings) 
         setting.routting(message, speratedSection);
+
+    //generators
+    else if(text === couponGenerators || speratedSection[3] === couponGenerators) 
+        couponGenerator.routting(message, speratedSection);
 }
 
+var setting = require('./settings');
+var user    = require('./user');
+var query   = require('./query');
+var coupon  = require('./admin/coupon');
+var couponGenerator = require('./admin/couponGenarator');
 var gates = {
     'nextpay': require('./gates/nextpay'),
 }
 
-module.exports = { name, checkRoute, routting, query, show, user, nextpay, gates }
+module.exports = { name, checkRoute, routting, query, show, user, gates, couponGenerator }
