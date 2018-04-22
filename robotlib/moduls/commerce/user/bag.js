@@ -157,7 +157,13 @@ var show = async function(userid, bag,  optionparam)
     //perform coupon
     var totalPerDis = 0;
     if(bag.cid)
+    {
         totalPerDis = await fn.m.commerce.coupon.performCoupon(total, bag.cid);
+        if(totalPerDis == 0) {
+            bag.cid = null;
+            bag.save();
+        }
+    }
 
 
     //message
@@ -214,7 +220,7 @@ var useCoupon = async function(userid, cid)
 {
     var userbag = await get(userid);
     userbag.cid = cid;
-    userbag.save().then();
+    await userbag.save().then();
     show(userid, userbag);
 }
 

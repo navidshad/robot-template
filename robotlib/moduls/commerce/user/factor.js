@@ -85,7 +85,10 @@ var create = async function(userid,  items, optionPram)
     //perform coupon
     var totalPerDis = 0;
     if(option.coupon)
+    {
         totalPerDis = await fn.m.commerce.coupon.performCoupon(totalAmount, option.coupon);
+        fn.m.commerce.coupon.removeCoupon(option.coupon);
+    }
     
     //prepare messag
     var mess = '🛍 ' + 'فاکتور شماره ' + newNumber + '\n' +

@@ -31,6 +31,10 @@ var getcoupon = async function(cid)
     var coupon = await fn.db.coupon.findOne({'_id':cid}).exec().then();
     return coupon;
 }
+var removeCoupon = function(cid)
+{
+    fn.db.coupon.remove({'_id':cid}).exec();
+}
 var getusercoupons = async function(userid)
 {
     var coupons = await fn.db.coupon.find({'userid':userid}).exec().then();
@@ -47,10 +51,11 @@ var getCouponsDetail = function(coupons)
     });
     return couponsText;
 }
-
 var performCoupon = async function(total, cid)
 {
     var coupon = await getcoupon(cid);
+    if(!coupon) return 0;
+
     var newtotal = 0;
     //amount
     if(coupon.discountmode == 'amount')
@@ -69,4 +74,4 @@ var performCoupon = async function(total, cid)
 }
 //#endregion
 
-module.exports = {  getusercoupons, getCouponsDetail, getcoupon, performCoupon }
+module.exports = {  getusercoupons, getCouponsDetail, getcoupon, removeCoupon, performCoupon }
