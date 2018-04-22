@@ -81,13 +81,19 @@ var create = async function(userid,  items, optionPram)
         totalAmount += item.price;
         titles += '\n' + item.name;
     });
+
+    //perform coupon
+    var totalPerDis = 0;
+    if(option.coupon)
+        totalPerDis = await fn.m.commerce.coupon.performCoupon(totalAmount, option.coupon);
     
     //prepare messag
     var mess = '🛍 ' + 'فاکتور شماره ' + newNumber + '\n' +
     '<code>ـــــــــــــــــ' +
     titles + '\n' +
     'ـــــــــــــــــ' + '\n' +
-    'جمع قیمت: ' + totalAmount + ' تومان' + '</code>';
+    'جمع قیمت: ' + totalAmount + ' تومان' + '</code> \n';
+    mess += (totalPerDis) ? '💶 ' + 'تخفیف: ' + totalPerDis + ' تومان' : '';
 
     //create
     var newFactor = new fn.db.factor({
@@ -97,6 +103,7 @@ var create = async function(userid,  items, optionPram)
         'desc'      : mess,
         'products'  : updatedBagitems,
         'amount'    : totalAmount,
+        'discount'  : totalPerDis,
     }).save((e, factor) => {
         if(e) console.log(e);
         fn.m.commerce.user.bag.clear(userid);
@@ -204,7 +211,8 @@ var showFactor = async function(userid,  option)
         ]);
 
         //gates buttons
-        var nextpaylink = await fn.m.commerce.gates.nextpay.getPaylink(factor.number, factor.amount);
+        var price = (factor.discount) ? factor.discount : factor.amount;
+        var nextpaylink = await fn.m.commerce.gates.nextpay.getPaylink(factor.number, price);
         detailArr.push([{'text': 'پرداخت با نکست پی', 'url': nextpaylink}]);
     }
     
@@ -268,4 +276,5 @@ global.fn.eventEmitter.on('successPeyment', async (factor) =>
     //emit after
     global.fn.eventEmitter.emit('affterSuccessPeyment', factor);
 });
+
 module.exports = { routting, show, showFactor, create, showfactorItems, getPaied }

@@ -75,10 +75,12 @@ var routting = async function(message, speratedSection, user){
     }
 }
 
-var query = async function(query, speratedQuery, user){
+var query = async function(query, speratedQuery, user)
+{
     var last = speratedQuery.length-1;
     var botusername = global.robot.username;
     var querytag = fn.mstr.commerce.query;
+    var userid = query.from.id;
 
     //clear bag
     if(speratedQuery[2] === querytag['clearbag']) bag.clear(query.from.id);
@@ -91,10 +93,9 @@ var query = async function(query, speratedQuery, user){
     }
 
     //submit
-    else if(speratedQuery[2] === querytag['submitbag']) {
-        var userBag = await bag.get(user.userid);
-        factor.create(query.from.id, userBag.items);
-    }
+    else if(speratedQuery[2] === querytag['submitbag'])
+        bag.submitBag(user.userid);
+
 
     //get address
     else if(speratedQuery[2] === querytag['address']) 
@@ -139,11 +140,32 @@ var query = async function(query, speratedQuery, user){
     else if(speratedQuery[2] === querytag['getpaid']) factor.getPaied(query.from.id,  speratedQuery[last]);
 
     //remove factor
-    if(speratedQuery[2] === querytag['deletefactor']) {
+    else if(speratedQuery[2] === querytag['deletefactor']) 
+    {
         fn.db.factor.remove({'_id':speratedQuery[last]}).exec((e) => {
             if(e) console.log(e);
             factor.show(query.from.id,  fn.str['seccess']);
         });
+    }
+
+    //show coupon list
+    else if (speratedQuery[2] === querytag['usecoupon'])
+    {
+        var userBag = await bag.get(query.from.id);
+        bag.show(userid, userBag,  {'view': 'coupons'});
+    }
+    //use a coupon
+    else if (speratedQuery[2] === querytag['coupon'])
+    {
+        var cid = speratedQuery[3];
+        bag.useCoupon(userid, cid);
+    }
+
+    //back to bag
+    else if (speratedQuery[2] === querytag['backtobag'])
+    {
+        var userBag = await bag.get(query.from.id);
+        bag.show(userid, userBag);
     }
 }
 

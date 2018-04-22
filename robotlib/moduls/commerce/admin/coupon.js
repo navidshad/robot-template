@@ -6,11 +6,11 @@ var create = async function(option)
 
     //create
     var number = Date.today().getTime() / 1000;
-    var code = `${option.userid}-${number}`;
+    var code = `u${option.userid}n${number}`;
     var coupon = new fn.db.coupon({
         'code'          : code,
         'userid'        : option.userid,
-        'startDate'     : (option.startDate)    ? option.startDate      : Date.today(),
+        'startDate'     : (option.startDate)    ? option.startDate      : new Date(),
         'endDate'       : (option.endDate)      ? option.endDate        : new Date().addDays(2),
         'consumption'   : (option.consumption)  ? option.consumption    : 1,
         'discountmode'  : (option.discountmode) ? option.discountmode   : 'amount',
@@ -23,17 +23,50 @@ var create = async function(option)
     return coupon;
 }
 
-var getbycode = function(code)
+global.fn.eventEmitter.on('createCoupon', create);
+
+//#region utilities
+var getcoupon = async function(cid)
 {
-
+    var coupon = await fn.db.coupon.findOne({'_id':cid}).exec().then();
+    return coupon;
 }
-
-var getbyuser = async function(userid)
+var getusercoupons = async function(userid)
 {
     var coupons = await fn.db.coupon.find({'userid':userid}).exec().then();
     return coupons;
 }
+var getCouponsDetail = function(coupons)
+{
+    var couponsText = '';
+    coupons.forEach((coup, i) => {
+        var num = i+1;
+        var code = coup.code;
+        var dis = (coup.discountmode == 'amount') ? coup.amount + ' تومان ' : coup.percent + ' درصد ';
+        couponsText += num + ' 🏷 ' + ', ' + dis + 'تخفیف \n'; 
+    });
+    return couponsText;
+}
 
-global.fn.eventEmitter.on('createCoupon', create);
+var performCoupon = async function(total, cid)
+{
+    var coupon = await getcoupon(cid);
+    var newtotal = 0;
+    //amount
+    if(coupon.discountmode == 'amount')
+    {
+        newtotal = total - coupon.amount;
+        if(newtotal < 100) newtotal = 100;
+    }
+    //percent
+    else if(coupon.discountmode == 'percent')
+    {
+        newtotal = total - ((total / 100) * coupon.percent);
+        if(newtotal < 100) newtotal = 100;
+    }
+    //return
+    return newtotal;
+}
+//#endregion
 
-module.exports = {  getbyuser }
+module.exports = {  getusercoupons, getCouponsDetail, getcoupon, performCoupon }

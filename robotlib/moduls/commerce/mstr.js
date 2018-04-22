@@ -33,7 +33,10 @@ module.exports.commerce = {
         commerce : 'commerce',
         admin:'a',
         user : 'u',
+        backtobag:'btb',
         submitbag: 'submitbag',
+        usecoupon:'uc',
+        coupon:'co',
         clearbag: 'clearbag',
         deletefactor: 'deletef',
         itemsdetail: 'itmdtl',
@@ -46,6 +49,7 @@ module.exports.commerce = {
 
         //generator
         generator:'gen',
+        sessions:'sessions',
         mode:'mode',
         discountmode:'discountmode',
         amount:'amount',
@@ -77,6 +81,12 @@ module.exports.commerce = {
 
     //coupon generator
     generator:{
+        sessions: {
+            'name': 'دوره',
+            'mess': 'لطفا تعداد دوره را برای این بن ارسال کنید. دوره های تعداد کار های خاصی هستند که باید اتفاق بیوفتند تا یک بن صادر شود. برای مثال تعداد دوره در حالت "خرید کردن" منظور تعداد خرید های کاربر است، یا در حالت"عضویت کانال" تعداد روز هایی است که کاربر باید در کانال عضو باشد.',
+            'type': Number,
+        },
+
         mode:{
             'name'  : 'حالت',
             'mess'  : 'لطفا حالت استخراج بن ها را انتخاب کنید.',

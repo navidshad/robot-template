@@ -118,4 +118,6 @@ var gates = {
     'nextpay': require('./gates/nextpay'),
 }
 
-module.exports = { name, checkRoute, routting, query, show, user, gates, couponGenerator }
+module.exports = { name, checkRoute, routting, query, show, user, gates, 
+    coupon, couponGenerator 
+}

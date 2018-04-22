@@ -18,6 +18,8 @@ var bagSchema = new Schema({
     'boughtItems'   : [bagitem],
     'address'       : String,
     'phone'         : Number,
+    //coupon code
+    cid             : String,
 });
   
 var factorSchema = new Schema({
@@ -27,6 +29,7 @@ var factorSchema = new Schema({
     'desc'      : String,
     'products'  : [bagitem],
     'amount'    : Number,
+    'discount'  : Number,
     'message_id': Number,
     'chatid'    : Number,
     'ispaid'    : Boolean,
@@ -54,7 +57,7 @@ var couponGenaratorSchema = new Schema({
     mode        : {type:String, default:'buy'},
     discountmode: {type:String, default:'amount'},
     amount      : {type:Number, default:5000},
-    percent     : Number,
+    percent     : {type:Number, default:10},
 
     days        : {type:Number, default:1},
     hours       : {type:Number, default:0},

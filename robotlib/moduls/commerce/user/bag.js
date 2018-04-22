@@ -48,7 +48,8 @@ var additem = async function(userid,  item, option, callback)
     });
 }
 
-var addToBag = async function(userid, type, productid, datas){
+var addToBag = async function(userid, type, productid, datas)
+{
     var bag = await get(userid);
     var product = null
     var item = {};
@@ -68,18 +69,25 @@ var addToBag = async function(userid, type, productid, datas){
     if(!result.status) global.robot.bot.sendMessage(userid, fn.mstr.commerce.mess['alreadyAdded']);
 }
 
-var show = function(userid, bag,  option)
+var submitBag = async function(userid)
+{
+    var userBag = await get(userid);
+    fn.m.commerce.user.factor.create(userid, userBag.items, {'coupon':userBag.cid});
+}
+
+var getView_main = function()
 {
     var detailArr = [];
     var query = fn.mstr.commerce.query;
     var fn_submit   = query['commerce'] + '-' + query['user'] + '-' + query['submitbag'];
+    var fn_usecoupon= query['commerce'] + '-' + query['user'] + '-' + query['usecoupon'];
     var fn_clear    = query['commerce'] + '-' + query['user'] + '-' + query['clearbag'];
     var fn_close    = query['commerce'] + '-' + query['close'];
 
     //controller btns
     detailArr.push([ 
         {'text': '✅ ' + 'ثبت و پرداخت', 'callback_data': fn_submit},
-        {'text': '❌ ' + 'تخلیه سبد', 'callback_data': fn_clear}
+        {'text': '🏷 ' + 'اعمال بن', 'callback_data': fn_usecoupon}
     ].reverse());
 
     //personal info 
@@ -94,23 +102,75 @@ var show = function(userid, bag,  option)
     ].reverse());
 
     //close
-    detailArr.push([{'text': 'بستن سبد', 'callback_data': fn_close}]);
+    detailArr.push([
+        {'text': '❌ ' + 'تخلیه سبد', 'callback_data': fn_clear},
+        {'text': 'بستن سبد', 'callback_data': fn_close}
+    ]);
+
+    return detailArr;
+}
+
+var getView_coupons = function(coupons)
+{
+    var detailArr = [];
+    var query = fn.mstr.commerce.query;
+
+    //back btn
+    var back_fn = query['commerce'] + '-' + query['user'] + '-' + query['backtobag'];
+    var back_tx = '🔙 ' + 'برگشت';
+    var bbtn  = {'text': back_tx , 'callback_data': back_fn};
+    detailArr.push([bbtn]);
+
+    coupons.forEach((coup, i) => {
+        var num = i+1;
+        var code = coup.code;
+        var dis = (coup.discountmode == 'amount') ? coup.amount + ' تومان ' : coup.percent + ' درصد ';
+        var coup_fn = query['commerce'] + '-' + query['user'] + '-' + query['coupon'] + '-' + coup.id;
+        var coup_tx = '🏷 ' + num + ', ' + dis + 'تخفیف \n';
+        var btn  = {'text': coup_tx, 'callback_data': coup_fn};
+        detailArr.push([btn]);
+    });
+    return detailArr;
+}
+
+var show = async function(userid, bag,  optionparam)
+{
+    var option = (optionparam) ? optionparam : {};
+
+    //coupons 
+    var coupons = await fn.m.commerce.coupon.getusercoupons(userid);
+    var couponsText = fn.m.commerce.coupon.getCouponsDetail(coupons);
+    
+    var detailArr = [];
+    if(option.view === 'coupons') detailArr = getView_coupons(coupons);
+    else detailArr = getView_main();
+
 
     //products
     var total = 0;
     var titles = '';
     bag.items.forEach((item, i) => {
-        titles += '\n' + item.name + ' ' + item.price + ' تومان';
+        titles += '\n 🔸 ' + item.name + ' ' + item.price + ' تومان';
         total += item.price;
     });
 
+    //perform coupon
+    var totalPerDis = 0;
+    if(bag.cid)
+        totalPerDis = await fn.m.commerce.coupon.performCoupon(total, bag.cid);
+
+
     //message
     var mess = '🛍 ' + 'سبد خرید شما' + '\n' +
-    '<code>ـــــــــــــــــ' +
+    '<code>ـــــــــــــــــ</code>' +
     titles + '\n' +
-    'ـــــــــــــــــ' + '\n' +
-    'جمع قیمت: ' + total + ' تومان' + '\n' +
-    'ـــــــــــــــــ</code>' + '\n' +
+    '<code>ـــــــــــــــــ</code>' + '\n' +
+    '💶 ' + 'جمع قیمت: ' + total + ' تومان' + '\n';
+    
+    mess += (totalPerDis) ? '💶 ' + 'اعمال تخفیف: ' + totalPerDis + ' تومان' : '';
+    mess += '\n' + '<code>ـــــــــــــــــ</code>' + '\n' +
+    'بن های تخفیف شما: ' + '\n' + couponsText +
+    '<code>ـــــــــــــــــ</code>' + '\n' +
     fn.mstr.commerce.mess['editbag'];
 
     var showBag = true;
@@ -132,11 +192,11 @@ var clear = async function(userid, botindex)
 
     //clear
     bag.items = [];
+    bag.ccode = null;
+
     //save
-    bag.save((e) => {
-        if(e) console.log(e);
-        show(userid, bag,  {'show':false});
-    });
+    await bag.save().then();
+    show(userid, bag,  {'show':false});
 }
 
 var checkBoughtItem = async function(userid, productid)
@@ -149,4 +209,13 @@ var checkBoughtItem = async function(userid, productid)
 
     return isbought;
 }
-module.exports = { show, additem, clear, get, addToBag, checkBoughtItem }
+
+var useCoupon = async function(userid, cid)
+{
+    var userbag = await get(userid);
+    userbag.cid = cid;
+    userbag.save().then();
+    show(userid, userbag);
+}
+
+module.exports = { show, additem, clear, get, addToBag, checkBoughtItem, useCoupon, submitBag }

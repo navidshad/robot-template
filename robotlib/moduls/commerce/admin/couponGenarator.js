@@ -24,6 +24,7 @@ var showGenerator = async function(userid, name)
     var detailArr = [];
     var qt = fn.mstr.commerce.query;
 
+    var fn_sessions     = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['sessions'] + '-' + gen.id;
     var fn_mode         = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['mode'] + '-' + gen.id;
     var fn_discountmode = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['discountmode'] + '-' + gen.id;
     var fn_amount       = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['amount'] + '-' + gen.id;
@@ -37,14 +38,16 @@ var showGenerator = async function(userid, name)
     if(gen.allowEdit)
     {        
         detailArr = [ 
+            [{'text': 'دوره', 'callback_data': fn_sessions}],
+
             [{'text': 'حالت', 'callback_data': fn_mode}, 
             {'text': 'نوع تخفیف', 'callback_data': fn_discountmode}],
 
             [{'text': 'مقدار تخفیف', 'callback_data': fn_amount}, 
             {'text': 'درصد تخفیف', 'callback_data': fn_percent}],
 
-            [{'text': 'تعداد روز', 'callback_data': fn_amount}, 
-            {'text': 'تعداد ساعت', 'callback_data': fn_percent}],
+            [{'text': 'تعداد روز', 'callback_data': fn_days}, 
+            {'text': 'تعداد ساعت', 'callback_data': fn_hours}],
 
             [{'text': 'حذف کردن', 'callback_data': fn_delete}, 
             {'text': 'وضعیت', 'callback_data': fn_active}],
@@ -262,6 +265,7 @@ global.fn.eventEmitter.on('affterSuccessPeyment', async (factor) =>
     });
 });
 //#endregion
+
 
 module.exports = {
     routting, query
