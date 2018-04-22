@@ -68,21 +68,12 @@ var checkProfile = async function(id, callback)
     }
 
     var isMember = false;
+    //console.log('checkProfile', id);
     //when chanel checker is not active
-    // if(fn.m.chanelChecker.isActive())
-    // {
-    //     var status = 'non';
-    //     var chanel = await fn.m.chanelChecker.getUser(id);
-    //     //console.log('chanel status: ', chanel);
-    //     if(chanel) status = chanel.status;
+    if(fn.m.chanelChecker.isActive())
+        isMember = await fn.m.chanelChecker.getUser(id);
 
-    //     if(status === 'creator' || status === 'member')
-    //     {
-    //         isMember = true;
-    //     }
-    // }
-
-    if(user) user.isMemberOfChannel = true; //isMember;
+    if(user) user.isMemberOfChannel = isMember;
     if (callback) callback(user);
     return user;
 }

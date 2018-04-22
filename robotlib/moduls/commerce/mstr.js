@@ -91,9 +91,9 @@ module.exports.commerce = {
             'name'  : 'حالت',
             'mess'  : 'لطفا حالت استخراج بن ها را انتخاب کنید.',
             'items' : [
-                {'name': 'buy', 'lable':'خرید کردن'},
+                {'name': 'buy',         'lable':'خرید کردن'},
                 {'name': 'membership', 'lable':'عضویت در کانال'},
-                {'name': 'membership', 'lable':'دعوت کاربران'},
+                {'name': 'invite', 'lable':'دعوت کاربران'},
             ]
         },
 

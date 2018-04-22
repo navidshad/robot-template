@@ -1,6 +1,7 @@
 fn = global.fn;
 
 var routting = function(message){
+    console.log('routing', message.from.id);
     //commands
     if(message.text && message.text === '/start')                   fn.commands.start(message);
     else if (message.text && message.text === '/getsection')        fn.commands.getsection(message);

@@ -19,7 +19,11 @@ var showGenerator = async function(userid, name)
 {
     //get generator
     var gen = await fn.db.generator.findOne({'name': name}).sort('-_id').exec().then();
-    if(!gen) global.robot.bot.sendMessage(userid, fn.mstr.commerce.mess['notGenerator']);
+    if(!gen) {
+        global.robot.bot.sendMessage(userid, fn.mstr.commerce.mess['notGenerator']);
+        show(userid);
+        return;
+    }
 
     var detailArr = [];
     var qt = fn.mstr.commerce.query;
@@ -117,41 +121,44 @@ var routting = async function(message, speratedSection)
         else createGenerator(userid, text);
     }
 
-    var mstrdatas = Object.keys(fn.mstr[mName].generator);
-    var key = false;
-    mstrdatas.forEach(item => {
-        if(item === speratedSection[last-1]) key = true;
-    });
-
-    //edit
-    if(key)
+    else
     {
-        var itemSection = speratedSection[last-1];
-        var genid = speratedSection[last];
-        var dataOption = fn.mstr[mName].generator[itemSection];
+        var mstrdatas = Object.keys(fn.mstr[mName].generator);
+        var key = false;
+        mstrdatas.forEach(item => {
+            if(item === speratedSection[last-1]) key = true;
+        });
     
-        var truechoose = true;
-        var value = text;
-        if(dataOption.items)
+        //edit
+        if(key)
         {
-            truechoose = false;
-            dataOption.items.forEach(element => {
-                if(element.lable === text) {
-                    truechoose = true;
-                    value = element.name;
-                }
-            });
+            var itemSection = speratedSection[last-1];
+            var genid = speratedSection[last];
+            var dataOption = fn.mstr[mName].generator[itemSection];
+        
+            var truechoose = true;
+            var value = text;
+            if(dataOption.items)
+            {
+                truechoose = false;
+                dataOption.items.forEach(element => {
+                    if(element.lable === text) {
+                        truechoose = true;
+                        value = element.name;
+                    }
+                });
+            }
+        
+            if(!truechoose) return;
+        
+            var data = {'name': itemSection, 'value':value};
+            editGenerator(userid, genid, data);
+            show (userid);
         }
-    
-        if(!truechoose) return;
-    
-        var data = {'name': itemSection, 'value':value};
-        editGenerator(userid, genid, data);
-        show (userid);
+        
+        //choose a generator
+        else showGenerator(userid, text);
     }
-    
-    //choose a generator
-    else showGenerator(userid, text);
 }
 
 var query = async function(query, speratedQuery)
@@ -193,46 +200,15 @@ var query = async function(query, speratedQuery)
 }
 
 //#region successPeymentData
-var getGentemp = async function(userid, name)
+var getGentemp = async function(userid)
 {
     var gentemp = await global.fn.db.gentemp.findOne({'userid': userid}).exec().then();
     if(!gentemp) gentemp = await new global.fn.db.gentemp({'userid': userid}).save().then();
     return gentemp;
 }
 
-var generateCoupon = async function(userid, generator, gentemp)
+var generateCoupon = async function(userid, generator)
 {
-    var sessions = generator.sessions;
-    //get buy mode detail
-    var temp = null
-    var tindex = null
-    gentemp.generators.forEach((gen, i) => 
-    { 
-        if(gen.name === generator.name) temp = gen; 
-        tindex=i; 
-    });
-
-    //add if doesn't exsit
-    if(!temp){
-        temp = {'name': generator.name, 'counter': 0};
-        gentemp.generators.push(temp);
-        tindex = gentemp.length-1;
-    }
-
-    //add to counter
-    temp.counter += 1;
-
-    //update gentemp
-    gentemp[tindex] = temp;
-    await gentemp.save().then();
-
-    //generate coupons
-    if(temp.counter < sessions) return;
-
-    //reset session counter
-    gentemp.generators[tindex].counter = 0;
-    await gentemp.save().then();
-    
     var coupon = {
         'userid'        : userid,
         'startDate'     : new Date(),
@@ -249,20 +225,104 @@ global.fn.eventEmitter.on('affterSuccessPeyment', async (factor) =>
 {
     var mode = 'buy';
     var generators = await global.fn.db.generator.find({'mode': mode}).exec().then();
-    var user = await global.fn.userOper.checkProfile(factor.userid);
-    var gentemp = await getGentemp(user.userid, generators.name);
-
-    //++successPeyment of user
-    var successPeyments = 0;
-    user.datas.forEach((data, i) => { 
-        if(data.name === 'successPeyment') 
-            successPeyments = parseInt(data.value) 
-    });
+    var user = await fn.db.user.findOne({'userid':factor.userid}).exec().then();
+    var gentemp = await getGentemp(user.userid);
 
     //each generator
-    generators.forEach(element => { 
-        generateCoupon (user.userid, element, gentemp) 
-    });
+    for (let index = 0; index < generators.length; index++) 
+    {
+        const element = array[index];
+        var sessions = element.sessions;
+        //get buy mode detail
+        var temp = null
+        var tindex = null
+        gentemp.generators.forEach((gen, i) => 
+        { 
+            if(gen.name === element.name) temp = gen; 
+            tindex=i; 
+        });
+    
+        //add if doesn't exsit
+        if(!temp){
+            temp = {'name': element.name, 'counter': 0};
+            gentemp.generators.push(temp);
+            tindex = gentemp.length-1;
+        }
+    
+        //add to counter
+        temp.counter += 1;
+    
+        //update gentemp
+        gentemp.generators[tindex] = temp;
+        await gentemp.save().then();
+    
+        //dont generate coupons
+        console.log('comparing counter');
+        if(temp.counter < sessions) return;
+
+        //reset session counter
+        gentemp.generators[tindex].counter = 0;
+        await gentemp.save().then();
+
+        //generate coupon
+        generateCoupon (user.userid, element);
+    }
+
+});
+
+global.fn.eventEmitter.on('affterChannelCheck', async (userid, isMember) => 
+{
+    var mode = 'membership';
+    var generators = await global.fn.db.generator.find({'mode': mode}).exec().then();
+    var user = await fn.db.user.findOne({'userid':userid}).exec().then();
+    var gentemp = await getGentemp(user.userid, generators.name);
+
+    //each generator
+    for (let index = 0; index < generators.length; index++) 
+    {
+        const element = generators[index];
+        var sessions = element.sessions;
+        //get mode detail
+        var temp = null
+        var tindex = null
+        gentemp.generators.forEach((gen, i) => 
+        { 
+            if(gen.name === element.name) temp = gen; 
+            tindex=i; 
+        });
+    
+        //add if doesn't exsit
+        if(!temp){
+            temp = {'name': element.name, 'counter': 0, 'old': Date.today()};
+            gentemp.generators.push(temp);
+            tindex = gentemp.length-1;
+            await gentemp.save().then();
+        }
+        else if (!temp.old) 
+        {
+            temp.old = Date.today();
+            gentemp.generators[tindex] = temp;
+            await gentemp.save().then();
+        }
+    
+        //#region counter analyze
+        var registeryDate =  Date.parse(temp.old);
+        var nextSessionsDays = registeryDate.addDays(sessions);
+        var today = Date.today();
+
+        //compare
+        //console.log('comparing days');
+        var compare = today.compareTo(nextSessionsDays);
+        if(compare < 0) 
+            return; //it means less than 
+
+        //reset session counter
+        gentemp.generators[tindex].old = today;
+        await gentemp.save().then();
+
+        //generate coupon
+        generateCoupon (user.userid, element);
+    }
 });
 //#endregion
 

@@ -32,7 +32,7 @@ module.exports = function(detail){
         //channel post 
         global.robot.bot.on('channel_post', (post) => {
             console.log(post);
-            if(post.text === fn.mstr.chanelChecker['addChannelRegister'])
+            if(post.text === '/registerbot')
                 global.fn.m.chanelChecker.registerChannel(post.chat, post.message_id);
             //global.queryRouting.analyze(query);
         });

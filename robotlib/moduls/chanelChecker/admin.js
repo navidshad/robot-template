@@ -36,29 +36,6 @@ var checkRoute = function(option){
     return result;
 }
 
-var showchanelCheckerSetting = function(userid, detail){
-    var activationtext = '',
-    moduleOption = fn.getModuleOption(name, {'create': true}).option;
-    index = null;
-
-    //defin activation button
-    activationtext = (moduleOption.active) ? 'disable' : 'enable';
-
-    var channel = (moduleOption.datas[0]) ? moduleOption.datas[0].name : 'هنوز هیچ کانالی متصل نشده است';
-    var mess = fn.mstr.chanelChecker['name'] + '\n' +
-    '📣 ' + 'کانال متصل شده: ' + channel;
-    
-    var list = [
-        fn.str.activation[activationtext],
-        fn.mstr.chanelChecker['addChannel']
-    ],
-    back = fn.str.goToAdmin['back'],
-    remarkup = fn.generateKeyboard({'custom': true, 'grid':true, 'list': list, 'back':back}, false);
-
-    global.robot.bot.sendMessage(userid, mess, remarkup);
-    fn.userOper.setSection(userid, fn.mstr.chanelChecker['name'], true);    
-}
-
 var isActive = function(){
     //console.log('check channelCkeck is active or not');
     var moduleOption = fn.getModuleOption('chanelChecker');
@@ -69,28 +46,37 @@ var isActive = function(){
 var registerChannel = function(chat, messageid){
     var moduleOption = fn.getModuleOption('chanelChecker');
     var detail = [];
-    detail.push({'name':chat.username, 'value':chat.id});
+
+    detail.push({
+        'name': 'channel', 
+        'more': {'name':chat.username, 'value':chat.id}  
+    });
+
     global.robot.config.moduleOptions[moduleOption.index].datas = detail;
     global.robot.save();
     global.robot.bot.deleteMessage(chat.id, messageid);
 }
 
-var getUser = function(userid){
+var getUser = async function(userid)
+{
     var moduleOption = fn.getModuleOption('chanelChecker');
     var chatid = 0;
+    var isMember = false;
 
-    if(moduleOption.option.datas.length > 0) 
-        chatid = moduleOption.option.datas[0].name;
+    if(moduleOption.option.datas.length > 0)
+    {
+        chatid = moduleOption.option.datas[0].more[0].value;
+        chatid = parseInt(chatid);
+    } 
 
-    return new Promise((resolve, reject) => {
-        global.robot.bot.getChatMember(chatid, userid, (e, result) => {
-            if(result) resolve(result);
-            else{
-                console.log(e);
-                reject(e);
-            }
-        }); 
-    });
+    var channel = await global.robot.bot.getChatMember(chatid, userid).then();
+
+    var status = 'non';
+    if(channel.status) status = channel.status;
+    if(status === 'creator' || status === 'member') isMember = true;
+
+    if(channel) global.fn.eventEmitter.emit('affterChannelCheck', userid, isMember);
+    return isMember;
 }
 
 var InviteUser = function(userid){
@@ -98,43 +84,26 @@ var InviteUser = function(userid){
     var chanel = '-';
     var moduleOption = fn.getModuleOption('chanelChecker').option;
     if(moduleOption.datas.length > 0) 
-        chanel = moduleOption.datas[0].name;
+        chanel = moduleOption.datas[0].more[0].name;
 
     var mess = 'کاربر گرامی شما ابتدا باید در کانال زیر عضو شوید.' + '\n @' + chanel;
     global.robot.bot.sendMessage(userid, mess);
 }
 
-var routting = function(message, speratedSection){
+var routting = function(message, speratedSection, user){
     var text = message.text;
     var last = speratedSection.length-1;
     //show chanelChecker setting
-    if (text == fn.mstr.chanelChecker['name'] || text == fn.mstr.chanelChecker['back'])
-        showchanelCheckerSetting(message.from.id);
+    if (text == fn.mstr.chanelChecker['back'])
+        fn.adminPanel.show(message);
 
-    //active or deactive
-    else if(fn.checkValidMessage(text, [fn.str.activation.enable,fn.str.activation.disable])){
-        console.log('active deactive chanelChecker');
-        var key = (text === fn.str.activation.enable) ? true : false;
-        global.robot.config.moduleOptions.forEach(function(element) {
-            if(element.name === 'chanelChecker') 
-                element.active = key;
-        }, this);
-
-        global.robot.save();
-        showchanelCheckerSetting(message.from.id);
-        fn.getMainMenuItems();
-    }
-
-    //set telegram channel
-    else if (text === fn.mstr.chanelChecker['addChannel']){
-        console.log('set telegram chenel username');
-        var mess = fn.mstr.chanelChecker['addChannelMess'];
-        global.robot.bot.sendMessage(message.from.id, mess)
-        .then((msg) => {
-            global.robot.bot.sendMessage(message.from.id, fn.mstr.chanelChecker['addChannelRegister']);
-        });
-    }
-
+    else settings.routting (message, speratedSection, user, name);
 }
 
-module.exports = { name, checkRoute, routting, registerChannel, getUser, InviteUser, isActive}
+var settings = require('./settings');
+var query = require('./query');
+
+module.exports = { 
+    name, checkRoute, routting, query, settings, 
+    registerChannel, getUser, InviteUser, isActive
+}
