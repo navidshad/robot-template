@@ -35,6 +35,7 @@ var showGenerator = async function(userid, name)
     var fn_percent      = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['percent'] + '-' + gen.id;
     var fn_days         = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['days'] + '-' + gen.id;
     var fn_hours        = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['hours'] + '-' + gen.id;
+    var fn_consumption  = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['consumption'] + '-' + gen.id;
     
     var fn_active = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['status'] + '-' + gen.id;
     var fn_delete = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['delete'] + '-' + gen.id;
@@ -52,6 +53,8 @@ var showGenerator = async function(userid, name)
 
             [{'text': 'تعداد روز', 'callback_data': fn_days}, 
             {'text': 'تعداد ساعت', 'callback_data': fn_hours}],
+
+            [{'text': 'دفعات مصرف بن', 'callback_data': fn_consumption}],
 
             [{'text': 'حذف کردن', 'callback_data': fn_delete}, 
             {'text': 'وضعیت', 'callback_data': fn_active}],
@@ -224,7 +227,7 @@ var generateCoupon = async function(userid, generator)
 global.fn.eventEmitter.on('affterSuccessPeyment', async (factor) => 
 {
     var mode = 'buy';
-    var generators = await global.fn.db.generator.find({'mode': mode}).exec().then();
+    var generators = await global.fn.db.generator.find({'mode': mode, 'status': true}).exec().then();
     var user = await fn.db.user.findOne({'userid':factor.userid}).exec().then();
     var gentemp = await getGentemp(user.userid);
 
@@ -273,7 +276,7 @@ global.fn.eventEmitter.on('affterSuccessPeyment', async (factor) =>
 global.fn.eventEmitter.on('affterChannelCheck', async (userid, isMember) => 
 {
     var mode = 'membership';
-    var generators = await global.fn.db.generator.find({'mode': mode}).exec().then();
+    var generators = await global.fn.db.generator.find({'mode': mode, 'status': true}).exec().then();
     var user = await fn.db.user.findOne({'userid':userid}).exec().then();
     var gentemp = await getGentemp(user.userid, generators.name);
 
@@ -324,9 +327,8 @@ global.fn.eventEmitter.on('affterChannelCheck', async (userid, isMember) =>
         generateCoupon (user.userid, element);
     }
 });
+
 //#endregion
-
-
 module.exports = {
     routting, query
 }

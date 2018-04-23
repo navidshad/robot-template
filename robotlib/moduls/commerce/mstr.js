@@ -53,11 +53,12 @@ module.exports.commerce = {
         mode:'mode',
         discountmode:'discountmode',
         amount:'amount',
-        percent:'percentprc',
+        percent:'percent',
         days:'days',
         hours:'hours',
+        consumption:'consumption',
         status:'status',
-        delete:'delete'
+        delete:'delete',
     },
 
     mess : {
@@ -131,7 +132,7 @@ module.exports.commerce = {
         },
 
         consumption:{
-            'name': 'دفعات مصرف',
+            'name': 'دفعات مصرف بن',
             'mess': 'هر بن تخفیف چند بار باید مصرف شود.',
             'type': Number,
         },

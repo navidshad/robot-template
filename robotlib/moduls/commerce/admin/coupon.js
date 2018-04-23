@@ -31,9 +31,14 @@ var getcoupon = async function(cid)
     var coupon = await fn.db.coupon.findOne({'_id':cid}).exec().then();
     return coupon;
 }
-var removeCoupon = function(cid)
+var removeCoupon = await function(cid)
 {
-    fn.db.coupon.remove({'_id':cid}).exec();
+    var coupon = await getcoupon(cid);
+    if(!coupon) return;
+
+    coupon.consumption += 1;
+    if(coupon.consumption < 0) fn.db.coupon.remove({'_id':cid}).exec();
+    else coupon.save().then();
 }
 var getusercoupons = async function(userid)
 {
