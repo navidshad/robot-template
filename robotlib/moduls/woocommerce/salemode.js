@@ -28,9 +28,11 @@ var addRemoveAttr = async function(userid, mName, productid, attrindex, optionin
     var added = false;
     wooSubmiter.attributes.forEach((element, i) => 
     {
-        if(element.name !== attribute.name && element.value !== option) return;
-        waIndex = i;
-        added = true;
+        if(element.name === attribute.name && element.value === option) 
+        {
+            waIndex = i;
+            added = true;
+        }
     });
 
     //add
@@ -160,8 +162,8 @@ var query = async function(query, speratedQuery, user, mName)
     //choose attr option
     else if (speratedQuery[3] === queryTag['attributeOption'])
     {
-        var attrindex = parseInt(speratedQuery[4]);
-        var optionindex = parseInt(speratedQuery[4]);
+        var attrindex = parseInt(speratedQuery[last-2]);
+        var optionindex = parseInt(speratedQuery[last-1]);
         addRemoveAttr(userid, mName, speratedQuery[last], attrindex, optionindex)
     }
 
@@ -173,6 +175,13 @@ var query = async function(query, speratedQuery, user, mName)
         
         //get wooSubmiter
         var wooSubmiter = await getwooSubmiter(userid, product.id);
+
+        if(wooSubmiter.attributes.length  !== product.attributes.length)
+        {
+            global.robot.bot.sendMessage(userid, 'شما ابتدا باید از هر ویژگی یک گزینه انتخاب کنید.');
+            showAttributes(userid, mName, speratedQuery[last]);
+            return;
+        }
 
         var datas = [];
         wooSubmiter.attributes.forEach(element => {
