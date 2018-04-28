@@ -111,19 +111,19 @@ var getMenuItems = function(name, callback)
             var modulsoptions = global.robot.config.moduleOptions;
             if(modulsoptions) {
                 modulsoptions.forEach(function(md) {
-                    if(md.category && md.category === name && md.active){
+                    if(md.category === name && md.active){
                         var order = (typeof md.btn_order === 'number') ? md.btn_order : 1;
                         //if moudle has 1 btn
                         if(md.button) items.push({'name':md.button, 'order': order});
                         //if module has more than 1 btn
-                        else if(md.buttons) {
+                        else if(md.buttons.length > 0) {
                             md.buttons.forEach(element => { items.push({'name':element, 'order': order}); });
-                            return;
                         }
+                        
                         //user route method
                         var mRoute = getModuleRouteMethods(md.name);
                         if(!mRoute.userRoute) return;
-                        mRoute.methods.getButtons().forEach(element => { items.push({'name':element, 'order': order}); });
+                        mRoute.methods.getButtons(md.name).forEach(element => { items.push({'name':element, 'order': order}); });
                     }
                 }, this);
             }

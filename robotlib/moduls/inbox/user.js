@@ -76,7 +76,7 @@ var routting = function(message, speratedSection){
             });
             newInboxMess.save();
             alertToAmin(newInboxMess);
-            fn.commands.backToMainMenu(message, user, fn.str['seccess']);
+            fn.commands.backToMainMenu(message.from.id, user, fn.str['seccess']);
         });
     }
 }

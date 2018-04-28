@@ -42,6 +42,37 @@ var registerId = async function(flag, regCallback)
         await user.save().then();
     }
 
+    //inject datas
+    if(flag.datas)
+    {
+        flag.datas.forEach(fdata => 
+        {
+            var isadded = false;
+            var index = null;
+            user.datas.forEach((element, i) => 
+            { 
+                if(element.name == fdata.name) { 
+                    isadded = true; 
+                    index = i; 
+                }
+            });
+            
+            //update
+            if(isadded) {
+                if(fdata.value) user.datas[index].value = fdata.value;
+                if(fdata.key) user.datas[index].value = fdata.key;
+                if(fdata.more) user.datas[index].more = fdata.more;
+            }
+            //add
+            else if(!isadded) user.datas.push(fdata);
+        });
+
+        await user.save().then()
+        .catch(e => {
+            console.log(e);
+        });
+    }
+
     //return user
     return user;
 }
@@ -67,7 +98,7 @@ var checkProfile = async function(id, callback)
         return;
     }
 
-    var isMember = false;
+    var isMember = true;
     //console.log('checkProfile', id);
     //when chanel checker is not active
     if(fn.m.chanelChecker.isActive())

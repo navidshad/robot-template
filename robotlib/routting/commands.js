@@ -5,7 +5,7 @@ var start = async function(message){
     form.bot = global.robot.username;
 
     var newuser = await fn.userOper.registerId(message.from);
-    backToMainMenu(message, newuser);
+    backToMainMenu(message.from.id, newuser);
     if(newuser.isAdmin) global.robot.bot.sendMessage(message.from.id, fn.str['youareadmin']);
 }
 
@@ -25,15 +25,15 @@ var registerAdmin = function(message){
 }
 
 //back to mainMenu
-var backToMainMenu = async function(message, user, mess){
+var backToMainMenu = async function(userid, user, mess){
     //console.log('go to main menu');
     await fn.getMainMenuItems().then();
     var items = global.robot.menuItems;
-    fn.userOper.setSection(message.from.id, fn.str['mainMenu'], false);
+    fn.userOper.setSection(userid, fn.str['mainMenu'], false);
     remarkup = fn.generateKeyboard({'section':fn.str['mainMenu'], 'list':items, "isCompelet": user.isCompelet, "isAdmin": user.isAdmin}, false);
     var texttosend = (mess) ? mess : global.robot.config.firstmessage;
     if(texttosend == null) texttosend = global.fn.str['mainMenuMess'];
-    global.robot.bot.sendMessage(message.from.id, texttosend, remarkup);
+    global.robot.bot.sendMessage(userid, texttosend, remarkup);
 }
 
 //get word counr

@@ -19,6 +19,7 @@ var data = new Schema({
 
 var UserSchema = new Schema({
     userid      : Number,
+    inviter     : Number,
     username    : String,
     is_bot      : String,
     first_name	: String,

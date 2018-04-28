@@ -18,7 +18,10 @@ var routting = function(message, speratedSection, user)
     else {
         global.mRoutes.forEach(route => {
             var result = route.admin({'text':text, 'speratedSection': speratedSection});
-            if(result.status) result.routting(message, speratedSection, user);
+            if(result.status) {
+                result.routting(message, speratedSection, user);
+                return;
+            }
         });
     }
 }

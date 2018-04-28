@@ -2,12 +2,17 @@ fn = global.fn;
 
 var routting = function(message){
     console.log('routing', message.from.id);
+    
     //commands
     if(message.text && message.text === '/start')                   fn.commands.start(message);
     else if (message.text && message.text === '/getsection')        fn.commands.getsection(message);
     else if (message.text && message.text.includes('/register-'))   fn.commands.registerAdmin(message);
     else if (message.text && message.text.includes('/getwordcount'))  fn.commands.getWordCount(message.from.id);
-
+    
+    //emit command event
+    else if (message.text && message.text.startsWith('/')) fn.eventEmitter.emit('commands', message);
+    
+    //routting
     else{
         //validating user
         fn.userOper.checkProfile(message.from.id, (user) => {
@@ -18,7 +23,7 @@ var routting = function(message){
             var speratedSection = user.section.split('/');
             
             //go to meain menu
-            if(message.text && message.text === fn.str['backToMenu']) fn.commands.backToMainMenu(message, user);
+            if(message.text && message.text === fn.str['backToMenu']) fn.commands.backToMainMenu(message.from.id, user);
             
             //when profile is compelet
             else if(user.isCompelet){

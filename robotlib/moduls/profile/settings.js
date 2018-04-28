@@ -1,8 +1,7 @@
-
 var mainBtnsPermissions = {
     'activation': true,
-    'category': false,
-    'order': false,
+    'category': true,
+    'order': true,
 }
 
 var getSettingsInlinesBtns = function(options)
@@ -10,9 +9,9 @@ var getSettingsInlinesBtns = function(options)
     var detailArr = [],
     mName   = options.mName,
     qt      = fn.mstr[mName].query,
-    fn_activation = qt[mName] + '-' + qt['admin'] + '-' + qt['settings'] + '-' + qt['activation'],
-    fn_category   = qt[mName] + '-' + qt['admin'] + '-' + qt['settings'] + '-' + qt['category'],
-    fn_order      = qt[mName] + '-' + qt['admin'] + '-' + qt['settings'] + '-' + qt['order'],
+    fn_activation = qt[mName] + '-' + qt['admin'] + '-' + qt['settings'] + '-' + qt['activation'] + '-' + qt[mName],
+    fn_category   = qt[mName] + '-' + qt['admin'] + '-' + qt['settings'] + '-' + qt['category'] + '-' + qt[mName],
+    fn_order      = qt[mName] + '-' + qt['admin'] + '-' + qt['settings'] + '-' + qt['order'] + '-' + qt[mName],
 
     tx_activation = fn.str.activation[options.activation],
     tx_category   = fn.mstr['category'].asoption,
@@ -29,7 +28,7 @@ var getSettingsInlinesBtns = function(options)
     var row = [];
     datas.forEach((item, i) => 
     {
-        var fn_item = qt[mName] + '-' + qt['admin'] + '-' + qt['settings'] + '-' + item;
+        var fn_item = qt[mName] + '-' + qt['admin'] + '-' + qt['settings'] + '-' + item + '-' + qt[mName];
         var tx_item = fn.mstr[mName].datas[item].name;
         row.push({'text': tx_item, 'callback_data': fn_item});
         
@@ -98,7 +97,7 @@ var routting = function(message, speratedSection, user, mName)
     var text = message.text;
     var last = speratedSection.length-1;
     //show inbox setting
-    if (text === fn.mstr[mName].btns['name'])
+    if (text === fn.mstr[mName].btns['settings'])
         show(message.from.id, mName);
 
 
@@ -164,7 +163,7 @@ var routting = function(message, speratedSection, user, mName)
         
         global.robot.save();
         show (message.from.id, mName);
-        fn.adminPanel.show(message);
+        fn.m[mName].show(message.from.id);
     }
 }
 
