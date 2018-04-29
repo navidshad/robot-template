@@ -3,7 +3,7 @@ module.exports = {
     dbpath      :'mongodb://rooot:123456789@ds113019.mlab.com:13019/template',
     token       :'',
 
-    testRun     : true,
+    testRun     : false,
     dbpath_test :'',
     token_test  :'',
 
@@ -12,13 +12,15 @@ module.exports = {
     modules:{
         'category'          :true,
         'post'              :true,
-        'bag'               :true,
+        'profile'           :true,
+        'commerce'          :true,
         'settings'          :true,
         'search'            :true,
         'ticket'            :true,
         'contacttousers'    :true,
         'chanelChecker'     :true,
         'favorites'         :true,
+        'woocommerce'       :true,
     },
     
     //web
