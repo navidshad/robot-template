@@ -262,6 +262,14 @@ var getModuleRouteMethods = function(mName)
     return mRouteMethods;
 }
 
+var alertadmins = async function(mess)
+{
+    var admins = await fn.db.user.find({'isAdmin': true}).exec().then();
+    admins.forEach(user => {
+        global.robot.bot.sendMessage(user.userid, mess);
+    });
+}
+
 module.exports = {
     //system
     db, time, str, telegramBot, generateKeyboard, convertObjectToArray, commands,
@@ -273,5 +281,6 @@ module.exports = {
     //admin
     adminPanel, upload,
     //tools
-    getModuleOption, putDatasToModuleOption, getModuleRouteMethods, getModuleData,
+    getModuleOption, putDatasToModuleOption, getModuleRouteMethods, 
+    getModuleData, alertadmins,
 }

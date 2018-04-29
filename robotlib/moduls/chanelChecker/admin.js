@@ -75,6 +75,10 @@ var getUser = async function(userid)
     if(channel.status) status = channel.status;
     if(status === 'creator' || status === 'member') isMember = true;
 
+    //mandatory Membership
+    var mMembership = fn.getModuleData ('chanelChecker', 'mandatoryMembership');
+    if(mMembership && mMembership.value == 'false') isMember = true;
+
     if(channel) global.fn.eventEmitter.emit('affterChannelCheck', userid, isMember);
     return isMember;
 }

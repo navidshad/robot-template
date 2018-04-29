@@ -20,7 +20,16 @@ var create = async function(option)
     await coupon.save().then();
 
     //alert to user
-    return coupon;
+    alertTouser(coupon)
+}
+
+var alertTouser = function(coupon)
+{
+    var mess = '💟 ' + 'کاربر عزیز یک بن تخفیف برای شما صادر شد: \n';
+    mess += fn.m.commerce.coupon.getDetail(coupon);
+    mess += '\n⚠️ برای استفاده از بن تخفیف به بخش ثبت سفارش مراجعه کنید.';
+    global.robot.bot.sendMessage(coupon.userid, mess);
+    fn.alertadmins(mess);
 }
 
 global.fn.eventEmitter.on('createCoupon', create);
@@ -77,6 +86,17 @@ var performCoupon = async function(total, cid)
     //return
     return newtotal;
 }
+var getDetail = function(coupon)
+{
+    var amount = (coupon.discountmode == 'amount') ? `${coupon.amount} تومان` : `${coupon.percent} درصد`;
+    var mess = '';
+    mess += '✴️ ' + `کد بن: ${coupon.code} \n`;
+    mess += '✴️ ' + `کد کاربر: ${coupon.userid} \n`;
+    mess += '✴️ ' + `تاریخ امروز: ${coupon.startDate.toString('M/d/yyyy')} \n`;
+    mess += '✴️ ' + `تاریخ پایان: ${coupon.endDate.toString('M/d/yyyy')} \n`;
+    mess += '✴️ ' + `مقدار: ${amount} تخفیف \n`;
+    return mess;
+}
 //#endregion
 
-module.exports = {  getusercoupons, getCouponsDetail, getcoupon, removeCoupon, performCoupon }
+module.exports = {  getusercoupons, getCouponsDetail, getcoupon, removeCoupon, performCoupon, getDetail }

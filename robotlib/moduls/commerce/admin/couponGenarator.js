@@ -353,7 +353,7 @@ global.fn.eventEmitter.on('affterInvitedUserRegistered', async (inviter, newuser
         if(!temp){
             temp = {'name': element.name, 'counter': 0, 'old': Date.today()};
             gentemp.generators.push(temp);
-            tindex = gentemp.length-1;
+            tindex = gentemp.generators.length-1;
             await gentemp.save().then();
         }
         
@@ -372,6 +372,7 @@ global.fn.eventEmitter.on('affterInvitedUserRegistered', async (inviter, newuser
         generateCoupon (user.userid, element);
     }
 });
+
 //#endregion
 module.exports = {
     routting, query

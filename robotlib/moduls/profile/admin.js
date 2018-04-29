@@ -51,7 +51,7 @@ var show = function(userid){
 var routting = function(message, speratedSection, user)
 {
     //show section
-    if(message.text === fn.mstr[name]['name'] || message.text === fn.mstr['inbox'].back)
+    if(message.text === fn.mstr[name]['name'] || message.text === fn.mstr[name].back)
         show(message.from.id);
     
     //show setting

@@ -95,7 +95,7 @@ module.exports.commerce = {
                 {'name': 'buy',         'lable':'خرید کردن'},
                 {'name': 'membership', 'lable':'عضویت در کانال'},
                 {'name': 'invite', 'lable':'دعوت کاربران'},
-            ]
+            ],
         },
 
         discountmode: {

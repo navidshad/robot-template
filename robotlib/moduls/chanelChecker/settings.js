@@ -98,7 +98,7 @@ var routting = function(message, speratedSection, user, mName)
     var text = message.text;
     var last = speratedSection.length-1;
     //show inbox setting
-    if (text === fn.mstr[mName].btns['name'])
+    if (text === fn.mstr[mName]['name'])
         show(message.from.id, mName);
 
 
