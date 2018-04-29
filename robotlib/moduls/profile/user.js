@@ -83,7 +83,7 @@ var registerFromLink = async function(telegramUser, text)
     else fn.commands.backToMainMenu(userid, existUser, 'سلام خوش امدید' + '\n' + 'شما قبلا ثبت نام کرده اید.');
 
     //emir event
-    if(newuser) global.fn.eventEmitter.emit('affterInvitedUserRegistered', newuser);
+    if(newuser) global.fn.eventEmitter.emit('affterInvitedUserRegistered', inviter, newuser);
 }
 
 var routting = function(message, speratedSection, user, mName)

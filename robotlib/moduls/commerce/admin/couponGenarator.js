@@ -328,6 +328,50 @@ global.fn.eventEmitter.on('affterChannelCheck', async (userid, isMember) =>
     }
 });
 
+global.fn.eventEmitter.on('affterInvitedUserRegistered', async (inviter, newuser) => 
+{
+    var mode = 'invite';
+    var generators = await global.fn.db.generator.find({'mode': mode, 'status': true}).exec().then();
+    var user = await fn.db.user.findOne({'userid':inviter}).exec().then();
+    var gentemp = await getGentemp(user.userid, generators.name);
+
+    //each generator
+    for (let index = 0; index < generators.length; index++) 
+    {
+        const element = generators[index];
+        var sessions = element.sessions;
+        //get mode detail
+        var temp = null
+        var tindex = null
+        gentemp.generators.forEach((gen, i) => 
+        { 
+            if(gen.name === element.name) temp = gen; 
+            tindex=i; 
+        });
+    
+        //add if doesn't exsit
+        if(!temp){
+            temp = {'name': element.name, 'counter': 0, 'old': Date.today()};
+            gentemp.generators.push(temp);
+            tindex = gentemp.length-1;
+            await gentemp.save().then();
+        }
+        
+        gentemp.generators[tindex].counter += 1;
+
+        //compare
+        var counter = gentemp.generators[tindex].counter;
+        if(counter > sessions) 
+            return; //it means less than 
+
+        //reset session counter
+        gentemp.generators[tindex].counter = 0;
+        await gentemp.save().then();
+
+        //generate coupon
+        generateCoupon (user.userid, element);
+    }
+});
 //#endregion
 module.exports = {
     routting, query
