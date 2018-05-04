@@ -320,8 +320,18 @@ var routting = async function(message, speratedSection, user, mName)
         var parentid = (speratedSection[last] == button) ? 0 : parseInt(speratedSection[last]);
         var categories = await getCategories(userid, {'parent':parentid}, {'name': text});
 
-        if(categories.length > 0) showDirectory(userid, categories[0], 1);
-        else showProduct(userid, mName, parentid, text);
+        var requests = {
+            'categories' : await getCategories(userid, {'parent':parentid}, {'name': text}),
+            'search' : await getProducts(userid, {'search': text, 'page': page, 'per_page': 10}),
+        };
+
+        await Promise.all([requests.requests, requests.search]);
+        console.log(requests);
+        //show a category
+        //if(categories.length > 0) showDirectory(userid, categories[0], 1);
+        //show a product: name + id
+        //else showProduct(userid, mName, parentid, text);
+        //show
     }
 }
 

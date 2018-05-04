@@ -3,7 +3,8 @@ var start = async function(message){
     //collect 
     var form = Object(message.from);
     form.bot = global.robot.username;
-
+    form.date = Date.today();
+    
     var newuser = await fn.userOper.registerId(message.from);
     backToMainMenu(message.from.id, newuser);
     if(newuser.isAdmin) global.robot.bot.sendMessage(message.from.id, fn.str['youareadmin']);

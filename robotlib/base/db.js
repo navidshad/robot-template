@@ -30,6 +30,7 @@ var UserSchema = new Schema({
     isCompelet  : Boolean,
     section     : String,
     datas       : [data],
+    date        : Date
 });
 
 var ConfigSchema = new Schema({
