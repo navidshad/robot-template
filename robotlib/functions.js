@@ -95,56 +95,58 @@ var removeFile = function(path, callback)
     });
 }
 
-var getMenuItems = function(name, callback)
+var getMenuItems = async function(name, callback)
 {
     var items = [];
     var noitem = false;
-    fn.db.post.find({'category': name, 'publish': true}).limit(20).exec((e, postlist) => {
+    var postlist = await fn.db.post.find({'category': name, 'publish': true}).limit(20).exec().then();
+    if(postlist) postlist.forEach(function(element) { items.push({'name':element.name, 'order':element.order}) }, this);
 
-        if(postlist) postlist.forEach(function(element) { items.push({'name':element.name, 'order':element.order}) }, this);
+    //get child categories
+    var catlist = await fn.db.category.find({'parent': name}, 'name order').exec().then();
+    catlist.forEach(function(element) { items.push({'name':element.name, 'order':element.order}) }, this); 
 
-        //get child categories
-        fn.db.category.find({'parent': name}, 'name order').exec((e, catlist) => { 
-            if(catlist) catlist.forEach(function(element) { items.push({'name':element.name, 'order':element.order}) }, this); 
-
-            //get modules
-            var modulsoptions = global.robot.config.moduleOptions;
-            if(modulsoptions) {
-                modulsoptions.forEach(function(md) {
-                    if(md.category === name && md.active){
-                        var order = (typeof md.btn_order === 'number') ? md.btn_order : 1;
-                        //if moudle has 1 btn
-                        if(md.button) items.push({'name':md.button, 'order': order});
-                        //if module has more than 1 btn
-                        else if(md.buttons.length > 0) {
-                            md.buttons.forEach(element => { items.push({'name':element, 'order': order}); });
-                        }
-                        
-                        //user route method
-                        var mRoute = getModuleRouteMethods(md.name);
-                        if(!mRoute.userRoute) return;
-                        mRoute.methods.getButtons(md.name).forEach(element => { items.push({'name':element, 'order': order}); });
-                    }
-                }, this);
+    //get modules
+    var modulsoptions = global.robot.config.moduleOptions;
+    if(modulsoptions) {
+        modulsoptions.forEach(function(md) {
+            if(md.category === name && md.active){
+                var order = (typeof md.btn_order === 'number') ? md.btn_order : 1;
+                //if moudle has 1 btn
+                if(md.button) items.push({'name':md.button, 'order': order});
+                //if module has more than 1 btn
+                else if(md.buttons.length > 0) {
+                    md.buttons.forEach(element => { items.push({'name':element, 'order': order}); });
+                }
+                
+                //user route method
+                var mRoute = getModuleRouteMethods(md.name);
+                if(!mRoute.userRoute) return;
+                mRoute.methods.getButtons(md.name).forEach(element => { items.push({'name':element, 'order': order}); });
             }
+        }, this);
+    }
 
-            //sort
-            items.sort((a, b) => {return a.order - b.order});
-            var newItems = [];
-            items.forEach(function(element) { newItems.push(element.name); }, this);
-            newItems.reverse();
-            
-            //no item
-            if(items.length === 0) noitem = true;
-            
-            //callback and description
-            var description = name;
-            fn.db.category.findOne({'name':name}, (e, c) => {
-                if(c && c.description) description =c.description;
-                if(callback) callback(newItems, description, noitem);
-            });
-        });
-    });
+    //sort
+    items.sort((a, b) => {return a.order - b.order});
+    var newItems = [];
+    items.forEach(function(element) { newItems.push(element.name); }, this);
+    newItems.reverse();
+    
+    //no item
+    if(items.length === 0) noitem = true;
+    
+    //callback and description
+    var detail = {
+        'description' : name,
+        'attachment'  : []
+    }
+
+    var category = await fn.db.category.findOne({'name':name}).then();
+    if(category && category.description) detail.description = category.description;
+    if(category && category.attachments) detail.attachments = category.attachments;
+    
+    if(callback) callback(newItems, detail, noitem);
 }
 
 var getMainMenuItems = function()

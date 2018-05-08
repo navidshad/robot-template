@@ -123,6 +123,7 @@ var createcategoryMess = function(userid, category, option){
     var fn_parent       = fn.mstr.category['queryCategory'] + '-' + fn.mstr.category['queryCategoryParent'] + '-' + category._id;
     var fn_description  = fn.mstr.category['queryCategory'] + '-' + fn.mstr.category['queryCategoryDescription'] + '-' + category._id;
     var fn_delete       = fn.mstr.category['queryCategory'] + '-' + fn.mstr.category['queryDelete'] + '-' + category._id;
+    var fn_attachment   = fn.mstr.category['queryCategory'] + '-' + global.fn.str.query['attach'] + '-' + category._id;
     var fn_order        = fn.mstr.category['queryCategory'] + '-' + fn.mstr.category['queryOrder'] + '-' + category._id;    
     var fn_close        = fn.mstr.category['queryCategory'] + '-close';
     
@@ -138,6 +139,18 @@ var createcategoryMess = function(userid, category, option){
         {'text': 'اولویت', 'callback_data': fn_order},
     ]);
 
+    detailArr.push([
+        {'text': 'آپلود پیوست', 'callback_data': fn_attachment}
+    ]);
+
+    if(category.attachments) category.attachments.forEach((element, i) => {
+        var fn_removeAttchment = fn.mstr.category['queryCategory'] + '-' + fn.str.query['removeAttachment'] + '-' + category._id + '-' + i;
+        var row = [ 
+            {'text':'❌', 'callback_data':fn_removeAttchment},
+            {'text':element.name, 'callback_data':'nothing'} 
+        ];
+        detailArr.push(row);
+    });
 
    //create message
    var description='...', 
@@ -171,38 +184,55 @@ updatePostCategory = function(oldCat, newCat){
 
 var editcategory = async function(id, detail, userid, speratedSection, ecCallBack){
     //console.log('edit a category', id);
-    fn.db.category.findOne({"_id": id}, function(err, category)
-    {
-        fn.userOper.setSection(userid, fn.str.maincategory, true);
-        if(category)
-        {
-            if(detail.name) {
-                var oldn = category.name;
-                category.name = detail.name;
-                updatePostCategory(oldn, detail.name);
-            }
-            if(detail.parent) category.parent = detail.parent;
-            if(detail.description) category.description = detail.description;
-            if(detail.order) category.order = detail.order;
+    var sendKey = true;
+    var category = await fn.db.category.findOne({"_id": id}).exec().then();
 
-            category.save(() => {
-                //get new category
-                global.fn.updateBotContent(() => {
-                    createcategoryMess(userid, category);
-                    showCategoryDir(userid, category.parent, speratedSection); 
-                });
-                              
-                if(ecCallBack) ecCallBack();
-            });
+    if(category)
+    {
+        if(detail.name) {
+            var oldn = category.name;
+            category.name = detail.name;
+            updatePostCategory(oldn, detail.name);
         }
-        else{
-            global.robot.bot.sendMessage(userid, 'این دسته بندی دیگر وجود ندارد', fn.generateKeyboard({section:fn.str['goTocategory']}));
+        if(detail.parent) category.parent = detail.parent;
+        if(detail.description) category.description = detail.description;
+        if(detail.order) category.order = detail.order;
+
+
+        //attachment
+        //add
+        if(detail.attachment) {
+            speratedSection = speratedSection.splice(speratedSection.length-1, 1);
+            sendKey = false;
+            if(!category.attachments.length === 0) category.attachments = [];
+            category.attachments.push(detail.attachment);
+            global.robot.bot.sendMessage(userid, 'انجام شد');
         }
-    });
+        //remove
+        if(detail.removeAttachment) category.attachments.splice(parseInt(detail.removeAttachment), 1);
+
+        await category.save().then();
+        //get new category
+        global.fn.updateBotContent(() => 
+        {
+            if(!sendKey) return;
+            
+            fn.userOper.setSection(userid, fn.mstr.category.maincategory, true);
+            createcategoryMess(userid, category);
+            showCategoryDir(userid, category.parent, speratedSection); 
+        });
+                        
+        if(ecCallBack) ecCallBack();
+    }
+    else{
+        global.robot.bot.sendMessage(userid, 'این دسته بندی دیگر وجود ندارد', fn.generateKeyboard({section:fn.str['goTocategory']}));
+    }
+
 }
 
 //routting
-var routting = function(message, speratedSection){
+var routting = async function(message, speratedSection)
+{
     var text = message.text;
     var last = speratedSection.length-1;
     var catname = (text.split(' - ')[1]) ? text.split(' - ')[1] : text;
@@ -310,8 +340,16 @@ var routting = function(message, speratedSection){
         else global.robot.bot.sendMessage(message.from.id, fn.mstr.category.edit['order']);        
     }
 
+    //end attachment
+    else if (speratedSection[last-1] === fn.mstr.category['endAttach'])
+    {
+        var cat = await fn.db.category.findOne({'_id':speratedSection[last]}).exec().then()
+        if(cat) createcategoryMess(message.from.id, cat);
+        showRoot(message, speratedSection);
+    }
 }
 
 var query = require('./query');
+var upload = require('./upload');
 
-module.exports = { name, get, checkRoute, routting, query, checkInValidCat, deleteCategory }
+module.exports = { name, get, checkRoute, routting, query, editcategory, checkInValidCat, deleteCategory, upload }

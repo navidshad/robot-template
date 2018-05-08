@@ -313,6 +313,7 @@ var routting = function(message, speratedSection){
         });
     }
 
+    //end attachment
     else if (speratedSection[last-1] === fn.mstr.post['endAttach']){
         fn.db.post.findOne({'_id': speratedSection[last]}).exec((e, post) => {
             if(post) createpostMess(message.from.id, post);           

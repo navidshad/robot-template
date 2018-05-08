@@ -103,4 +103,4 @@ var send = function(message, resid, type, caption, callback){
     }
 }
 
-module.exports = {show}
+module.exports = { show, snedAttachmentArray }

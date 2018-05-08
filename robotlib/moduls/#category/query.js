@@ -55,6 +55,23 @@ var parent = function (query, speratedQuery){
     fn.generateKeyboard({'custom': true, 'grid':false, 'list': list, 'back':back}, false));
 }
 
+var attachSection = function(query,speratedQuery){
+    console.log('get attachment');
+    var last = speratedQuery.length-1;
+    var markup = fn.generateKeyboard({section:fn.mstr.category['endAttach']}, true);
+    var newSection = fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr.category['name'] + '/' + fn.mstr.category.maincategory + '/' + fn.mstr.category['endAttach'] + '/' + speratedQuery[last];
+    fn.userOper.setSection(query.from.id, newSection, false);
+    global.robot.bot.sendMessage(query.from.id, fn.mstr.category.edit['attach'], markup);
+}
+
+var removeattachment = function(query,speratedQuery){
+    var last = speratedQuery.length-1;
+    console.log('remove attachment');
+    var newSection = fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr.category['name'] + '/' + fn.mstr.category.maincategory;
+    fn.userOper.setSection(query.from.id, newSection, false);
+    fn.m.category.editcategory(speratedQuery[last-1], {'removeAttachment': speratedQuery[last]}, query.from.id, speratedQuery);
+}
+
 var routting = function(query, speratedQuery){
     
     //remove query message
@@ -85,7 +102,9 @@ var routting = function(query, speratedQuery){
             }
         });
     }
-    
+
+    else if(speratedQuery[1] === global.fn.str.query['attach']) attachSection(query,speratedQuery)
+    else if(speratedQuery[1] === fn.str.query['removeAttachment']) removeattachment(query,speratedQuery);
 }
 
 module.exports = {routting, checkQuery}

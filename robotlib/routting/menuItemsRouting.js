@@ -1,50 +1,21 @@
-// var checkRoute = function(option){
-
-//     var btnsArr  = [ 
-//         fn.mstr.inbox.lable
-//     ];
-
-//     var result = {}
-//     //check text message
-//     if(option.text) btnsArr.forEach(btn => { 
-//         if(option.text === btn) 
-//         {
-//             result.status = true; 
-//             result.button = btn;
-//             result.routting = routting;
-//         }
-//     });
-
-//     //check seperate section
-//     if(option.speratedSection){
-//         option.speratedSection.forEach(section => {
-//             btnsArr.forEach(btn => 
-//             { 
-//                 if(section === btn){
-//                     result.status = true; 
-//                     result.button = btn;
-//                     result.routting = routting;
-//                 }
-//             });
-//         });
-//     }
-
-//     //return
-//     return result;
-// }
-
-var showCategoryDir = function(userid,catname, speratedSection){
-    fn.getMenuItems(catname, (items, des, noitem) => {
-
+var showCategoryDir = function(message, catname, speratedSection)
+{
+    fn.getMenuItems(catname, (items, detail, noitem) => 
+    {
         //parent
         var parent = speratedSection[speratedSection.length-2];
         var back = (parent === fn.str['mainMenu']) ? fn.str['backToMenu'] : fn.mstr.category['backtoParent'];
-        if(!noitem){
-            fn.userOper.setSection(userid, catname, true);
-            global.robot.bot.sendMessage(userid, des, 
-                fn.generateKeyboard({'custom': true, 'grid':true, 'list': items, 'back':back}, false));        
-        }else global.robot.bot.sendMessage(userid, 'این بخش هنوز خالی است.');
+        
+        if(noitem)
+        {
+            global.robot.bot.sendMessage(message.from.id, 'این بخش هنوز خالی است.');
+            return;
+        }
 
+        fn.userOper.setSection(message.from.id, catname, true);
+        var markup = fn.generateKeyboard({'custom': true, 'grid':true, 'list': items, 'back':back}, false);
+        global.robot.bot.sendMessage(message.from.id, detail.description, markup);
+        fn.m.post.user.snedAttachmentArray(message, detail.attachments, 0);
     });
 }
 
@@ -59,7 +30,7 @@ var backtoParent = function(message, speratedSection, user)
     
     if(catname == fn.str['mainMenu'] || !catname) fn.commands.backToMainMenu(message.from.id, user);
     else if(fn.m.category.checkInValidCat(catname)) 
-        showCategoryDir(message.from.id, catname, nsperatedSection);
+        showCategoryDir(message, catname, nsperatedSection);
 }
 
 
@@ -78,14 +49,14 @@ var routting = function(message, speratedSection, user){
         var catname = text.split(' - ')[1];
         speratedSection.splice(last, 1);
         fn.userOper.setSection(message.from.id, catname, true);
-        showCategoryDir(message.from.id, catname, speratedSection);
+        showCategoryDir(message, catname, speratedSection);
     }
 
     //go to category
     else if(fn.m.category.checkInValidCat(text)){
         //console.log('go to category', text);
         speratedSection.push(text);
-        showCategoryDir(message.from.id, text, speratedSection);
+        showCategoryDir(message, text, speratedSection);
     }
 
     //go to a post  
