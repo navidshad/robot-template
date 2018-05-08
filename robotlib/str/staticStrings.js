@@ -31,8 +31,8 @@ module.exports = {
         upload     :'upld',
         attach     :'atch',
         removeAttachment:'ratch',
-        delete     :'dlte',
-        delete:'publication',
+        delete          :'dlte',
+        delete          :'publication',
         queryOrder      :'order',
     },
 
