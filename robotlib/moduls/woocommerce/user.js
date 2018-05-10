@@ -154,6 +154,8 @@ var getProducts = async function(userid, paramenters, optionparam)
 var showDirectory = async function(userid, category, page, optionparam)
 {
     var option = (optionparam) ? optionparam : {};
+    var columns = fn.getModuleData('woocommerce', 'columns').value;
+    columns = (columns) ? parseInt(columns) : 2;
 
     var catDistnation = null;
     if(option.main || !category) catDistnation = {'name': option.main, 'description':'', 'id':0};
@@ -183,7 +185,7 @@ var showDirectory = async function(userid, category, page, optionparam)
     }
 
     var back = fn.mstr['category']['backtoParent'];
-    var remarkup = fn.generateKeyboard({'custom':true, 'grid':true, 'list':list, 'back':back}, false);
+    var remarkup = fn.generateKeyboard({'custom':true, 'grid':true, 'list':list, 'back':back}, false, columns);
 
     //navigator
     var next = page + 1;

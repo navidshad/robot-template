@@ -6,13 +6,13 @@ var custome = function(arr, grid, keys, back, columns){
                 var items = arr;
                 var row = [];
                 var secondPosition = true;
-                
-                //make grid 
+
+                //make grid
                 for (var i = 0; i < items.length; i++) {
                     const btn = items[i];
                     row.push(btn);
 
-                    if(row.length >= columns)
+                    if(row.length >= columns || i == items.length-1)
                     {
                         keys.reply_markup.keyboard.push(row);
                         row = [];
@@ -26,7 +26,7 @@ var custome = function(arr, grid, keys, back, columns){
                     else keys.reply_markup.keyboard.push(element);
                 }, this);
             }
-            
+
             //back button
             if(back){
                 keys.reply_markup.keyboard.push([back]);
@@ -37,7 +37,8 @@ var custome = function(arr, grid, keys, back, columns){
             return keys;
 }
 
-module.exports = function(flag, onlyBack, columns=2){
+module.exports = function(flag, onlyBack, columns){
+    columns = (!columns) ? 2 : columns;
     var keys = {
         "reply_markup": {
             'keyboard': [],
@@ -68,7 +69,7 @@ module.exports = function(flag, onlyBack, columns=2){
                 i +=1;
                 if(i < items.length)
                     btnsLevel.push(items[i]);
-                secondPosition = false;           
+                secondPosition = false;
             }
             if(i < items.length-1){secondPosition = true;}
             keys.reply_markup.keyboard.push(btnsLevel);
@@ -87,6 +88,6 @@ module.exports = function(flag, onlyBack, columns=2){
             var key = global.robot.config.modules[element.modulename];
             if(key) items.push(element.name);
         }
-        return custome(items, true, keys);
+        return custome(items, true, keys, null, columns);
     }
 }

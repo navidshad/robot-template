@@ -2,16 +2,16 @@ var name = 'woocommerce';
 
 var checkRoute = function(option)
 {
-    var btnsArr  = [ 
+    var btnsArr  = [
         fn.mstr[name]['name']
     ];
 
     var result = {}
     //check text message
-    if(option.text) btnsArr.forEach(btn => { 
-        if(option.text === btn) 
+    if(option.text) btnsArr.forEach(btn => {
+        if(option.text === btn)
         {
-            result.status = true; 
+            result.status = true;
             result.button = btn;
             result.routting = routting;
         }
@@ -20,10 +20,10 @@ var checkRoute = function(option)
     //check seperate section
     if(option.speratedSection){
         option.speratedSection.forEach(section => {
-            btnsArr.forEach(btn => 
-            { 
+            btnsArr.forEach(btn =>
+            {
                 if(section === btn){
-                    result.status = true; 
+                    result.status = true;
                     result.button = btn;
                     result.routting = routting;
                 }
@@ -35,12 +35,12 @@ var checkRoute = function(option)
     return result;
 }
 
-var show = function(userid){
-    console.log(`got to ${name} section`);
+var show = function(userid)
+{
     var titles = [
         fn.mstr[name].btns['settings']
     ];
-
+    console.log(`got to ${name} section, ${titles}`);
     //show list
     var mess = fn.mstr[name]['name']
     var markup = fn.generateKeyboard({'custom':true, 'grid':true, 'list': titles, 'back':fn.str.goToAdmin['back']}, false);
@@ -50,15 +50,16 @@ var show = function(userid){
 
 var routting = function(message, speratedSection, user)
 {
+    console.log('woocommerce admin section');
     //show section
     if(message.text === fn.mstr[name]['name'] || message.text === fn.mstr[name]['back'])
         show(message.from.id);
-    
+
     //show setting
-    else if(message.text === fn.mstr[name].btns['settings']) 
+    else if(message.text === fn.mstr[name].btns['settings'])
         settings.show(message.from.id, name);
 
-    else if(speratedSection[3] === fn.mstr[name].btns['settings']) 
+    else if(speratedSection[3] === fn.mstr[name].btns['settings'])
         settings.routting(message, speratedSection, user, name);
 }
 
@@ -66,12 +67,12 @@ var settings = require('./settings');
 var user = require('./user');
 var query = require('./query');
 
-module.exports = { 
-    name, 
-    checkRoute, 
+module.exports = {
+    name,
+    checkRoute,
     routting,
     settings,
     user,
-    query, 
+    query,
     show,
 }
