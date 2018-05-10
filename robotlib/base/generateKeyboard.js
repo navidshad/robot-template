@@ -1,23 +1,22 @@
 fn = global.fn;
 
-var custome = function(arr, grid, keys, back){
+var custome = function(arr, grid, keys, back, columns){
             //grid mode
             if(grid){
                 var items = arr;
                 var row = [];
                 var secondPosition = true;
-                //make grid
+                
+                //make grid 
                 for (var i = 0; i < items.length; i++) {
-                    var btnsLevel = [];
-                    btnsLevel.push(items[i]);
-                    if(secondPosition){
-                        i +=1;
-                        if(i < items.length)
-                            btnsLevel.push(items[i]);
-                        secondPosition = false;           
+                    const btn = items[i];
+                    row.push(btn);
+
+                    if(row.length >= columns)
+                    {
+                        keys.reply_markup.keyboard.push(row);
+                        row = [];
                     }
-                    if(i < items.length-1){secondPosition = true;}
-                    keys.reply_markup.keyboard.push(btnsLevel);
                 }
             }
             //list
@@ -38,7 +37,7 @@ var custome = function(arr, grid, keys, back){
             return keys;
 }
 
-module.exports = function(flag, onlyBack){
+module.exports = function(flag, onlyBack, columns=2){
     var keys = {
         "reply_markup": {
             'keyboard': [],
@@ -54,7 +53,7 @@ module.exports = function(flag, onlyBack){
     //costume keyboard
     else if(flag.custom === true){
         //console.log('generate costume keyboard');
-        return custome(flag.list, flag.grid, keys, flag.back);
+        return custome(flag.list, flag.grid, keys, flag.back, columns);
     }
 
     //main menu keybard
