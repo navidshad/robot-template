@@ -3,6 +3,7 @@ var tx_name = 'ووکامرس';
 
 var mstr = {
     modulename: name,
+    symbol:'☸️',
     //admin
     name:'☸️ ' + tx_name, 
     back:'🔙 برگشت به ' + tx_name,

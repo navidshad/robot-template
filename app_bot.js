@@ -15,6 +15,7 @@ var settingUp = async function()
     events = require('events');
     global.fn = { eventEmitter: new events.EventEmitter() };
     global.mRoutes = [];
+    global.searchRoutes = [];
 
     await getMstrs().then();
     await getModuls().then();
@@ -70,8 +71,9 @@ var getModuls = function(){
                 route.admin     = emodule.checkRoute;
 
                 if(emodule.user){
-                    route.user      = emodule.user.checkRoute;
-                    route.getButtons= (emodule.user.getButtons) ? emodule.user.getButtons : null;
+                    route.user       = emodule.user.checkRoute;
+                    route.getButtons = (emodule.user.getButtons) ? emodule.user.getButtons : null;
+                    route.searchRoute= (emodule.user.searchRoute) ? emodule.user.searchRoute : null;
                 }
 
                 route.upload    = (emodule.upload) ? emodule.upload.checkUpload : null;
@@ -83,7 +85,8 @@ var getModuls = function(){
     });
 }
 
-var getFunctions = function(){
+var getFunctions = function()
+{
     return new Promise((resolve, reject) => {
         var fn = require('./robotlib/functions');
         global.fn = extend(global.fn, fn);

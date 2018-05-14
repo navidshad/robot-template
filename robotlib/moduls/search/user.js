@@ -1,7 +1,8 @@
 var checkRoute = function(option){
 
     var btnsArr  = [ 
-        fn.mstr.search['lable']
+        fn.mstr.search['lable'],
+        fn.mstr.search['back']
     ];
 
     var result = {}
@@ -40,22 +41,43 @@ var show = function(userid){
     fn.userOper.setSection(userid, fn.mstr.search['name'], true);
 }
 
-var search = async function(userid, text){
+var search = async function(userid, text)
+{
     var list = [];
     var back = fn.mstr.search['back'];
     var mess = 'نتیجه جستجو برای ' + text;
+    var promissarray = [];
+    var symbols = {};
 
-    var posts = await fn.db.post.find({ $text: {$search: text}}).limit(30).exec().then()
+    //get search routes 
+    var searchroutes = fn.getRoute('searchRoute');
+    searchroutes.map(route => {
+        promissarray.push(route.searchRoute(userid, text));
+        symbols[route.name] = fn.mstr[route.name].symbol;
+    });
+
+    var results = await Promise.all(promissarray).then()
     .catch((e) => { 
         console.log(e);
         global.robot.bot.sendMessage(userid, 'دیتابیس باید برای عملیات جستجو تنظیم شود، لطفا به مسئول فنی اطلاع دهید.');
     });
 
-    if(posts.length === 0) {global.robot.bot.sendMessage(userid, fn.mstr.search['notfound']); return;}
+    for (let index = 0; index < results.length; index++) 
+    {
+        const result = results[index];
+        var mName = result.mName;
+        var symbol = symbols[mName];
+        result.items.map(item => 
+        {
+            var title = result.makebtntitle(item);
+            var btn = `${symbol} ${title}`;
+            list.push(btn);
+        });
+    }
 
-    posts.forEach((element) => { list.push(element.name); }, this);
+    var markup = fn.generateKeyboard({'custom': true, 'grid':true, 'list': list, 'back':back}, false);
+    global.robot.bot.sendMessage(userid, mess, markup);
     fn.userOper.setSection(userid, fn.mstr.search['result'], true);
-    global.robot.bot.sendMessage(userid, mess, fn.generateKeyboard({'custom': true, 'grid':true, 'list': list, 'back':back}, false));
 }
 
 var showItem = function(message, name){
@@ -65,12 +87,13 @@ var showItem = function(message, name){
     });
 }
 
-var routting = function(message, speratedSection){
+var routting = function(message, speratedSection)
+{
     var mName = fn.mstr.search['modulename'];
     var text = message.text;
     var last = speratedSection.length-1;
 
-    //show search setting
+    //show search section
     if (text === fn.mstr.search['lable'] || text === fn.mstr.search['back'])
         show(message.from.id);
 
@@ -80,7 +103,8 @@ var routting = function(message, speratedSection){
     
     //choose item
     else if (speratedSection[last] === fn.mstr.search['result'])
-        showItem(message, text);
+        fn.eventEmitter.emit('searchshowitem', message, speratedSection)
+
 }
 
 module.exports = { routting, checkRoute }

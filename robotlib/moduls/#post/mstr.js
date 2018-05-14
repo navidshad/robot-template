@@ -1,5 +1,6 @@
 module.exports.post = {
     modulename:'post',
+    symbol:'🔖',
     //admin
     name:'🔖 مطالب',
     back:'🔙 برگشت به 🔖 مطالب',

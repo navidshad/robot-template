@@ -103,4 +103,37 @@ var send = function(message, resid, type, caption, callback){
     }
 }
 
-module.exports = { show, snedAttachmentArray }
+var makebtntitle = function(post)
+{
+    var btn = post.name;
+    return btn;
+}
+
+var searchRoute = function (userid, text)
+{
+    return new Promise(async (resolve, reject) => 
+    {
+        var posts = await fn.db.post.find({ $text: {$search: text}}).limit(30).exec().then();
+        var reesult = {
+            items: posts, 
+            mName:'post', 
+            'makebtntitle': makebtntitle
+        };
+        resolve(reesult);
+    });
+}
+
+global.fn.eventEmitter.on('searchshowitem', async (message, speratedSection) => 
+{
+    var symbol = fn.mstr['post'].symbol;
+    var text = message.text;
+    if(!text.startsWith(symbol)) return;
+
+    message.text = message.text.replace(symbol, '');
+    message.text = message.text.trim();
+    fn.m.post.user.show(message, message.text, () => {
+        //item does not existed
+        global.robot.bot.sendMessage(message.user.id, fn.str['choosethisItems']);
+    });
+});
+module.exports = { show, snedAttachmentArray, searchRoute }

@@ -272,6 +272,15 @@ var alertadmins = async function(mess)
     });
 }
 
+var getRoute = function(routename)
+{
+    result = [];
+    global.mRoutes.map(route => {
+        if(route[routename]) result.push(route);
+    });
+    return result;
+}
+
 module.exports = {
     //system
     db, time, str, telegramBot, generateKeyboard, convertObjectToArray, commands,
@@ -284,5 +293,5 @@ module.exports = {
     adminPanel, upload,
     //tools
     getModuleOption, putDatasToModuleOption, getModuleRouteMethods, 
-    getModuleData, alertadmins,
+    getModuleData, alertadmins, getRoute,
 }

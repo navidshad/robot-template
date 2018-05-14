@@ -28,7 +28,8 @@ var backtoParent = function(message, speratedSection, user)
     nsperatedSection = nsperatedSection.concat(speratedSection);
     nsperatedSection.splice(from, 1);
     
-    if(catname == fn.str['mainMenu'] || !catname) fn.commands.backToMainMenu(message.from.id, user);
+    if(catname == fn.str['mainMenu'] || !catname) 
+        fn.commands.backToMainMenu(message.from.id, user);
     else if(fn.m.category.checkInValidCat(catname)) 
         showCategoryDir(message, catname, nsperatedSection);
 }

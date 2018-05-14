@@ -151,6 +151,11 @@ var getProducts = async function(userid, paramenters, optionparam)
     return result;
 }
 
+var makebtntitle = function(product)
+{
+    var btn = product.name + ' ' + product.id;
+    return btn;
+}
 var showDirectory = async function(userid, category, page, optionparam)
 {
     var option = (optionparam) ? optionparam : {};
@@ -175,7 +180,7 @@ var showDirectory = async function(userid, category, page, optionparam)
 
     var list = [];
     categories.forEach(cat => { list.push(cat.name); });
-    products.forEach(pro => { list.push(pro.name + ' ' + pro.id); });
+    products.forEach(pro => { list.push(makebtntitle(pro)); });
 
     var totalitems = categories.length + products.length;
     if(totalitems == 0)
@@ -199,17 +204,18 @@ var showDirectory = async function(userid, category, page, optionparam)
     fn.userOper.setSection(userid, categoryid, true);
 }
 
-var showSearch = async function(userid, products, text, option={})
+var searchRoute = async function (userid, text)
 {
-  var list = [];
-  products.forEach(pro => { list.push(pro.name + ' ' + pro.id); });
-
-  var back = fn.mstr['category']['backtoParent'];
-  var remarkup = fn.generateKeyboard({'custom':true, 'grid':true, 'list':list, 'back':back}, false);
-
-  var mess = `نتیجه جستجو برای "${text}"`;
-  global.robot.bot.sendMessage(userid, mess, remarkup);
-  fn.userOper.setSection(userid, -1, true);
+    return new Promise(async (resolve, reject) => 
+    {
+        var products = await getProducts(userid, {'search': text});
+        var reesult = {
+            items: products, 
+            mName:'woocommerce', 
+            'makebtntitle': makebtntitle
+        };
+        resolve(reesult);
+    });
 }
 
 var showMain = async function(userid, button)
@@ -281,7 +287,7 @@ var getProductDetail = function(product, optionparams)
     //mess
     var title = '☸️ ' + striptags(product.name);
     var id = '🆔 ' + product.id;
-    var description = '🔶 ' + striptags(product.short_description);
+    var description = '🔶 ' + striptags(product.short_description, '&nbsp;');
     var mess = title;
     mess += '\n' + description.trim();
     mess += '\n' + atrrsDetail;
@@ -354,15 +360,14 @@ var routting = async function(message, speratedSection, user, mName)
 
         var requests = {
             'categories'  : await getCategories(userid, {'parent':parentid}, {'name': text}),
-            'search'      : await getProducts(userid, {'search': text}),
+            //'search'      : await getProducts(userid, {'search': text}),
         };
 
         await Promise.all([requests.requests, requests.search]);
 
         //show a category
         if(requests.categories.length > 0) showDirectory(userid, categories[0], 1);
-        //show search
-        else if (requests.search.length > 0) showSearch(userid, requests.search, text);
+
         //show a product: name + id
         else showProduct(userid, mName, null, text);
     }
@@ -373,7 +378,8 @@ var salemode = require('./salemode');
 module.exports = {
     routting, checkRoute,
     salemode, getProductDetail,
-    getFromWoocom, getCategories, getProducts
+    getFromWoocom, getCategories, getProducts,
+    searchRoute,
  }
 
 // events -------------------------------
@@ -405,4 +411,16 @@ global.fn.eventEmitter.on('favshowitem', async (userid, item) =>
     if(item.type !== pType) return;
 
     showProduct(userid, mName, item.id);
+});
+
+global.fn.eventEmitter.on('searchshowitem', async (message, speratedSection) => 
+{
+    var mName = 'woocommerce';
+    var symbol = fn.mstr[mName].symbol;
+    var text = message.text;
+    if(!text.startsWith(symbol)) return;
+
+    message.text = message.text.replace(symbol, '');
+    message.text = message.text.trim();
+    showProduct(message.from.id, mName, null, message.text);
 });
