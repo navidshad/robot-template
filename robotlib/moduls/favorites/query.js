@@ -23,25 +23,8 @@ var checkQuery = function(option){
     return result;
 }
 
-var switchLike = async function(query, speratedQuery)
+var routting = function(query, speratedQuery)
 {
-    var last = speratedQuery.length-1;
-    var item = {}
-    item.type = speratedQuery[last-1];
-    item.id = speratedQuery[last];
-
-    //get name
-    if(item.type === fn.mstr.favorites.types['post'])
-    {
-        var post = await fn.db.post.findOne({'_id': item.id}).sort('name').exec().then();
-        if(!post) return;
-        item.name = post.name;
-    }
-
-    fn.m.favorites.user.addremove(query, item);
-}
-
-var routting = function(query, speratedQuery){
     var last = speratedQuery.length-1;
     var queryTag = fn.mstr.favorites.query;
     
@@ -49,7 +32,24 @@ var routting = function(query, speratedQuery){
     global.robot.bot.deleteMessage(query.message.chat.id, query.message.message_id);
 
     //switch like
-    if(speratedQuery[2] === queryTag['like']) switchLike(query, speratedQuery);
+    if(speratedQuery[2] === queryTag['like']) fn.eventEmitter.emit('favliked', query, speratedQuery);
 }
 
+// events -------------------------------
+global.fn.eventEmitter.on('favliked', async (query, speratedQuery) =>
+{
+    var last = speratedQuery.length-1;
+    var item = {}
+    item.type = speratedQuery[last-1];
+    item.id = speratedQuery[last];
+
+    if(item.type !== fn.mstr.favorites.types['post']) return;
+
+    //get post
+    var post = await fn.db.post.findOne({'_id': item.id}).sort('name').exec().then();
+    if(!post) return;
+    item.name = post.name;
+
+    fn.m.favorites.user.addremove(query, item);
+});
 module.exports = { routting, checkQuery }

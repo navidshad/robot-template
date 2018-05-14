@@ -64,7 +64,7 @@ var show = async function(userid)
     fn.userOper.setSection(userid,  mess, true);
 }
 
-//add to favorites
+//add to or remove from favorites
 var addremove = async function(query, newitem)
 {
     var userid = query.from.id;
@@ -88,16 +88,7 @@ var addremove = async function(query, newitem)
     //save
     await favorites.save();
     //showItem
-    showItem(query, newitem);
-}
-
-var showItem = async function(query, item)
-{
-    var types = fn.mstr.favorites.types;
-    if(item.type === types['post']){
-        var user = await fn.userOper.checkProfile(query.from.id).then();
-        fn.m.post.user.show(query.message, item.name, user);
-    }
+    fn.eventEmitter.emit('favshowitem', query.from.id, newitem);
 }
 
 var getbutton = async function(userid, type, id)
@@ -123,12 +114,34 @@ var getbutton = async function(userid, type, id)
     return {'text': (notAdded) ? '🖤': '❤️', 'callback_data': fn_like};
 }
 
-var routting = function(message, speratedSection, user){
+var routting = async function(message, speratedSection, user)
+{
     var last = speratedSection.length-1;
     var text = message.text;
+    var userid = message.from.id;
 
-    //show
-    if(text === fn.mstr.favorites.btns_user['favorites']) show(message.from.id);
+    //show list
+    if(text === fn.mstr.favorites.btns_user['favorites']) show(userid);
+    
+    //show item
+    else 
+    {
+        var favorites = await get(userid);
+        var fav = null;
+
+        favorites.items.map(item => { if(item.name === text) fav = item; });
+
+        if(fav) fn.eventEmitter.emit('favshowitem', userid, fav);
+    }
 }
+
+global.fn.eventEmitter.on('favshowitem', async (userid, item) =>
+{
+    var types = fn.mstr.favorites.types;
+    if(item.type === types['post']){
+        var user = await fn.userOper.checkProfile(query.from.id).then();
+        fn.m.post.user.show(userid, item.name, user);
+    }
+});
 
 module.exports = { routting, checkRoute, addremove, getbutton }

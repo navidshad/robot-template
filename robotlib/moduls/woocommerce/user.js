@@ -154,8 +154,8 @@ var getProducts = async function(userid, paramenters, optionparam)
 var showDirectory = async function(userid, category, page, optionparam)
 {
     var option = (optionparam) ? optionparam : {};
-    var columns = fn.getModuleData('woocommerce', 'columns').value;
-    columns = (columns) ? parseInt(columns) : 2;
+    var columns = fn.getModuleData('woocommerce', 'columns');
+    columns = (columns) ? parseInt(columns.key) : 2;
 
     var catDistnation = null;
     if(option.main || !category) catDistnation = {'name': option.main, 'description':'', 'id':0};
@@ -218,10 +218,14 @@ var showMain = async function(userid, button)
     showDirectory(userid, 0, 1, {'main': button});
 }
 
-var showProduct = async function(userid, mName, categoryid, text)
+var showProduct = async function(userid, mName, id=null, text)
 {
-    var pid = text.split(' ');
-    pid = pid[pid.length-1];
+    var pid = null;
+    if(!id) {
+        pid = text.split(' ');
+        pid = pid[pid.length-1];
+    }
+    else pid = id;
 
     var product = await getFromWoocom (userid, 'products/' + pid);
     if(!product) return;
@@ -244,6 +248,12 @@ var showProduct = async function(userid, mName, categoryid, text)
         var buy = [{'text': 'خرید', 'callback_data': fx_buy}];
         detailArr.push(buy);
     }
+
+    //like button
+    var pType = fn.mstr[mName].types['product'];
+    var likebtn = await fn.m.favorites.user.getbutton(userid, pType, pid);
+
+    if(likebtn) detailArr.push([likebtn]);
 
     //mess
     var mess = getProductDetail(product, {'image':true});
@@ -269,7 +279,7 @@ var getProductDetail = function(product, optionparams)
     });
 
     //mess
-    var title = '☸️ ' + striptags(product.title);
+    var title = '☸️ ' + striptags(product.name);
     var id = '🆔 ' + product.id;
     var description = '🔶 ' + striptags(product.short_description);
     var mess = title;
@@ -354,7 +364,7 @@ var routting = async function(message, speratedSection, user, mName)
         //show search
         else if (requests.search.length > 0) showSearch(userid, requests.search, text);
         //show a product: name + id
-        else showProduct(userid, mName, parentid, text);
+        else showProduct(userid, mName, null, text);
     }
 }
 
@@ -365,3 +375,34 @@ module.exports = {
     salemode, getProductDetail,
     getFromWoocom, getCategories, getProducts
  }
+
+// events -------------------------------
+global.fn.eventEmitter.on('favliked', async (query, speratedQuery) =>
+{
+    var mName = 'woocommerce';
+    var userid = query.from.id;
+    var last = speratedQuery.length-1;
+    var item = {}
+    item.type = speratedQuery[last-1];
+    item.id = speratedQuery[last];
+
+    //get name
+    var pType = fn.mstr[mName].types['product'];
+    if(item.type === pType)
+    {
+        var product = await getFromWoocom(userid, 'products/' + item.id);
+        if(!product) return;
+        item.name = product.name;
+    }
+
+    fn.m.favorites.user.addremove(query, item);
+});
+
+global.fn.eventEmitter.on('favshowitem', async (userid, item) =>
+{
+    var mName = 'woocommerce';
+    var pType = fn.mstr[mName].types['product'];
+    if(item.type !== pType) return;
+
+    showProduct(userid, mName, item.id);
+});

@@ -130,7 +130,7 @@ var getPaied = async function(userid,  fid)
     //show factor
     showFactor(userid,  {'factor': factor});
 
-    //emite success peyment
+    //emit success peyment
     fn.eventEmitter.emit('successPeyment', factor);
 
     // //send payment messages
