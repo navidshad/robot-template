@@ -45,7 +45,7 @@ var routting = function(message, speratedSection, user){
         backtoParent(message, speratedSection, user);
 
     //back to a category
-    if(text.includes(fn.str['back']) && text.split(' - ')[1]){
+    else if(text.includes(fn.str['back']) && text.split(' - ')[1]){
         //console.log('back to category', text);
         var catname = text.split(' - ')[1];
         speratedSection.splice(last, 1);
