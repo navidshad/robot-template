@@ -32,6 +32,8 @@ var backtoParent = function(message, speratedSection, user)
         fn.commands.backToMainMenu(message.from.id, user);
     else if(fn.m.category.checkInValidCat(catname)) 
         showCategoryDir(message, catname, nsperatedSection);
+    // free string
+    else fn.freeStrings.routting(message, speratedSection, user); 
 }
 
 

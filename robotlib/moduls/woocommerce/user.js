@@ -156,9 +156,10 @@ var makebtntitle = function(product)
     var btn = product.name + ' ' + product.id;
     return btn;
 }
-var showDirectory = async function(userid, category, page, optionparam)
+var showDirectory = async function(user, category, page, optionparam)
 {
     var option = (optionparam) ? optionparam : {};
+    var userid = user.userid;
     var columns = fn.getModuleData('woocommerce', 'columns');
     columns = (columns) ? parseInt(columns.key) : 2;
 
@@ -168,15 +169,22 @@ var showDirectory = async function(userid, category, page, optionparam)
 
     var categoryid = catDistnation.id;
 
-    //get subcats
-    var categories = await getCategories(userid, {'parent':categoryid, 'page': page, 'per_page': 10});
-
-    //get subproducts
-    //main cat is 0, if request is for main cat, products will not be used
+    var categories = [];
     var products = [];
+
+    // get subcats and products
+    var p_categories = getCategories(userid, {'parent':categoryid, 'page': page, 'per_page': 10});
+    var P_products = getProducts(userid, {'category': catDistnation.id, 'page': page, 'per_page': 10});
+    
     console.log('categoryid', categoryid);
-    if(categoryid !== 0)
-        products = await getProducts(userid, {'category': catDistnation.id, 'page': page, 'per_page': 10});
+
+    var promissarr = [p_categories];
+    // main cat is 0, if request is for main cat, products will not be used
+    if(categoryid !== 0) promissarr.push(P_products)
+    var result = await Promise.all(promissarr).then();
+
+    categories = result[0];
+    if(categoryid !== 0) products = result[1];
 
     var list = [];
     categories.forEach(cat => { list.push(cat.name); });
@@ -190,14 +198,42 @@ var showDirectory = async function(userid, category, page, optionparam)
     }
 
     var back = fn.mstr['category']['backtoParent'];
-    var remarkup = fn.generateKeyboard({'custom':true, 'grid':true, 'list':list, 'back':back}, false, columns);
+    var remarkup = fn.generateKeyboard({'custom':true, 'grid':true, 'list':list}, false, columns);
 
-    //navigator
-    var next = page + 1;
-    var back = page -1;
-    var navigator = ['⬅️ ' + ' صفحه ' + next];
-    if(back > 0) navigator.push(back + ' صفحه ' + '➡️');
+    // navigator
+    var nextp = page + 1;
+    var backp = page -1;
+    var navigator = ['⬅️ ' + ' صفحه ' + nextp];
+    if(backp > 0) navigator.push(backp + ' صفحه ' + '➡️');
     remarkup.reply_markup.keyboard.push(navigator);
+
+    // begin backs ---------------------------
+    var backbtns = await fn.db.wooBackbtn.find().exec().then();
+    var wooSection = fn.getModuleData('woocommerce', 'menuItem').value;
+
+    var speratedSection = user.section.split('/');
+    //speratedSection = speratedSection.slice(0, speratedSection.length-1);
+
+    var extractedBacks = [];
+    backbtns.map(item => 
+    {
+        var isSection = false;
+        var weAreChild = false;
+        var weAreRoot = false;
+        var itemCatid = item.catid.toString();
+
+        speratedSection.forEach(sec => { if(sec === itemCatid) isSection = true; });
+        if(categoryid.toString() !== itemCatid && isSection) weAreChild = true;
+        if(categoryid == 0) weAreRoot = true;
+
+        if(weAreChild && !weAreRoot) 
+            extractedBacks.push(item.name);
+    });
+
+    if(extractedBacks.length) remarkup.reply_markup.keyboard.push(extractedBacks);
+    remarkup.reply_markup.keyboard.push([back]);
+
+    // end backs -----------------------------
 
     var mess = (catDistnation.description.length > 0) ? catDistnation.description : catDistnation.name;
     global.robot.bot.sendMessage(userid, mess, remarkup);
@@ -218,10 +254,10 @@ var searchRoute = async function (userid, text)
     });
 }
 
-var showMain = async function(userid, button)
+var showMain = async function(user, button)
 {
-    await fn.userOper.setSection(userid, button, true);
-    showDirectory(userid, 0, 1, {'main': button});
+    await fn.userOper.setSection(user.userid, button, true);
+    showDirectory(user, 0, 1, {'main': button});
 }
 
 var showProduct = async function(userid, mName, id=null, text)
@@ -308,10 +344,28 @@ var routting = async function(message, speratedSection, user, mName)
     var back = fn.mstr['category']['backtoParent'];
 
     //show main
-    if (message.text === button) showMain(userid, button);
+    if (message.text === button) showMain(user, button);
 
+    //back buttons
+    var backbtns = await fn.db.wooBackbtn.find().exec().then();
+    var backbtn = null;
+    backbtns.map(item => { if(item.name === text) backbtn = item; });
+
+    if(backbtn)
+    {
+        if(backbtn.destid == 0)
+        {
+            showMain(user, button);
+            return;
+        }
+
+        var category = await getFromWoocom (userid, 'products/categories/' + backbtn.destid);
+        if(category) showDirectory(user, category, 1);
+        return;
+    }
+    
     //back
-    else if(text == back)
+    if(text == back)
     {
         console.log('back to upcat woo')
         //backup to botcat
@@ -329,7 +383,7 @@ var routting = async function(message, speratedSection, user, mName)
         var upcat = {};
         if(upid !== 0) upcat = await getFromWoocom (userid, 'products/categories/' + upid);
 
-        showDirectory(userid, upcat, 1, op);
+        showDirectory(user, upcat, 1, op);
     }
 
     //navigator
@@ -348,7 +402,7 @@ var routting = async function(message, speratedSection, user, mName)
         var upid = parseInt(speratedSection[last]);
         var category = await getFromWoocom (userid, 'products/categories/' + upid);
 
-        showDirectory(userid, category, page);
+        showDirectory(user, category, page);
     }
 
     //choose item
@@ -356,8 +410,6 @@ var routting = async function(message, speratedSection, user, mName)
     {
         console.log('choose item woo')
         var parentid = (speratedSection[last] == button) ? 0 : parseInt(speratedSection[last]);
-        var categories = await getCategories(userid, {'parent':parentid}, {'name': text});
-
         var requests = {
             'categories'  : await getCategories(userid, {'parent':parentid}, {'name': text}),
             //'search'      : await getProducts(userid, {'search': text}),
@@ -366,14 +418,14 @@ var routting = async function(message, speratedSection, user, mName)
         await Promise.all([requests.requests, requests.search]);
 
         //show a category
-        if(requests.categories.length > 0) showDirectory(userid, categories[0], 1);
+        if(requests.categories.length > 0) showDirectory(user, requests.categories[0], 1);
 
         //show a product: name + id
         else showProduct(userid, mName, null, text);
     }
 }
 
-var salemode = require('./salemode');
+var salemode = require('./user/salemode');
 
 module.exports = {
     routting, checkRoute,

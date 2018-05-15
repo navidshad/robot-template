@@ -8,4 +8,11 @@ var wooSubmiterSchema = new Schema({
   attributes: [attribute],
 });
 
+var wooBackbtns = new Schema({
+  name: String,
+  catid: Number,
+  destid: Number,
+});
+
 module.exports.wooSubmiter = mongoose.model('wooSubmiters', wooSubmiterSchema);
+module.exports.wooBackbtn  = mongoose.model('wooBackbtns', wooBackbtns);

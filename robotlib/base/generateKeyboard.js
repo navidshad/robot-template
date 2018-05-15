@@ -1,40 +1,41 @@
 fn = global.fn;
 
-var custome = function(arr, grid, keys, back, columns){
-            //grid mode
-            if(grid){
-                var items = arr;
-                var row = [];
-                var secondPosition = true;
+var custome = function(arr, grid, keys, back, columns)
+{
+    //grid mode
+    if(grid){
+        var items = arr;
+        var row = [];
+        var secondPosition = true;
 
-                //make grid
-                for (var i = 0; i < items.length; i++) {
-                    const btn = items[i];
-                    row.push(btn);
+        //make grid
+        for (var i = 0; i < items.length; i++) {
+            const btn = items[i];
+            row.push(btn);
 
-                    if(row.length >= columns || i == items.length-1)
-                    {
-                        keys.reply_markup.keyboard.push(row);
-                        row = [];
-                    }
-                }
+            if(row.length >= columns || i == items.length-1)
+            {
+                keys.reply_markup.keyboard.push(row);
+                row = [];
             }
-            //list
-            else{
-                arr.forEach(function(element) {
-                    if(typeof element === 'string')keys.reply_markup.keyboard.push([element]);
-                    else keys.reply_markup.keyboard.push(element);
-                }, this);
-            }
+        }
+    }
+    //list
+    else{
+        arr.forEach(function(element) {
+            if(typeof element === 'string')keys.reply_markup.keyboard.push([element]);
+            else keys.reply_markup.keyboard.push(element);
+        }, this);
+    }
 
-            //back button
-            if(back){
-                keys.reply_markup.keyboard.push([back]);
-            }
-            else{
-                keys.reply_markup.keyboard.push([fn.str['backToMenu']]);
-            }
-            return keys;
+    //back button
+    if(back){
+        keys.reply_markup.keyboard.push([back]);
+    }
+    else{
+        //keys.reply_markup.keyboard.push([fn.str['backToMenu']]);
+    }
+    return keys;
 }
 
 module.exports = function(flag, onlyBack, columns){
@@ -88,6 +89,6 @@ module.exports = function(flag, onlyBack, columns){
             var key = global.robot.config.modules[element.modulename];
             if(key) items.push(element.name);
         }
-        return custome(items, true, keys, null, columns);
+        return custome(items, true, keys, flag.back, columns);
     }
 }

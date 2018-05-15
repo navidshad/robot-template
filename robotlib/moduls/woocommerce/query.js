@@ -39,6 +39,10 @@ var routting = function(query, speratedQuery, user, mName)
     //user buy
     else if (speratedQuery[2] === queryTag['salemode'])
         fn.m[mName].user.salemode.query(query, speratedQuery, user, mName);
+
+    //backbutton
+    else if (speratedQuery[2] === queryTag['backbtn'])
+        fn.m[mName].backbtns.query(query, speratedQuery, user, mName);
 }
 
 module.exports = { routting, checkQuery }
