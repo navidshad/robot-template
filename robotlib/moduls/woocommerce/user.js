@@ -161,7 +161,8 @@ var showDirectory = async function(user, category, page, optionparam)
     var option = (optionparam) ? optionparam : {};
     var userid = user.userid;
     var columns = fn.getModuleData('woocommerce', 'columns');
-    columns = (columns) ? parseInt(columns.key) : 2;
+    columns = (columns) ? parseInt(columns.value) : 2;
+    //console.log('columns', columns);
 
     var catDistnation = null;
     if(option.main || !category) catDistnation = {'name': option.main, 'description':'', 'id':0};
@@ -175,7 +176,7 @@ var showDirectory = async function(user, category, page, optionparam)
     // get subcats and products
     var p_categories = getCategories(userid, {'parent':categoryid, 'page': page, 'per_page': 10});
     var P_products = getProducts(userid, {'category': catDistnation.id, 'page': page, 'per_page': 10});
-    
+
     console.log('categoryid', categoryid);
 
     var promissarr = [p_categories];
@@ -215,7 +216,7 @@ var showDirectory = async function(user, category, page, optionparam)
     //speratedSection = speratedSection.slice(0, speratedSection.length-1);
 
     var extractedBacks = [];
-    backbtns.map(item => 
+    backbtns.map(item =>
     {
         var isSection = false;
         var weAreChild = false;
@@ -226,7 +227,7 @@ var showDirectory = async function(user, category, page, optionparam)
         if(categoryid.toString() !== itemCatid && isSection) weAreChild = true;
         if(categoryid == 0) weAreRoot = true;
 
-        if(weAreChild && !weAreRoot) 
+        if(weAreChild && !weAreRoot)
             extractedBacks.push(item.name);
     });
 
@@ -242,12 +243,12 @@ var showDirectory = async function(user, category, page, optionparam)
 
 var searchRoute = async function (userid, text)
 {
-    return new Promise(async (resolve, reject) => 
+    return new Promise(async (resolve, reject) =>
     {
         var products = await getProducts(userid, {'search': text});
         var reesult = {
-            items: products, 
-            mName:'woocommerce', 
+            items: products,
+            mName:'woocommerce',
             'makebtntitle': makebtntitle
         };
         resolve(reesult);
@@ -363,7 +364,7 @@ var routting = async function(message, speratedSection, user, mName)
         if(category) showDirectory(user, category, 1);
         return;
     }
-    
+
     //back
     if(text == back)
     {
@@ -465,7 +466,7 @@ global.fn.eventEmitter.on('favshowitem', async (userid, item) =>
     showProduct(userid, mName, item.id);
 });
 
-global.fn.eventEmitter.on('searchshowitem', async (message, speratedSection) => 
+global.fn.eventEmitter.on('searchshowitem', async (message, speratedSection) =>
 {
     var mName = 'woocommerce';
     var symbol = fn.mstr[mName].symbol;
