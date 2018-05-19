@@ -229,15 +229,17 @@ var showDirectory = async function(user, category, page, optionparam)
     backbtns.map(item =>
     {
         var isSection = false;
+        var isCategory = false;
         var weAreChild = false;
         var weAreRoot = false;
         var itemCatid = item.catid.toString();
 
         speratedSection.forEach(sec => { if(sec === itemCatid) isSection = true; });
+        if(categoryid == item.destid) isCategory = true;
         if(categoryid.toString() !== itemCatid && isSection) weAreChild = true;
         if(categoryid == 0) weAreRoot = true;
 
-        if(weAreChild && !weAreRoot)
+        if(weAreChild && !weAreRoot && !isCategory)
             extractedBacks.push(item.name);
     });
 
@@ -327,6 +329,7 @@ var getProductDetail = function(product, optionparams)
     var currency = (currencyData.value) ? currencyData.value : 'تومان';
 
     //atrrs
+    if(!product.attributes) return;
     var atrrsDetail = '';
     product.attributes.forEach(atrr => {
         atrrsDetail = '✴️ ' + atrr.name + ': ' + atrr.options + '\n';
