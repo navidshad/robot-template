@@ -194,8 +194,8 @@ var showDirectory = async function(user, category, page, optionparam)
     products = (categoryid !== 0) ? result[2] : [];
     // // next pages
     var nextp_cat = result[1];
-    var next_pro = result[3];
-    var totalNext = nextp_cat.length + next_pro.length;
+    var nextp_pro = (result[3]) ? result[3] : [];
+    var totalNext = nextp_cat.length + nextp_pro.length;
 
     var list = [];
     categories.forEach(cat => { list.push(cat.name); });
