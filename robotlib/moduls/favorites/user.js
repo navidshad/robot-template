@@ -50,7 +50,7 @@ var show = async function(userid)
 {
     var favorites = await get(userid);
     var list = favorites.items.map(item => { return item.name });
-    var back = fn.str['backToParent'];
+    var back = fn.mstr.category['backtoParent'];
     var markup = fn.generateKeyboard({'custom': true, 'grid':true, 'list': list, 'back':back}, false);
     var mess = fn.mstr.favorites.btns_user['favorites'];
 

@@ -73,7 +73,7 @@ var parametersToString = function(parameters){
     return query;
 }
 
-var getFromWoocom = async function(userid, endPoint, parameters)
+var getFromWoocom = async function(userid, endPoint, parameters, option={})
 {
     var tempEndpoint = endPoint;
     if(parameters) tempEndpoint += parametersToString(parameters);
@@ -84,7 +84,8 @@ var getFromWoocom = async function(userid, endPoint, parameters)
     var body = JSON.parse(result.body);
 
     //404 is missing or dosint exist
-    if(body.code)
+    var printerror = (option.printerror !== null) ? option.printerror : true;
+    if(body.code && printerror)
     {
       console.log('\x1b[31m',body.code, body.message);
       console.log('\x1b[33m%s\x1b[0m: ', tempEndpoint);
@@ -95,10 +96,9 @@ var getFromWoocom = async function(userid, endPoint, parameters)
     else return body;
 }
 
-var getCategories = async function(userid, paramenters, optionparam)
+var getCategories = async function(userid, paramenters, option={})
 {
-    var option = (optionparam) ? optionparam : {};
-    var categories = await getFromWoocom(userid, 'products/categories', paramenters);
+    var categories = await getFromWoocom(userid, 'products/categories', paramenters, {'printerror': option.printerror});
     var result = [];
     categories.forEach(cat =>
     {
@@ -126,10 +126,9 @@ var getCategories = async function(userid, paramenters, optionparam)
     return result;
 }
 
-var getProducts = async function(userid, paramenters, optionparam)
+var getProducts = async function(userid, paramenters, option={})
 {
-    var option = (optionparam) ? optionparam : {};
-    var products = await getFromWoocom(userid, 'products', paramenters);
+    var products = await getFromWoocom(userid, 'products', paramenters, {'printerror': option.printerror});
 
     var result = [];
     products.forEach(product =>
@@ -176,16 +175,27 @@ var showDirectory = async function(user, category, page, optionparam)
     // get subcats and products
     var p_categories = getCategories(userid, {'parent':categoryid, 'page': page, 'per_page': 10});
     var P_products = getProducts(userid, {'category': catDistnation.id, 'page': page, 'per_page': 10});
+    // get next page
+    var p_categories_n = getCategories(userid, {'parent':categoryid, 'page': page+1, 'per_page': 10}, {'printerror': false});
+    var P_products_n = getProducts(userid, {'category': catDistnation.id, 'page': page+1, 'per_page': 10}, {'printerror': false});
 
     console.log('categoryid', categoryid);
 
-    var promissarr = [p_categories];
+    var promissarr = [p_categories, p_categories_n];
     // main cat is 0, if request is for main cat, products will not be used
-    if(categoryid !== 0) promissarr.push(P_products)
+    if(categoryid !== 0) {
+        promissarr.push(P_products)
+        promissarr.push(P_products_n)
+    }
     var result = await Promise.all(promissarr).then();
 
+    // get results from promiss
     categories = result[0];
-    if(categoryid !== 0) products = result[1];
+    products = (categoryid !== 0) ? result[2] : [];
+    // // next pages
+    var nextp_cat = result[1];
+    var next_pro = result[3];
+    var totalNext = nextp_cat.length + next_pro.length;
 
     var list = [];
     categories.forEach(cat => { list.push(cat.name); });
@@ -206,7 +216,7 @@ var showDirectory = async function(user, category, page, optionparam)
     var backp = page -1;
     var navigator = ['⬅️ ' + ' صفحه ' + nextp];
     if(backp > 0) navigator.push(backp + ' صفحه ' + '➡️');
-    remarkup.reply_markup.keyboard.push(navigator);
+    if(totalNext) remarkup.reply_markup.keyboard.push(navigator);
 
     // begin backs ---------------------------
     var backbtns = await fn.db.wooBackbtn.find().exec().then();
@@ -310,6 +320,7 @@ var getProductDetail = function(product, optionparams)
 {
     var option = (optionparams) ? optionparams : {};
     var striptags = require('striptags');
+    const replaceString = require('replace-string'); 
 
     //get currentcy
     var currencyData = fn.getModuleData('woocommerce', 'currency');
@@ -324,12 +335,16 @@ var getProductDetail = function(product, optionparams)
     //mess
     var title = '☸️ ' + striptags(product.name);
     var id = '🆔 ' + product.id;
-    var description = '🔶 ' + striptags(product.short_description, '&nbsp;');
+
+    var description = '🔶 ' + replaceString(product.short_description, '&nbsp;', '');
+    description = striptags(description);
+    
+    var price = (product.price.length) ? product.price : 0;
     var mess = title;
     mess += '\n' + description.trim();
     mess += '\n' + atrrsDetail;
-    mess += '💵 قیمت: ' + product.price + ' ' + currency;
-    mess += '\n' + id;
+    mess += '💵 قیمت: ' + price + ' ' + currency;
+    //mess += '\n' + id;
     //image
     if(option.image && product.images.length > 0) mess += '\n\n' + product.images[0].src;
 
@@ -345,7 +360,10 @@ var routting = async function(message, speratedSection, user, mName)
     var back = fn.mstr['category']['backtoParent'];
 
     //show main
-    if (message.text === button) showMain(user, button);
+    if (message.text === button) {
+        showMain(user, button);
+        return;
+    }
 
     //back buttons
     var backbtns = await fn.db.wooBackbtn.find().exec().then();

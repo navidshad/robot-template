@@ -43,23 +43,18 @@ var show = async function(userid)
     titles.push(fn.mstr.commerce['settings']);
     titles.push(fn.mstr.commerce.btns['couponGenerators']);
 
-    var factors = await fn.db.factor.find({'bot':botusername, 'ispied': true})
-    .sort('-_id').exec().then();
+    var factors = await fn.db.factor.find({'ispaid': true})
+    .sort('-_id').limit(10).exec().then();
 
     factors.forEach(function(item) {
-        var readedSym = fn.mstr.commerce.readSym[0];
-        if(item.readed)  readedSym = fn.mstr.commerce.readSym[1];
-        var title = 'ـ ' + readedSym + ' ' + item.username + ' | ' + item.date;
+        var title = item.number.toString();
         titles.push(title);
     }, this);
 
     //show list
-    if(titles.length > 0){
-        var markup = fn.generateKeyboard({custom:true, list:titles, grid:true, back:fn.str.goToAdmin['back']}, false);
-        global.robot.bot.sendMessage(userid, fn.mstr[name].name, markup);
-        fn.userOper.setSection(userid, fn.mstr[name].name, true);
-    }
-    else global.robot.bot.sendMessage(userid, 'هنوز هیچ فاکتوری ثبت نشده است.');
+    var markup = fn.generateKeyboard({custom:true, list:titles, grid:true, back:fn.str.goToAdmin['back']}, false);
+    global.robot.bot.sendMessage(userid, fn.mstr[name].name, markup);
+    fn.userOper.setSection(userid, fn.mstr[name].name, true);
 }
 
 var showFactor = function(message){

@@ -234,7 +234,7 @@ global.fn.eventEmitter.on('affterSuccessPeyment', async (factor) =>
     //each generator
     for (let index = 0; index < generators.length; index++) 
     {
-        const element = array[index];
+        const element = generators[index];
         var sessions = element.sessions;
         //get buy mode detail
         var temp = null

@@ -52,7 +52,7 @@ var addRemoveAttr = async function(userid, mName, productid, attrindex, optionin
     else if(waIndex !== null) wooSubmiter.attributes.splice(waIndex, 1);
 
     await wooSubmiter.save().then();
-    showAttributes(userid, mName, productid, {'view': 'options', 'attrindex': attrindex});
+    showAttributes(userid, mName, productid, {'attrindex': attrindex});
 }
 
 var checkAttrOption = function(wooSubmiter, option)
@@ -71,13 +71,13 @@ var getView_main = function(mName, product)
     var qt = fn.mstr[mName].query;
     product.attributes.forEach((attr, i) => {
         var fx_attr = qt[mName] + '-' + qt['user'] + '-' + qt['salemode'] + '-' + qt['attribute'] + '-' + i + '-' + product.id;
-        var attrBtn = [{'text': 'انتخاب ' + attr.name, 'callback_data': fx_attr}];
+        var attrBtn = [{'text': 'ابتدا انتخاب ' + attr.name, 'callback_data': fx_attr}];
         detailArr.push(attrBtn);
     });
 
     //submit
     var fx_submit = qt[mName] + '-' + qt['user'] + '-' + qt['salemode'] + '-' + qt['addtobag'] + '-' + product.id;
-    var submit = [{'text': '🛍✅ ' + 'ثبت و خرید', 'callback_data': fx_submit}];
+    var submit = [{'text': '📝 ثبت و خرید 🛒', 'callback_data': fx_submit}];
     detailArr.push(submit);
 
     return detailArr;
@@ -89,7 +89,7 @@ var getView_attribute = function(mName, product, wooSubmiter, attrindex)
     var qt = fn.mstr[mName].query;
     //back btn
     var fx_back = qt[mName] + '-' + qt['user'] + '-' + qt['salemode'] + '-' + qt['buy'] + '-' + product.id;
-    var backBtn = [{'text': '🔙' + 'برگشت به ویژگی ها', 'callback_data': fx_back}];
+    var backBtn = [{'text': 'بازگشت جهت ثبت و خرید', 'callback_data': fx_back}];
     detailArr.push(backBtn);
 
     //attr options
@@ -111,6 +111,11 @@ var showAttributes = async function(userid, mName, productid, optionparams)
     var option = (optionparams) ? optionparams : {};
     var product = await fn.m.woocommerce.user.getFromWoocom(userid, 'products/' + productid);
     if(!product) return;
+    else if(!product.price.length)
+    {
+        global.robot.bot.sendMessage(userid, `این محصول بدون قیمت است لطفا به مدیر فروشگاه اطلاع دهید. \n 🆔 ${product.id} \n ☸️ ${product.name}`);
+        return;
+    }
 
     //get wooSubmiter
     var wooSubmiter = await getwooSubmiter(userid, productid);
