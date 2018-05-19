@@ -44,7 +44,7 @@ var show = async function(userid)
     titles.push(fn.mstr.commerce.btns['couponGenerators']);
 
     var factors = await fn.db.factor.find({'ispaid': true})
-    .sort('-_id').limit(10).exec().then();
+    .sort('-_id').limit(35).exec().then();
 
     factors.forEach(function(item) {
         var title = item.number.toString();
@@ -57,32 +57,34 @@ var show = async function(userid)
     fn.userOper.setSection(userid, fn.mstr[name].name, true);
 }
 
-var showFactor = function(message){
-    var botusername = global.robot.username;
-    //get date from message
-    seperateText = message.text.split('|');
-    date = seperateText[1];
-    date = (date) ? date.trim() : '';
-
+var showFactor = async function(userid, fnumber, option={})
+{
     //find message
-    fn.db.bag.findOne({'date':date, 'bot':botusername}, function(ee, item){
-        if(item){
-            var detailArr = [];
-            var fn_answer = fn.mstr.commerce.query['commerce'] + '-' + fn.mstr.commerce.query['answer'] + '-' + item._id;
-            var fn_delete = fn.mstr.commerce.query['commerce'] + '-' + fn.mstr.commerce.query['delete'] + '-' + item._id;
-            detailArr.push([ 
-                {'text': 'ارسال پاسخ', 'callback_data': fn_answer},
-                {'text': 'حذف', 'callback_data': fn_delete}
-            ]);
+    var factor = await fn.db.factor.findOne({'number':fnumber}).exec().then();
+    if(!factor) return;
 
-            bagMess = 'پیام از طرف ' + '@' + item.username +
-            '\n' + 'ــــــــــــــــــــ' + '\n' + item.message + '\n \n @' + global.robot.username;
-            global.robot.bot.sendMessage(message.from.id, bagMess, {"reply_markup" : {"inline_keyboard" : detailArr}});
-        }
-        else{
-            global.robot.bot.sendMessage(message.from.id, 'این پیام دیگر موجود نیست');
-        }
+    //get user bag
+    var bag = await fn.m[name].user.bag.get(factor.userid);
+
+    //item details
+    var details = '';
+    factor.products.forEach(pro =>
+    {
+        if(!pro.data.length) return;
+        details += `\n${pro.name}: `;
+        pro.data.forEach(de => { details += `${de.key} ${de.value}, `; });
     });
+
+    var text = `${factor.desc} \n`;
+    text += `<code>ـــــــــــــــــ</code> \n`;
+    text += `<code> ${details} </code> \n`;
+    text += `<code>ـــــــــــــــــ</code> \n`;
+    text += `👤 ${factor.userid} \n`;
+    text += `🏠 ${bag.address} \n`;
+    text += `📱 ${bag.phone}`;
+
+    if(option.alertoadmins) fn.alertadmins(text);
+    else global.robot.bot.sendMessage(userid, text, {'parse_mode':'HTML'});
 }
 
 var routting = function(message, speratedSection, user)
@@ -102,6 +104,9 @@ var routting = function(message, speratedSection, user)
     //generators
     else if(text === couponGenerators || speratedSection[3] === couponGenerators) 
         couponGenerator.routting(message, speratedSection);
+
+    //show a factor 
+    else showFactor(message.from.id, text);
 }
 
 var setting = require('./settings');
@@ -114,5 +119,5 @@ var gates = {
 }
 
 module.exports = { name, checkRoute, routting, query, show, user, gates, 
-    coupon, couponGenerator 
+    coupon, couponGenerator, showFactor
 }

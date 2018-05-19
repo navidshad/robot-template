@@ -132,7 +132,7 @@ var getPaied = async function(userid,  fid)
 
     //emit success peyment
     fn.eventEmitter.emit('successPeyment', factor);
-
+    fn.m['commerce'].showFactor(null, factor.number, {'alertoadmins': true});
     // //send payment messages
     // factor.products.forEach(element => {
     //     //peform specyfic action after peyment according to product type

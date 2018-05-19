@@ -268,7 +268,7 @@ var alertadmins = async function(mess)
 {
     var admins = await fn.db.user.find({'isAdmin': true}).exec().then();
     admins.forEach(user => {
-        global.robot.bot.sendMessage(user.userid, mess);
+        global.robot.bot.sendMessage(user.userid, mess, {'parse_mode':'HTML'});
     });
 }
 
