@@ -209,7 +209,7 @@ var showFactor = async function(userid,  option)
         var fn_getpaid = query['commerce'] + '-' + query['user'] + '-' + query['getpaid'] + '-' + option.factor.id;
         var fn_delete = query['commerce'] + '-' + query['user'] + '-' + query['deletefactor'] + '-' + option.factor.id;
         detailArr.push([
-            {'text': 'پرداخت آزمایشی', 'callback_data': fn_getpaid},
+            //{'text': 'پرداخت آزمایشی', 'callback_data': fn_getpaid},
             {'text': 'حذف فاکتور', 'callback_data': fn_delete}
         ]);
 
