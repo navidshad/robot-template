@@ -72,7 +72,21 @@ var addToBag = async function(userid, type, productid, datas)
 var submitBag = async function(userid)
 {
     var userBag = await get(userid);
+    if(!userBag.address.length && !userBag.phone)
+    {
+        global.robot.bot.sendMessage(userid, 'لطفا ابتدا آدرس و شماره تلفن خود را وارد کنید.');
+        show(userid, userBag);
+        return;
+    }
+    // no items
+    else if (!userBag.items.length)
+    {
+        global.robot.bot.sendMessage(userid, 'ابتدا باید چندتا محصول به سبد خرید خود اضافه کنید');
+        return;
+    }
+    
     fn.m.commerce.user.factor.create(userid, userBag.items, {'coupon':userBag.cid});
+
 }
 
 var getView_main = function()
