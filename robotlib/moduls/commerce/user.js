@@ -102,7 +102,7 @@ var query = async function(query, speratedQuery, user)
     {
         var mess = fn.mstr.commerce.mess['getAddress'];
         var nSection = fn.str['mainMenu'] + '/' + fn.mstr.commerce.btns_user['bagshop'] + '/' + mess;
-        var markup = fn.generateKeyboard({'section' : fn.str['backToMenu']}, true);
+        var markup = fn.generateKeyboard({'section': fn.str['backToMenu']}, true);
 
         fn.userOper.setSection(query.from.id, nSection, false);
         global.robot.bot.sendMessage(query.from.id, mess, markup);
@@ -116,7 +116,7 @@ var query = async function(query, speratedQuery, user)
         ]
         var mess = fn.mstr.commerce.mess['getPhone'];
         var nSection = fn.str['mainMenu'] + '/' + fn.mstr.commerce.btns_user['bagshop'] + '/' + mess;
-        var markup = fn.generateKeyboard({'custom': true, 'grid':true, 'list': list}, false);
+        var markup = fn.generateKeyboard({'custom': true, 'grid':true, 'list': list, back: fn.str['backToMenu'] }, false);
         fn.userOper.setSection(query.from.id, nSection, false);
         global.robot.bot.sendMessage(query.from.id, mess, markup);
     }

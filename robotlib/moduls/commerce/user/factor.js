@@ -189,8 +189,6 @@ var showFactor = async function(userid,  option)
     
     //peyment
     var query = fn.mstr.commerce.query;
-    var peyLink = 'https://nextpay.ir/';
-    var fn_detail = query['commerce'] + '-' + query['user'] + '-' + query['itemsdetail'] + '-' + option.factor.id;
     var detailArr = [];
 
 
