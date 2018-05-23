@@ -336,8 +336,8 @@ var getProductDetail = function(product, optionparams)
     });
 
     //mess
-    var title = '☸️ ' + striptags(product.name);
-    var id = '🆔 ' + product.id;
+    var title = '🆔 ' + striptags(product.name);
+    var id = '☸️ ' + product.id;
 
     var description = '🔶 ' + replaceString(product.short_description, '&nbsp;', '');
     description = striptags(description);
@@ -347,7 +347,7 @@ var getProductDetail = function(product, optionparams)
     mess += '\n' + description.trim();
     mess += '\n' + atrrsDetail;
     mess += '💵 قیمت: ' + price + ' ' + currency;
-    //mess += '\n' + id;
+    mess += '\n' + id;
     //image
     if(option.image && product.images.length > 0) mess += '\n\n' + product.images[0].src;
 
