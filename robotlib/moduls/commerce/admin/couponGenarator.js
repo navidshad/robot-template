@@ -217,11 +217,8 @@ var getGentemp = async function(userid)
     return gentemp;
 }
 
-var generateCoupon = async function(userid, generator, productcount)
+var generateCoupon = async function(userid, generator)
 {
-    if(generator.minimumP > 0 && generator.minimumP > productcount) return;
-    else if (generator.maximumP > 0 && generator.maximumP < productcount) return;
-
     var coupon = {
         'userid'        : userid,
         'days'          : generator.days,
@@ -249,6 +246,12 @@ global.fn.eventEmitter.on('affterSuccessPeyment', async (factor) =>
     {
         const element = generators[index];
         var sessions = element.sessions;
+
+        //check products.length
+        var productcount = factor.products.length;
+        if(element.minimumP > 0 && element.minimumP > productcount) continue;
+        else if (element.maximumP > 0 && element.maximumP < productcount) continue;
+
         //get buy mode detail
         var temp = null
         var tindex = null
@@ -281,7 +284,6 @@ global.fn.eventEmitter.on('affterSuccessPeyment', async (factor) =>
         await gentemp.save().then();
 
         //generate coupon
-        var productcount = factor.products.length;
         generateCoupon (user.userid, element, productcount);
     }
 
@@ -338,8 +340,7 @@ global.fn.eventEmitter.on('affterChannelCheck', async (userid, isMember) =>
         await gentemp.save().then();
 
         //generate coupon
-        var productcount = factor.products.length;
-        generateCoupon (user.userid, element, productcount);
+        generateCoupon (user.userid, element);
     }
 });
 
@@ -384,8 +385,7 @@ global.fn.eventEmitter.on('affterInvitedUserRegistered', async (inviter, newuser
         await gentemp.save().then();
 
         //generate coupon
-        var productcount = factor.products.length;
-        generateCoupon (user.userid, element, productcount);
+        generateCoupon (user.userid, element);
     }
 });
 
