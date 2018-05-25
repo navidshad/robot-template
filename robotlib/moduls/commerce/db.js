@@ -20,6 +20,7 @@ var bagSchema = new Schema({
     'phone'         : {type:Number, default:0},
     //coupon code
     cid             : String,
+    usedcoupons     : []
 });
   
 var factorSchema = new Schema({
@@ -38,11 +39,10 @@ var factorSchema = new Schema({
 var couponSchema = new Schema({
     code        : String,
     userid      : Number,
-
     startDate   : Date,
     endDate     : Date,
-    consumption : {type:Number, default:1},
-
+    consumption     : {type:Number, default:1},
+    consumptionway  : {type:String, default:'custom'},
     discountmode: {type:String, default:'amount'},
     amount      : Number,
     percent     : Number,
@@ -62,8 +62,10 @@ var couponGenaratorSchema = new Schema({
     days        : {type:Number, default:1},
     hours       : {type:Number, default:0},
     consumption : {type:Number, default:1},
-
-    sessions    : {type:Number, default:5},
+    consumptionway  : {type:String, default:'custom'},
+    sessions        : {type:Number, default:5},
+    minimumP        : {type:Number, default:1},
+    maximumP        : {type:Number, default:5},
 });
 
 var gtdetail = {name:String, counter:Number, olde:String}

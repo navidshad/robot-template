@@ -49,6 +49,8 @@ module.exports.commerce = {
         //generator
         generator:'gen',
         sessions:'sessions',
+        minimumP:'minimumP',
+        maximumP:'maximumP',
         mode:'mode',
         discountmode:'discountmode',
         amount:'amount',
@@ -56,6 +58,7 @@ module.exports.commerce = {
         days:'days',
         hours:'hours',
         consumption:'consumption',
+        consumptionway:'consumptionway',
         status:'status',
         delete:'delete',
 
@@ -84,7 +87,14 @@ module.exports.commerce = {
     },
 
     datas: {
-        
+        oneCoupons: {
+            'name'  : 'حالت تک بن',
+            'mess'  : 'اگر این حالت فعال باشد، از هر نوع بن "درصدی، نقدی" فقط یک بار صادر میشود و در صدور های بعد تا مادامی که بن مصرف نشده باشد، فقط به مدت زمان بن قبلی اضافه میشود.',
+            'items' : [
+                {'name': 'true', 'lable':'فعال'},
+                {'name': 'false', 'lable':'غیر فعال'},
+            ]
+        },
         testpayment:{
             'name'  : 'پرداخت آزمایشی',
             'mess'  : 'لطفا نوع تعامل ربات با فروشگاه خود را مشخص کنید.',
@@ -107,11 +117,23 @@ module.exports.commerce = {
             'type': Number,
         },
 
+        minimumP: {
+            'name': 'حداقل محصول',
+            'mess': 'لطفا حداقل تعداد محصول برای صدور بن را مشخص کنید.',
+            'type': Number,
+        },
+
+        maximumP: {
+            'name': 'حداکثر محصول',
+            'mess': 'لطفا حداکثر تعداد محصول برای صدور بن را مشخص کنید.',
+            'type': Number,
+        },
+
         mode:{
-            'name'  : 'حالت',
+            'name'  : 'حالت صدور',
             'mess'  : 'لطفا حالت استخراج بن ها را انتخاب کنید.',
             'items' : [
-                {'name': 'buy',         'lable':'خرید کردن'},
+                {'name': 'buy', 'lable':'خرید کردن'},
                 {'name': 'membership', 'lable':'عضویت در کانال'},
                 {'name': 'invite', 'lable':'دعوت کاربران'},
             ],
@@ -121,19 +143,19 @@ module.exports.commerce = {
             'name': 'نوع تخفیف',
             'mess': 'لطفا حالت بن های تخفیف را مشخص کنید.',
             'items' : [
-                {'name': 'amount', 'lable':'واحد پولی'},
+                {'name': 'amount', 'lable':'نقدی'},
                 {'name': 'percent', 'lable':'درصد'},
             ]
         },
 
         amount:{
-            'name': 'مقدار واحد پولی',
+            'name': 'مقدار نقدی',
             'mess': 'چند هزار تومان به ازای هر بن، تخفیف داده شود؟',
             'type': Number,
         },
 
         percent:{
-            'name': 'درصد تخفیف',
+            'name': 'مقدار درصدی',
             'mess': 'چند درصد به ازای هر بن، تخفیف داده شود؟',
             'type': Number,
         },
@@ -154,6 +176,15 @@ module.exports.commerce = {
             'name': 'دفعات مصرف بن',
             'mess': 'هر بن تخفیف چند بار باید مصرف شود.',
             'type': Number,
+        },
+
+        consumptionway: {
+            'name': 'شیوه استفاده',
+            'mess': 'لطفا شیوه استفاده بن های تخفیف را مشخص کنید.',
+            'items' : [
+                {'name': 'automatic', 'lable':'اتوماتیک'},
+                {'name': 'custom', 'lable':'دستی'},
+            ]
         },
 
         status: {

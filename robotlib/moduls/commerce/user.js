@@ -142,10 +142,7 @@ var query = async function(query, speratedQuery, user)
     //remove factor
     else if(speratedQuery[2] === querytag['deletefactor']) 
     {
-        fn.db.factor.remove({'_id':speratedQuery[last]}).exec((e) => {
-            if(e) console.log(e);
-            factor.show(query.from.id,  fn.str['seccess']);
-        });
+        fn.db.factor.remove({'_id':speratedQuery[last]}).exec();
     }
 
     //show coupon list

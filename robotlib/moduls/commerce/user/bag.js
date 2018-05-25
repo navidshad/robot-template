@@ -170,15 +170,14 @@ var show = async function(userid, bag,  optionparam)
 
     //perform coupon
     var totalPerDis = 0;
-    if(bag.cid)
-    {
-        totalPerDis = await fn.m.commerce.coupon.performCoupon(total, bag.cid);
-        if(totalPerDis == 0) {
-            bag.cid = null;
-            bag.save();
-        }
+    var DisResult = await fn.m.commerce.coupon.performCoupon(userid, total, bag.cid);
+    totalPerDis = DisResult.total;
+    if(totalPerDis == 0) {
+        bag.cid = null;
+        bag.save();
     }
 
+    var usedcouponsText = fn.m.commerce.coupon.getUsedCouponsDetail(DisResult.usedcoupons);
 
     //message
     var mess = '🛍 ' + 'سبد خرید شما' + '\n' +
@@ -186,9 +185,9 @@ var show = async function(userid, bag,  optionparam)
     titles + '\n' +
     '<code>ـــــــــــــــــ</code>' + '\n' +
     '💶 ' + 'جمع قیمت: ' + total + ' تومان' + '\n';
-    
-    mess += (totalPerDis) ? '💶 ' + 'اعمال تخفیف: ' + totalPerDis + ' تومان' : '';
+    mess += '💶 ' + 'اعمال تخفیف: ' + totalPerDis + ' تومان';
     mess += '\n' + '<code>ـــــــــــــــــ</code>' + '\n' +
+    'بن ها استفاده شده: ' + '\n' + usedcouponsText +
     'بن های تخفیف شما: ' + '\n' + couponsText +
     '<code>ـــــــــــــــــ</code>' + '\n' +
     fn.mstr.commerce.mess['editbag'];

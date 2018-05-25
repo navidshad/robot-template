@@ -29,6 +29,8 @@ var showGenerator = async function(userid, name)
     var qt = fn.mstr.commerce.query;
 
     var fn_sessions     = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['sessions'] + '-' + gen.id;
+    var fn_minimumP     = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['minimumP'] + '-' + gen.id;
+    var fn_maximumP     = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['maximumP'] + '-' + gen.id;
     var fn_mode         = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['mode'] + '-' + gen.id;
     var fn_discountmode = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['discountmode'] + '-' + gen.id;
     var fn_amount       = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['amount'] + '-' + gen.id;
@@ -36,6 +38,7 @@ var showGenerator = async function(userid, name)
     var fn_days         = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['days'] + '-' + gen.id;
     var fn_hours        = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['hours'] + '-' + gen.id;
     var fn_consumption  = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['consumption'] + '-' + gen.id;
+    var fn_consumptionway  = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['consumptionway'] + '-' + gen.id;
     
     var fn_active = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['status'] + '-' + gen.id;
     var fn_delete = qt['commerce'] + '-' + qt['admin'] + '-' + qt['generator'] + '-' + qt['delete'] + '-' + gen.id;
@@ -45,7 +48,10 @@ var showGenerator = async function(userid, name)
         detailArr = [ 
             [{'text': 'دوره', 'callback_data': fn_sessions}],
 
-            [{'text': 'حالت', 'callback_data': fn_mode}, 
+            [{'text': 'حداکثر محصول', 'callback_data': fn_maximumP},
+            {'text': 'حداقل محصول', 'callback_data': fn_minimumP}],
+
+            [{'text': 'حالت صدور', 'callback_data': fn_mode}, 
             {'text': 'نوع تخفیف', 'callback_data': fn_discountmode}],
 
             [{'text': 'مقدار تخفیف', 'callback_data': fn_amount}, 
@@ -54,7 +60,8 @@ var showGenerator = async function(userid, name)
             [{'text': 'تعداد روز', 'callback_data': fn_days}, 
             {'text': 'تعداد ساعت', 'callback_data': fn_hours}],
 
-            [{'text': 'دفعات مصرف بن', 'callback_data': fn_consumption}],
+            [{'text': 'دفعات مصرف', 'callback_data': fn_consumption},
+            {'text': 'شیوه مصرف', 'callback_data': fn_consumptionway}],
 
             [{'text': 'حذف کردن', 'callback_data': fn_delete}, 
             {'text': 'وضعیت', 'callback_data': fn_active}],
@@ -210,13 +217,19 @@ var getGentemp = async function(userid)
     return gentemp;
 }
 
-var generateCoupon = async function(userid, generator)
+var generateCoupon = async function(userid, generator, productcount)
 {
+    if(generator.minimumP > productcount) return;
+    else if (generator.maximumP < productcount) return;
+
     var coupon = {
         'userid'        : userid,
+        'days'          : generator.days,
+        'hours'         : generator.hours,
         'startDate'     : new Date(),
         'endDate'       : new Date().addDays(generator.days).addHours(generator.hours),
         'consumption'   : generator.consumption,
+        'consumptionway': generator.consumptionway,
         'discountmode'  : generator.discountmode,
         'amount'        : generator.amount,
         'percent'       : generator.percent,
@@ -268,7 +281,8 @@ global.fn.eventEmitter.on('affterSuccessPeyment', async (factor) =>
         await gentemp.save().then();
 
         //generate coupon
-        generateCoupon (user.userid, element);
+        var productcount = factor.products.length;
+        generateCoupon (user.userid, element, productcount);
     }
 
 });
@@ -324,7 +338,8 @@ global.fn.eventEmitter.on('affterChannelCheck', async (userid, isMember) =>
         await gentemp.save().then();
 
         //generate coupon
-        generateCoupon (user.userid, element);
+        var productcount = factor.products.length;
+        generateCoupon (user.userid, element, productcount);
     }
 });
 
@@ -369,7 +384,8 @@ global.fn.eventEmitter.on('affterInvitedUserRegistered', async (inviter, newuser
         await gentemp.save().then();
 
         //generate coupon
-        generateCoupon (user.userid, element);
+        var productcount = factor.products.length;
+        generateCoupon (user.userid, element, productcount);
     }
 });
 
