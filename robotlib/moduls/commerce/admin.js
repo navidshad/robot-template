@@ -40,7 +40,7 @@ var show = async function(userid)
 {
     var botusername = global.robot.username;    
     var titles = [];
-    titles.push(fn.mstr.commerce['settings']);
+    titles.push(fn.mstr.commerce.btns['settings']);
     titles.push(fn.mstr.commerce.btns['couponGenerators']);
 
     var factors = await fn.db.factor.find({'ispaid': true})
@@ -98,8 +98,8 @@ var routting = function(message, speratedSection, user)
         show(message.from.id);
     
     //setting
-    else if(text === fn.mstr[name].settings || speratedSection[3] === fn.mstr[name].settings) 
-        setting.routting(message, speratedSection);
+    else if(text === fn.mstr[name].btns.settings || speratedSection[3] === fn.mstr[name].btns.settings) 
+        setting.routting(message, speratedSection, user, name);
 
     //generators
     else if(text === couponGenerators || speratedSection[3] === couponGenerators) 
@@ -119,5 +119,5 @@ var gates = {
 }
 
 module.exports = { name, checkRoute, routting, query, show, user, gates, 
-    coupon, couponGenerator, showFactor
+    coupon, couponGenerator, showFactor, setting
 }

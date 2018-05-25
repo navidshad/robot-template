@@ -23,7 +23,7 @@ var checkQuery = function(option){
     return result;
 }
 
-var routting = function(query, speratedQuery, user)
+var routting = function(query, speratedQuery, user, mName)
 {
     var last = speratedQuery.length-1;
     var qt = fn.mstr.commerce.query;
@@ -31,6 +31,10 @@ var routting = function(query, speratedQuery, user)
     //remove query message
     if(speratedQuery[2] !== qt['itemsdetail'] && speratedQuery[2] !== qt['postalInfo']) 
         global.robot.bot.deleteMessage(query.message.chat.id, query.message.message_id);
+
+    //admin settings
+    if(speratedQuery[1] === qt['admin'] && speratedQuery[2] === qt['settings'])
+        fn.m[mName].setting.query(query, speratedQuery, user, mName);
 
     //admin generator
     if (speratedQuery[2] === qt['generator']) 

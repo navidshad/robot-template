@@ -4,8 +4,6 @@ module.exports.commerce = {
     name:'🏷💰 ' + 'تجارت', 
     back:'🔙 برگشت به تجارت',
     readSym: ['📪','📭'],
-    settings : '⚙️' + ' - ' + 'تنظیمات',
-    backsetting: '🔙 برگشت به ' + '⚙️' + ' - ' + 'تنظیمات',
 
     f_peied     : '✅',
     f_notpaid  : '☑️',
@@ -16,7 +14,8 @@ module.exports.commerce = {
     },
 
     btns: {
-        nextpay:'کلید api نکست پی',
+        settings : '⚙️' + ' - ' + 'تنظیمات',
+        backsetting: '🔙 برگشت به ' + '⚙️' + ' - ' + 'تنظیمات',
         couponGenerators        :'🏷 ' + 'بن ساز ها',
         couponGeneratorsBack    :'🔙 ' + 'بن ساز ها',
         addgenerator            :'➕ ' + 'افزودن بن ساز',
@@ -59,6 +58,12 @@ module.exports.commerce = {
         consumption:'consumption',
         status:'status',
         delete:'delete',
+
+        //settings
+        settings    :'stings',
+        activation  :'activate',
+        category    :'catry',
+        order       :'order',
     },
 
     mess : {
@@ -70,14 +75,28 @@ module.exports.commerce = {
       
       notGenerator:'این بن دیگر موجود نمیباشد لطفا از گزینه های زیر استفاده کنید.',
       getnameGenerator:'لطفا یک نام برای "بن ساز" انتخاب کنید.',
-
-      getnextpayapikey:'لطفا کلید api درگاه نکست پی را ارسال کنید.'
     },
 
     //coupon
     discountmode: {
         amount      : 'amount',
         percent     : 'percent',
+    },
+
+    datas: {
+        
+        testpayment:{
+            'name'  : 'پرداخت آزمایشی',
+            'mess'  : 'لطفا نوع تعامل ربات با فروشگاه خود را مشخص کنید.',
+            'items' : [
+                {'name': 'true', 'lable':'فعال'},
+                {'name': 'false', 'lable':'غیر فعال'},
+            ]
+        },
+        nextpayapikey: {
+            'name'  : 'کلید api نکست پی',
+            'mess'  : 'لطفا کلید api درگاه نکست پی را ارسال کنید.',
+        }
     },
 
     //coupon generator

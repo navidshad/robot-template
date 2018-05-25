@@ -206,10 +206,17 @@ var showFactor = async function(userid,  option)
         //controller
         var fn_getpaid = query['commerce'] + '-' + query['user'] + '-' + query['getpaid'] + '-' + option.factor.id;
         var fn_delete = query['commerce'] + '-' + query['user'] + '-' + query['deletefactor'] + '-' + option.factor.id;
-        detailArr.push([
-            //{'text': 'پرداخت آزمایشی', 'callback_data': fn_getpaid},
-            {'text': 'حذف فاکتور', 'callback_data': fn_delete}
-        ]);
+        
+        var testpeymentBtn = {'text': 'پرداخت آزمایشی', 'callback_data': fn_getpaid};
+        var deleteBtn = {'text': 'حذف فاکتور', 'callback_data': fn_delete}
+        var firstRow = [deleteBtn];
+
+        var testpaymentOption = fn.getModuleData('commerce', 'testpayment');
+        var tpoValue = (testpaymentOption) ? testpaymentOption.value : '...';
+        var testpayment = (tpoValue == 'true') ? true : false;
+
+        if(testpayment) firstRow.push(testpeymentBtn)
+        detailArr.push(firstRow);
 
         //gates buttons
         var price = (factor.discount) ? factor.discount : factor.amount;

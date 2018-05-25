@@ -1,118 +1,243 @@
-var show = function(userid, newcat){
-    var mName = fn.mstr.commerce['modulename'];
-    var activationtext = '',
-    moduleOption = fn.getModuleOption(mName,  {'create': true});
+var mainBtnsPermissions = {
+    'activation': true,
+    'category': true,
+    'order': true,
+}
+
+var getSettingsInlinesBtns = function(options)
+{
+    var detailArr = [],
+    mName   = options.mName,
+    qt      = fn.mstr[mName].query,
+    fn_activation = qt[mName] + '-' + qt['admin'] + '-' + qt['settings'] + '-' + qt['activation'] + '-' + qt[mName],
+    fn_category   = qt[mName] + '-' + qt['admin'] + '-' + qt['settings'] + '-' + qt['category'] + '-' + qt[mName],
+    fn_order      = qt[mName] + '-' + qt['admin'] + '-' + qt['settings'] + '-' + qt['order'] + '-' + qt[mName],
+
+    tx_activation = fn.str.activation[options.activation],
+    tx_category   = fn.mstr['category'].asoption,
+    tx_order      = fn.str['editOrder'];
+
+    var firstrow = [];
+    if(mainBtnsPermissions.activation) firstrow.push({'text': tx_activation, 'callback_data': fn_activation});
+    if(mainBtnsPermissions.category) firstrow.push({'text': tx_category, 'callback_data': fn_category});
+    if(mainBtnsPermissions.order) firstrow.push({'text': tx_order, 'callback_data': fn_order});
+    detailArr.push(firstrow.reverse());
+
+    //data parameters
+    var datas = Object.keys(fn.mstr[mName].datas);
+    var row = [];
+    datas.forEach((item, i) => 
+    {
+        var fn_item = qt[mName] + '-' + qt['admin'] + '-' + qt['settings'] + '-' + item + '-' + qt[mName];
+        var tx_item = fn.mstr[mName].datas[item].name;
+        row.push({'text': tx_item, 'callback_data': fn_item});
+        
+        if(row.length == 2 || i == datas.length-1) {
+            detailArr.push(row);
+            row = [];
+        }
+    });
+
+    return detailArr;
+}
+
+var getDatsDetail = function(moduleOption, mName)
+{
+    var mess = '';
+    moduleOption.option.datas.forEach(data => {
+        var key = (data.key) ? data.key + ', ' : '';
+        var value = (data.value) ? data.value : '';
+        mess += '\n' + '✴️ ' + fn.mstr[mName].datas[data.name].name + ': ' + key + value;
+    });
+
+    return mess;
+}
+
+var show = function(userid, mName, newcat)
+{
+    var activationtext = '';
+    var moduleOption = fn.getModuleOption(mName, {'create': true});
     
     //defin activation button
     activationtext = (moduleOption.option.active) ? 'disable' : 'enable';
     //defin new category
     if(newcat) {
         moduleOption.option.category = newcat;
-        moduleOption.option.buttons = fn.convertObjectToArray(fn.mstr.commerce.btns_user);
+        var button = fn.getModuleData(mName, 'menuItem');
+        if(button) moduleOption.option.buttons = [button.value];
         global.robot.config.moduleOptions[moduleOption.index] = moduleOption.option;
         //save configuration
         global.robot.save();
-        fn.updateBotContent( () => { show(userid); });
+        fn.updateBotContent();
     }
 
-    //get nextpay api key
-    var nextpayapikey = fn.getModuleData(mName, 'nextpayapikey');
-    nextpayapikey = (nextpayapikey) ? nextpayapikey.value : '...';
-
-    var list = [
-        fn.mstr['category'].asoption, 
-        fn.str.activation[activationtext],
-        fn.str['editOrder'],
-        fn.mstr.commerce.btns['nextpay'],
-    ],
-    back = fn.mstr.commerce['back'],
-    remarkup = fn.generateKeyboard({'custom': true, 'grid':true, 'list': list, 'back':back}, false);
+    var detailArr = getSettingsInlinesBtns({'mName':mName,'activation': activationtext});
+    var messOption = {"reply_markup" : {"inline_keyboard" : detailArr}};
     
-    var detailMess = 'اطلاعات افزونه' + '\n'
-    + 'دسته: ' + moduleOption.option.category + '\n'
-    + 'نام دکمه در منو: ' + moduleOption.option.buttons + '\n'
-    + 'اولویت در منو: ' + moduleOption.option.btn_order + '\n'
-    + 'وضعیت: ' + moduleOption.option.active + '\n'
-    + 'کلید api نکست پی: ' + nextpayapikey;
+    var title = fn.mstr[mName].name;
+    var category = (moduleOption.option.category) ? moduleOption.option.category : 'نامشخص';
+    var buttons = (moduleOption.option.buttons) ? moduleOption.option.buttons : 'نامشخص';
+    var btn_order = (moduleOption.option.btn_order) ? moduleOption.option.btn_order : 'نامشخص';
+    var active = (moduleOption.option.active) ? '✅ فعال' : '⭕️ غیر فعال';
+    var datas = getDatsDetail(moduleOption, mName);
 
-    global.robot.bot.sendMessage(userid, detailMess, remarkup);
-    fn.userOper.setSection(userid,  fn.mstr.commerce['settings'], true);    
+    var detailMess = 'اطلاعات افزونه ' + title + '\n'
+    + '----------------------------------------------------' + '\n'
+    + '✴️ ' + 'دسته: ' + category + '\n'
+    + '✴️ ' + 'نام دکمه در منو: ' + buttons + '\n'
+    + '✴️ ' + 'اولویت در منو: ' + btn_order + '\n'
+    + '✴️ ' + 'وضعیت: ' + active + '\n' 
+    + datas + '\n'
+    + '⚙️';
+
+    global.robot.bot.sendMessage(userid, detailMess, messOption);
 }
 
-var category = function (message, speratedQuery){
-    console.log('set categori for bag');
-    fn.userOper.setSection(message.from.id,  fn.mstr['category'].asoption, true);
-    var back = fn.mstr.commerce['back'];
-    var list = [];
-    global.robot.category.forEach((element) => {
-        list.push(element.parent + ' - ' + element.name);
-    });
-    global.robot.bot.sendMessage(message.from.id, fn.mstr.post.edit['category'], 
-    fn.generateKeyboard({'custom': true, 'grid':false, 'list': list, 'back':back}, false));
-}
-
-var routting = function(message, speratedSection){
-    var mName = fn.mstr.commerce['modulename'];
+var routting = function(message, speratedSection, user, mName)
+{
     var text = message.text;
     var last = speratedSection.length-1;
+    //show inbox setting
+    if (text === fn.mstr[mName].btns['settings'])
+        show(message.from.id, mName);
 
-    //show bag setting
-    if (text === fn.mstr.commerce['settings'] || text === fn.mstr.commerce['back'])
-        show(message.from.id);
-
-    //active or deactive
-    else if(fn.checkValidMessage(text, [fn.str.activation.enable,fn.str.activation.disable])){
-        console.log('active deactive bag');
-        var key = (text === fn.str.activation.enable) ? true : false;
-        var moduleOption = fn.getModuleOption(mName);
-        global.robot.config.moduleOptions[moduleOption.index].active = key;
-        //save configuration
-        global.robot.save();
-        fn.updateBotContent( () => { show(message.from.id); });
-    }
 
     //set category
-    else if(text === fn.mstr['category'].asoption) category(message, speratedSection);
-    else if(speratedSection[last] == fn.mstr['category'].asoption){
-        console.log('get new category for bag');
+    else if(speratedSection[last] == fn.mstr['category'].asoption)
+    {
+        console.log('get new category for inbox');
         var cat = text.split(' - ')[1];
-        if(fn.m.category.checkInValidCat(cat)) show (message.from.id,  cat);
+        if(fn.m.category.checkInValidCat(cat)) {
+            show (message.from.id, mName, cat);
+            fn.m[mName].show(message.from.id);
+        }
         else global.robot.bot.sendMessage(message.from.id, fn.str['choosethisItems']);
     }
 
     //change order
-    else if (text === fn.str['editOrder']){
-        var mess = fn.str['editOrderMess'];
-        var remarkup = fn.generateKeyboard({'section': fn.mstr.commerce['backsetting']}, true);
-        global.robot.bot.sendMessage(message.from.id, mess, remarkup);
-        fn.userOper.setSection(message.from.id,  fn.str['editOrder'], true);
-    }
-    else if(speratedSection[last] === fn.str['editOrder']){
+    else if(speratedSection[last] === fn.str['editOrder'])
+    {
         var order = parseInt(text);
         if(!typeof order === 'number') global.robot.bot.sendMessage(message.from.id, fn.str['editOrder']);
 
-        var moduleOption = fn.getModuleOption(fn.mstr.commerce['modulename']);
+        var moduleOption = fn.getModuleOption(fn.mstr[mName]['modulename']);
         global.robot.config.moduleOptions[moduleOption.index].btn_order = order;
         //save configuration
         global.robot.save();
-        fn.updateBotContent( () => { show(message.from.id) });
+        fn.updateBotContent(() => { 
+            show(message.from.id, mName);
+            fn.m[mName].show(message.from.id);
+        });
     }
 
-    //get nextpy api key
-    else if (text === fn.mstr.commerce.btns['nextpay'])
+    //dates
+    else
     {
-        var mess = fn.mstr.commerce.mess['getnextpayapikey'];
-        var markup = fn.generateKeyboard({'section': fn.mstr.commerce['backsetting']}, true);
-        global.robot.bot.sendMessage(message.from.id, mess, markup);
-        fn.userOper.setSection(message.from.id,  fn.mstr.commerce.btns['nextpay'], true);
-    }
-    else if(speratedSection[last] === fn.mstr.commerce.btns['nextpay'])
-    {
-        var nextpayapikey = text;
-        var datas = [{'name': 'nextpayapikey', 'value': nextpayapikey}];
+        var mstrdatas = Object.keys(fn.mstr[mName].datas);
+        var key = false;
+        mstrdatas.forEach(item => {
+            if(item === speratedSection[last]) key = true;
+        });
+
+        if(!key) return;
+
+        var itemSection = speratedSection[last];
+        var dataOption = fn.mstr[mName].datas[itemSection];
+
+        var key = true;
+        var value = text;
+        if(dataOption.items)
+        {
+            key = false;
+            dataOption.items.forEach(element => {
+                if(element.lable === text) {
+                    key = true;
+                    value = element.name;
+                }
+            });
+        }
+
+        if(!key) return;
+
+        var datas = [{'name': itemSection, 'value':value}];
         fn.putDatasToModuleOption(mName, datas);
-        show(message.from.id);
+        
+        global.robot.save();
+        show (message.from.id, mName);
+        fn.m[mName].show(message.from.id);
     }
 }
 
-module.exports = { routting }
+var query = function(query, speratedQuery, user, mName)
+{
+    var last = speratedQuery.length-1;
+    var queryTag = fn.mstr[mName].query;
+
+    //activation
+    if(speratedQuery[3] === queryTag['activation'])
+    {
+        console.log(`active deactive ${mName}`);
+        var moduleOption = fn.getModuleOption(mName);
+        var key = global.robot.config.moduleOptions[moduleOption.index].active;
+        global.robot.config.moduleOptions[moduleOption.index].active = !key;
+        //save configuration
+        global.robot.save();
+        fn.updateBotContent(() => {
+            show(query.from.id, mName);
+        });
+    }
+
+    //setcategory
+    else if (speratedQuery[3] === queryTag['category'])
+    {
+        console.log(`set categori for ${mName}`);
+        var nSection = fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr[mName]['name'] + '/' + fn.mstr[mName].btns['settings'] + '/' + fn.mstr['category'].asoption;
+        var back = fn.mstr[mName]['back'];
+        var list = [];
+        global.robot.category.forEach((element) => {
+            list.push(element.parent + ' - ' + element.name);
+        });
+        var markup = fn.generateKeyboard({'custom': true, 'grid':false, 'list': list, 'back':back}, false);
+
+        global.robot.bot.sendMessage(query.from.id, fn.str['editCategory'], markup);
+        fn.userOper.setSection(query.from.id, nSection, false);
+    }
+
+    //order
+    else if (speratedQuery[3] === queryTag['order'])
+    {
+        var nSection = fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr[mName]['name'] + '/' + fn.mstr[mName].btns['settings'] + '/' + fn.str['editOrder'];
+        var remarkup = fn.generateKeyboard({'section': fn.mstr[mName]['back']}, true);
+        global.robot.bot.sendMessage(query.from.id, fn.str['editOrderMess'], remarkup);
+        fn.userOper.setSection(query.from.id, nSection, false);
+    }
+
+    //datas
+    else
+    {
+        var datas = Object.keys(fn.mstr[mName].datas);
+        var key = false;
+        datas.forEach(item => {
+            if(item === speratedQuery[3]) key = true;
+        });
+
+        if(!key) return;
+
+        var itemSection = speratedQuery[3];
+        var dataOption = fn.mstr[mName].datas[itemSection];
+
+        var list = [];
+        var back = fn.mstr[mName]['back'];
+
+        if(dataOption.items) dataOption.items.forEach(element => { list.push(element.lable) });
+
+        var mess = dataOption.mess;
+        var nSection = fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr[mName]['name'] + '/' + fn.mstr[mName].btns['settings'] + '/' + itemSection;
+        var remarkup = fn.generateKeyboard({'custom': true, 'grid':false, 'list': list, 'back':back}, false);
+
+        global.robot.bot.sendMessage(query.from.id, mess, remarkup);
+        fn.userOper.setSection(query.from.id, nSection, false);
+    }
+}
+
+module.exports = { routting, query, show }

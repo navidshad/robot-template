@@ -2,7 +2,7 @@ var soap = require('soap');
 
 var GetToken = async function (order_id, amount, key) {
     var port = global.config.serverport;
-    var callback_uri = global.robot.config.domain + ':' + port + '/returnback/nextpay';
+    var callback_uri = global.config.domain + ':' + port + '/returnback/nextpay';
     console.log('nextpay callback: ' + callback_uri);
     var url = 'https://api.nextpay.org/gateway/token.wsdl';
     
