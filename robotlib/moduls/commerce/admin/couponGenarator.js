@@ -219,8 +219,8 @@ var getGentemp = async function(userid)
 
 var generateCoupon = async function(userid, generator, productcount)
 {
-    if(generator.minimumP > productcount) return;
-    else if (generator.maximumP < productcount) return;
+    if(generator.minimumP > 0 && generator.minimumP > productcount) return;
+    else if (generator.maximumP > 0 && generator.maximumP < productcount) return;
 
     var coupon = {
         'userid'        : userid,

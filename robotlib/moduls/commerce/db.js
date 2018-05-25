@@ -64,8 +64,8 @@ var couponGenaratorSchema = new Schema({
     consumption : {type:Number, default:1},
     consumptionway  : {type:String, default:'custom'},
     sessions        : {type:Number, default:5},
-    minimumP        : {type:Number, default:1},
-    maximumP        : {type:Number, default:5},
+    minimumP        : {type:Number, default:0},
+    maximumP        : {type:Number, default:0},
 });
 
 var gtdetail = {name:String, counter:Number, olde:String}
