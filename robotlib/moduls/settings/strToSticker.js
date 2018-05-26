@@ -32,7 +32,7 @@ var create = async function(userid, name)
     var existedSticker = await fn.db.strStickers.count({'name': name}).exec().then();
  
     // error
-    if(existedSticker)
+    if(existedSticker || !name.startsWith('-'))
     {
         var mess = fn.mstr['settings'].mess['getstickerName'];
         global.fn.sendMessage(userid, mess);
