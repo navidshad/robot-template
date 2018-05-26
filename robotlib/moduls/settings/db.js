@@ -7,4 +7,4 @@ var strStickerSchema = new Schema({
   type        : String,
 });
 
-module.exports.strStickers = mongoose.model('strStickers', strStickerSchema);
+module.exports.strStickers = mongoose.model('strreplacers', strStickerSchema);
