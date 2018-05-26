@@ -32,7 +32,7 @@ var show = async function(message, postName, user, optionPrams, callback)
     switch (post.type) {
         case fn.mstr.post.types['text'].name:
             console.log('send text post');
-            global.robot.bot.sendMessage(message.from.id, description, option)
+            global.fn.sendMessage(message.from.id, description, option)
             .then((msg) => {
                 snedAttachmentArray(message, post.attachments, 0);
             });
@@ -133,7 +133,7 @@ global.fn.eventEmitter.on('searchshowitem', async (message, speratedSection) =>
     message.text = message.text.trim();
     fn.m.post.user.show(message, message.text, () => {
         //item does not existed
-        global.robot.bot.sendMessage(message.user.id, fn.str['choosethisItems']);
+        global.fn.sendMessage(message.user.id, fn.str['choosethisItems']);
     });
 });
 module.exports = { show, snedAttachmentArray, searchRoute }

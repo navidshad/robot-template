@@ -6,7 +6,7 @@ var show = async function(userid,  injectedText){
     var bag = await fn.m.commerce.user.bag.get(userid);
 
     if(bag.boughtItems == 0) {
-        global.robot.bot.sendMessage(userid, 'اکنون هیچ خریدی برای شما ثبت نشده است.');
+        global.fn.sendMessage(userid, 'اکنون هیچ خریدی برای شما ثبت نشده است.');
         return;
     }
      
@@ -17,7 +17,7 @@ var show = async function(userid,  injectedText){
     var mess = (injectedText) ? injectedText : fn.mstr.commerce.btns_user['myProducts'];
     var back = fn.mstr.category['backtoParent'];
     var remarkup = global.fn.generateKeyboard({'custom': true, 'grid':false, 'list': titles, 'back':back}, false);
-    global.robot.bot.sendMessage(userid, mess, remarkup);
+    global.fn.sendMessage(userid, mess, remarkup);
     fn.userOper.setSection(userid,  mess, true);  
 }
 

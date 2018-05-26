@@ -8,13 +8,13 @@ var showCategoryDir = function(message, catname, speratedSection)
         
         if(noitem)
         {
-            global.robot.bot.sendMessage(message.from.id, 'این بخش هنوز خالی است.');
+            global.fn.sendMessage(message.from.id, 'این بخش هنوز خالی است.');
             return;
         }
 
         fn.userOper.setSection(message.from.id, catname, true);
         var markup = fn.generateKeyboard({'custom': true, 'grid':true, 'list': items, 'back':back}, false);
-        global.robot.bot.sendMessage(message.from.id, detail.description, markup);
+        global.fn.sendMessage(message.from.id, detail.description, markup);
         fn.m.post.user.snedAttachmentArray(message, detail.attachments, 0);
     });
 }

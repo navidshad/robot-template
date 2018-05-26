@@ -49,7 +49,7 @@ var getInviteLink = function(userid, user, mName)
     var text = `لینک دعوت از طرف ${name} \n`;
     text += `${invitationMess} \n` + link;
 
-    global.robot.bot.sendMessage(userid, text);
+    global.fn.sendMessage(userid, text);
 }
 
 var registerFromLink = async function(telegramUser, text)

@@ -268,7 +268,7 @@ var alertadmins = async function(mess)
 {
     var admins = await fn.db.user.find({'isAdmin': true}).exec().then();
     admins.forEach(user => {
-        global.robot.bot.sendMessage(user.userid, mess, {'parse_mode':'HTML'});
+        sendMessage(user.userid, mess, {'parse_mode':'HTML'});
     });
 }
 
@@ -279,6 +279,70 @@ var getRoute = function(routename)
         if(route[routename]) result.push(route);
     });
     return result;
+}
+
+var saveLastMessage = async function(message)
+{
+    var userid = message.from.id;
+    var lastmess = {
+        'userid': userid,
+        'text'  : message.text,
+        'chatid': message.chat.id,
+        'messageid': message.message_id,
+    }
+    var last = await global.fn.db.lastMess.count({'userid': userid}).exec().then();
+    
+    //update
+    if(last) global.fn.db.lastMess.update({'userid': userid}, lastmess).exec();
+    else new global.fn.db.lastMess(lastmess).save();
+}
+
+var getLastMessage = async function(userid)
+{
+    var last = await global.fn.db.lastMess.findOne({'userid': userid}).exec().then();
+    if(last) return last;
+    else return {};
+}
+
+var sendMessage = async function(userid, text, option)
+{
+    //send message
+    var msg = await global.robot.bot.sendMessage(userid, text, option).then();
+
+    //check sticker replacer
+    var strToSticker = await global.fn.m['settings'].strToSticker.check(userid);
+    if(strToSticker.status)
+    {
+        var replacer = strToSticker.replacer;
+        sendDocument(msg.chat.id, replacer.fileid, replacer.type, option);
+        global.robot.bot.deleteMessage(msg.chat.id, msg.message_id);
+    }
+}
+
+var sendDocument = async function(chatid, fileid, type, option={})
+{
+    //send post
+    switch (type) 
+    {
+        case 'file':
+            return global.robot.bot.sendDocument(chatid, fileid, option).then();
+            break;
+        case 'photo':
+            return global.robot.bot.sendPhoto(chatid, fileid, option).then();
+            break;
+            
+        case 'sound':
+            return global.robot.bot.sendAudio(chatid, fileid, option).then();
+            break;
+
+        case 'video':
+            return global.robot.bot.sendVideo(chatid, fileid, option).then();
+            break;
+
+        case 'sticker':
+            return global.robot.bot.sendSticker(chatid, fileid, option).then();
+            break;
+    }
 }
 
 module.exports = {
@@ -294,4 +358,6 @@ module.exports = {
     //tools
     getModuleOption, putDatasToModuleOption, getModuleRouteMethods, 
     getModuleData, alertadmins, getRoute,
+    saveLastMessage, getLastMessage,
+    sendMessage, sendDocument,
 }

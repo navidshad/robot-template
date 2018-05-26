@@ -54,7 +54,7 @@ var show = function(userid){
         }
         //show list
         var markup = fn.generateKeyboard({'custom':true, 'grid':true, 'list': titles, 'back':fn.str.goToAdmin['back']}, false);
-        global.robot.bot.sendMessage(userid, fn.mstr['inbox'].name, markup);
+        global.fn.sendMessage(userid, fn.mstr['inbox'].name, markup);
         fn.userOper.setSection(userid, fn.mstr['inbox'].name, true);
     });
 }
@@ -78,10 +78,10 @@ var showMessage = function(message){
 
                 inboxMess = 'پیام از طرف ' + '@' + item.username +
                 '\n' + 'ــــــــــــــــــــ' + '\n' + item.message + '\n \n @' + global.robot.username;
-                global.robot.bot.sendMessage(message.from.id, inboxMess, {"reply_markup" : {"inline_keyboard" : detailArr}});
+                global.fn.sendMessage(message.from.id, inboxMess, {"reply_markup" : {"inline_keyboard" : detailArr}});
             }
             else{
-                global.robot.bot.sendMessage(message.from.id, 'این پیام دیگر موجود نیست');
+                global.fn.sendMessage(message.from.id, 'این پیام دیگر موجود نیست');
             }
         });
 }
@@ -95,16 +95,16 @@ var answertoMessage = function(message, messid){
             answer += 'جواب پیام شما:' + '\n';
             answer += message.text + '\n';
             answer += '\n @' + global.robot.username;
-            global.robot.bot.sendMessage(message.from.id, answer);
-            global.robot.bot.sendMessage(item.userid, answer).catch((error) => {
+            global.fn.sendMessage(message.from.id, answer);
+            global.fn.sendMessage(item.userid, answer).catch((error) => {
                 console.log(error.code);  // => 'ETELEGRAM'
                 console.log(error.response.body); // => { ok: false, error_code: 400, description: 'Bad Request: chat not found' }
-                if(error.response.statusCode === 403) global.robot.bot.sendMessage(message.from.id, 'این کاربر ربات را block کرده است.'); 
+                if(error.response.statusCode === 403) global.fn.sendMessage(message.from.id, 'این کاربر ربات را block کرده است.'); 
             });
             show(message.from.id);
         }
         else{
-            global.robot.bot.sendMessage(message.from.id, 'این پیام دیگر موجود نیست');
+            global.fn.sendMessage(message.from.id, 'این پیام دیگر موجود نیست');
         }
     });
 }

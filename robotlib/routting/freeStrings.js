@@ -15,7 +15,7 @@ var routting = function(message, speratedSection, user){
 
     //nothing
     if(nothingToRoute) fn.eventEmitter.emit('nothingtoroute', message, speratedSection, user);
-    //global.robot.bot.sendMessage(message.from.id, 'لطفا از گزینه های ربات استفاده کنید.');
+    //global.fn.sendMessage(message.from.id, 'لطفا از گزینه های ربات استفاده کنید.');
 }
 
 module.exports = {routting}

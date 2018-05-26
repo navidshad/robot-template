@@ -39,7 +39,7 @@ var uploadSection = function(query,speratedQuery){
     var newSection = fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr.post['name'] + '/' + fn.mstr.post['endupload'] + '/' + speratedQuery[last];
     var markup = fn.generateKeyboard({section:fn.mstr.post['endupload']}, true);
     fn.userOper.setSection(query.from.id, newSection, false);
-    global.robot.bot.sendMessage(query.from.id, fn.mstr.post.edit['upload'], markup);
+    global.fn.sendMessage(query.from.id, fn.mstr.post.edit['upload'], markup);
 }
 
 var attachSection = function(query,speratedQuery){
@@ -48,7 +48,7 @@ var attachSection = function(query,speratedQuery){
     var markup = fn.generateKeyboard({section:fn.mstr.post['endAttach']}, true);
     var newSection = fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr.post['name'] + '/' + fn.mstr.post['endAttach'] + '/' + speratedQuery[last];
     fn.userOper.setSection(query.from.id, newSection, false);
-    global.robot.bot.sendMessage(query.from.id, fn.mstr.post.edit['attach'], markup);
+    global.fn.sendMessage(query.from.id, fn.mstr.post.edit['attach'], markup);
 }
 
 var removeattachment = function(query,speratedQuery){
@@ -63,14 +63,14 @@ var description = function(query, speratedQuery){
     console.log('get new title of post');
     var last = speratedQuery.length-1;
     fn.userOper.setSection(query.from.id, fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name']  + '/' + fn.mstr.post['name'] + '/' + fn.mstr.post.edit['description'] + '/' + speratedQuery[last], false);
-    global.robot.bot.sendMessage(query.from.id, fn.mstr.post.edit['description'], fn.generateKeyboard({section:fn.mstr.post['name']}, true));
+    global.fn.sendMessage(query.from.id, fn.mstr.post.edit['description'], fn.generateKeyboard({section:fn.mstr.post['name']}, true));
 }
 
 var order = function(query, speratedQuery){
     console.log('get new order');
     var last = speratedQuery.length-1;
     fn.userOper.setSection(query.from.id, fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name']  + '/' + fn.mstr.post['name'] + '/' + fn.mstr.post.edit['order'] + '/' + speratedQuery[last], false);
-    global.robot.bot.sendMessage(query.from.id, fn.mstr.post.edit['order'], fn.generateKeyboard({section:fn.mstr['post']['back']}, true));
+    global.fn.sendMessage(query.from.id, fn.mstr.post.edit['order'], fn.generateKeyboard({section:fn.mstr['post']['back']}, true));
 }
 
 var category = function (query, speratedQuery){
@@ -80,7 +80,7 @@ var category = function (query, speratedQuery){
     var back = fn.mstr.post['back'];
     var list = [];
     global.robot.category.forEach(function(element) { list.push(element.parent + ' - ' + element.name); }, this);
-    global.robot.bot.sendMessage(query.from.id, fn.mstr.post.edit['category'], 
+    global.fn.sendMessage(query.from.id, fn.mstr.post.edit['category'], 
     fn.generateKeyboard({'custom': true, 'grid':false, 'list': list, 'back':back}, false));
 }
 
@@ -111,14 +111,14 @@ var routting = async function(query, speratedQuery){
         var markup = fn.generateKeyboard({section:fn.mstr.post['name']}, true);
 
         fn.userOper.setSection(query.from.id, nSection, false);
-        global.robot.bot.sendMessage(query.from.id, mess, markup);
+        global.fn.sendMessage(query.from.id, mess, markup);
     }
 
     //edit name
     if(speratedQuery[2] === queryTag['name']){
         console.log('get new title of post');
         fn.userOper.setSection(query.from.id, fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr.post['name'] + '/' + fn.mstr.post.edit['name'] + '/' + speratedQuery[last], false);
-        global.robot.bot.sendMessage(query.from.id, fn.mstr.post.edit['name'], fn.generateKeyboard({section:fn.mstr.post['name']}, true));
+        global.fn.sendMessage(query.from.id, fn.mstr.post.edit['name'], fn.generateKeyboard({section:fn.mstr.post['name']}, true));
     }
 
     //edit description
@@ -140,7 +140,7 @@ var routting = async function(query, speratedQuery){
         //get description
         if(!post.description){
             allow = false;
-            global.robot.bot.sendMessage(query.from.id, 'لطفا قسمت توضیحاترا کامل کنید.');
+            global.fn.sendMessage(query.from.id, 'لطفا قسمت توضیحاترا کامل کنید.');
             description(query, speratedQuery);
         }
 
@@ -154,7 +154,7 @@ var routting = async function(query, speratedQuery){
             if(post[idName]) return;
             
             allow = false;
-            global.robot.bot.sendMessage(query.from.id, uploadMess[key]);
+            global.fn.sendMessage(query.from.id, uploadMess[key]);
         });
         if(!allow) {
             uploadSection(query, speratedQuery);

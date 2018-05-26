@@ -83,7 +83,7 @@ var show = function(userid, mName, newcat)
     + datas + '\n'
     + '⚙️';
 
-    global.robot.bot.sendMessage(userid, detailMess, messOption);
+    global.fn.sendMessage(userid, detailMess, messOption);
 }
 
 var routting = function(message, speratedSection, user, mName)
@@ -104,14 +104,14 @@ var routting = function(message, speratedSection, user, mName)
             show (message.from.id, mName, cat);
             fn.m[mName].show(message.from.id);
         }
-        else global.robot.bot.sendMessage(message.from.id, fn.str['choosethisItems']);
+        else global.fn.sendMessage(message.from.id, fn.str['choosethisItems']);
     }
 
     //change order
     else if(speratedSection[last] === fn.str['editOrder'])
     {
         var order = parseInt(text);
-        if(!typeof order === 'number') global.robot.bot.sendMessage(message.from.id, fn.str['editOrder']);
+        if(!typeof order === 'number') global.fn.sendMessage(message.from.id, fn.str['editOrder']);
 
         var moduleOption = fn.getModuleOption(fn.mstr[mName]['modulename']);
         global.robot.config.moduleOptions[moduleOption.index].btn_order = order;
@@ -192,7 +192,7 @@ var query = function(query, speratedQuery, user, mName)
         });
         var markup = fn.generateKeyboard({'custom': true, 'grid':false, 'list': list, 'back':back}, false);
 
-        global.robot.bot.sendMessage(query.from.id, fn.str['editCategory'], markup);
+        global.fn.sendMessage(query.from.id, fn.str['editCategory'], markup);
         fn.userOper.setSection(query.from.id, nSection, false);
     }
 
@@ -201,7 +201,7 @@ var query = function(query, speratedQuery, user, mName)
     {
         var nSection = fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr[mName]['name'] + '/' + fn.mstr[mName].btns['settings'] + '/' + fn.str['editOrder'];
         var remarkup = fn.generateKeyboard({'section': fn.mstr[mName]['back']}, true);
-        global.robot.bot.sendMessage(query.from.id, fn.str['editOrderMess'], remarkup);
+        global.fn.sendMessage(query.from.id, fn.str['editOrderMess'], remarkup);
         fn.userOper.setSection(query.from.id, nSection, false);
     }
 
@@ -228,7 +228,7 @@ var query = function(query, speratedQuery, user, mName)
         var nSection = fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr[mName]['name'] + '/' + fn.mstr[mName].btns['settings'] + '/' + itemSection;
         var remarkup = fn.generateKeyboard({'custom': true, 'grid':false, 'list': list, 'back':back}, false);
 
-        global.robot.bot.sendMessage(query.from.id, mess, remarkup);
+        global.fn.sendMessage(query.from.id, mess, remarkup);
         fn.userOper.setSection(query.from.id, nSection, false);
     }
 }

@@ -48,7 +48,14 @@ var ConfigSchema = new Schema({
   }]
 });
 
+var lastMessageSchema = new Schema({
+  userid: Number,
+  text  : String,
+  chatid: Number,
+  messageid: Number,
+})
+
 var user     = mongoose.model('Users', UserSchema);
 var config   = mongoose.model('config', ConfigSchema);
-
-module.exports = {user, config};
+var lastMess = mongoose.model('lastMessages', lastMessageSchema);
+module.exports = {user, config, lastMess};

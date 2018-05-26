@@ -53,7 +53,7 @@ var show = async function(userid)
 
     //show list
     var markup = fn.generateKeyboard({custom:true, list:titles, grid:true, back:fn.str.goToAdmin['back']}, false);
-    global.robot.bot.sendMessage(userid, fn.mstr[name].name, markup);
+    global.fn.sendMessage(userid, fn.mstr[name].name, markup);
     fn.userOper.setSection(userid, fn.mstr[name].name, true);
 }
 
@@ -84,7 +84,7 @@ var showFactor = async function(userid, fnumber, option={})
     text += `📱 ${bag.phone}`;
 
     if(option.alertoadmins) fn.alertadmins(text);
-    else global.robot.bot.sendMessage(userid, text, {'parse_mode':'HTML'});
+    else global.fn.sendMessage(userid, text, {'parse_mode':'HTML'});
 }
 
 var routting = function(message, speratedSection, user)

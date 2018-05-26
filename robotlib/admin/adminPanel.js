@@ -2,7 +2,7 @@ fn = global.fn;
 var show = function(message){
     fn.userOper.setSection(message.from.id, fn.str.goToAdmin['name'], true);
     markup = fn.generateKeyboard({section:fn.str.goToAdmin['name'], 'list':fn.mstr, 'back':fn.str['backToMenu']}, false);        
-    global.robot.bot.sendMessage(message.from.id, fn.str.goToAdmin['name'], markup);
+    global.fn.sendMessage(message.from.id, fn.str.goToAdmin['name'], markup);
 }
 
 var routting = function(message, speratedSection, user)
@@ -19,7 +19,7 @@ var routting = function(message, speratedSection, user)
         global.mRoutes.forEach(route => {
             var result = route.admin({'text':text, 'speratedSection': speratedSection});
             if(result.status) {
-                result.routting(message, speratedSection, user);
+                result.routting(message, speratedSection, user, route.name);
                 return;
             }
         });

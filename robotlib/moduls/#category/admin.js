@@ -98,7 +98,7 @@ var showCategoryDir = function(userid,catname, speratedSection){
 
     fn.db.category.find({'parent':catname}).exec((e, cats) => {
         if(cats && cats.length > 0) cats.forEach(function(element) { list.push(element.order + ' - ' + element.name); }, this);
-        global.robot.bot.sendMessage(userid, catname, 
+        global.fn.sendMessage(userid, catname, 
         fn.generateKeyboard({'custom': true, 'grid':true, 'list': list, 'back':back}, false));                
     });
 }
@@ -173,9 +173,9 @@ var createcategoryMess = function(userid, category, option){
    'ــــــــــــــــــــــــــــــــ' + '\n' + 
    '⚠️' + 'برای ویرایش مطلب از دکمه های پیوست شده استفاده کنید.';
 
-   //global.robot.bot.sendMessage(userid, fn.str['seccess'], fn.generateKeyboard({section:fn.str.goTocategory[0]}, false));    
+   //global.fn.sendMessage(userid, fn.str['seccess'], fn.generateKeyboard({section:fn.str.goTocategory[0]}, false));    
    //showcategoryList(userid);
-   global.robot.bot.sendMessage(userid, text, {"reply_markup" : {"inline_keyboard" : detailArr}});
+   global.fn.sendMessage(userid, text, {"reply_markup" : {"inline_keyboard" : detailArr}});
 }
 
 updatePostCategory = function(oldCat, newCat){
@@ -206,7 +206,7 @@ var editcategory = async function(id, detail, userid, speratedSection, ecCallBac
             sendKey = false;
             if(!category.attachments.length === 0) category.attachments = [];
             category.attachments.push(detail.attachment);
-            global.robot.bot.sendMessage(userid, 'انجام شد');
+            global.fn.sendMessage(userid, 'انجام شد');
         }
         //remove
         if(detail.removeAttachment) category.attachments.splice(parseInt(detail.removeAttachment), 1);
@@ -225,7 +225,7 @@ var editcategory = async function(id, detail, userid, speratedSection, ecCallBac
         if(ecCallBack) ecCallBack();
     }
     else{
-        global.robot.bot.sendMessage(userid, 'این دسته بندی دیگر وجود ندارد', fn.generateKeyboard({section:fn.str['goTocategory']}));
+        global.fn.sendMessage(userid, 'این دسته بندی دیگر وجود ندارد', fn.generateKeyboard({section:fn.str['goTocategory']}));
     }
 
 }
@@ -264,21 +264,21 @@ var routting = async function(message, speratedSection)
         var back = fn.str['back'] + ' - ' + speratedSection[last];
         
         fn.userOper.setSection(message.from.id, mess, true);        
-        global.robot.bot.sendMessage(message.from.id, mess, fn.generateKeyboard({'section': back}, true));
+        global.fn.sendMessage(message.from.id, mess, fn.generateKeyboard({'section': back}, true));
     }
     else if(speratedSection[last] === fn.mstr.category.categoryoptions[1]){
         var parent = speratedSection[last-2];
         var grandparent = speratedSection[last-3];
         console.log('create category', text);
-        if(checkInValidCat(text)) global.robot.bot.sendMessage(message.from.id, fn.mstr.post.scErrors[2]);
-        else if(fn.checkValidMessage(text)) global.robot.bot.sendMessage(message.from.id, fn.str['chooseOtherText']);
+        if(checkInValidCat(text)) global.fn.sendMessage(message.from.id, fn.mstr.post.scErrors[2]);
+        else if(fn.checkValidMessage(text)) global.fn.sendMessage(message.from.id, fn.str['chooseOtherText']);
         else{
             fn.db.category.findOne({'name': text}).exec((e, category) => {
                 if(!category){ 
                     fn.userOper.setSection(message.from.id, speratedSection[last-1], true);
                     createcategory(text, speratedSection, message.from.id);
                 }
-                else global.robot.bot.sendMessage(message.from.id, fn.mstr.post.scErrors[0]);
+                else global.fn.sendMessage(message.from.id, fn.mstr.post.scErrors[0]);
             });
         }
     }
@@ -292,15 +292,15 @@ var routting = async function(message, speratedSection)
         if(catlist.length > 0){
             var back = fn.str['escapEdit'] + ' - ' + speratedSection[last];
             fn.userOper.setSection(message.from.id, fn.mstr.category.categoryoptions[0], true);                    
-            global.robot.bot.sendMessage(message.from.id, 'انتخاب کنید', fn.generateKeyboard({'custom': true, 'grid':true, 'list': catlist, 'back':back}, false));
+            global.fn.sendMessage(message.from.id, 'انتخاب کنید', fn.generateKeyboard({'custom': true, 'grid':true, 'list': catlist, 'back':back}, false));
         }
-        else global.robot.bot.sendMessage(message.from.id, 'در اینجا گزینه ای برای ویرایش وجود ندارد.');
+        else global.fn.sendMessage(message.from.id, 'در اینجا گزینه ای برای ویرایش وجود ندارد.');
     }
     else if(speratedSection[last] === fn.mstr.category.categoryoptions[0]){
         console.log('get deletting category');
         var catlist = [];
         deleteCategory.find({'parent': speratedSection[last-1]}).map((i) => { catlist.push(i.name) });
-        if(!checkInValidCat(text, catlist)) {global.robot.bot.sendMessage(message.from.id, fn.str['choosethisItems']); return;}
+        if(!checkInValidCat(text, catlist)) {global.fn.sendMessage(message.from.id, fn.str['choosethisItems']); return;}
         else {
             //fn.userOper.setSection(message.from.id, speratedSection[last-1], true);                                
             //deleteCategory.clear(text, () => {showCategoryDir(message.from.id, speratedSection[last-1], speratedSection)});            
@@ -312,12 +312,12 @@ var routting = async function(message, speratedSection)
 
     //edit name
     else if(speratedSection[last-1] === fn.mstr.category.edit['name']){
-        if(checkInValidCat(text)) global.robot.bot.sendMessage(message.from.id, fn.mstr.post.scErrors[2]);
-        else if(fn.checkValidMessage(text)) global.robot.bot.sendMessage(message.from.id, fn.str['chooseOtherText']);
+        if(checkInValidCat(text)) global.fn.sendMessage(message.from.id, fn.mstr.post.scErrors[2]);
+        else if(fn.checkValidMessage(text)) global.fn.sendMessage(message.from.id, fn.str['chooseOtherText']);
         else{
             fn.db.category.findOne({'_id': speratedSection[last]}).exec((e, category) => {
                 if(category) editcategory(speratedSection[last], {'name': text}, message.from.id, speratedSection);
-                else global.robot.bot.sendMessage(message.from.id,  fn.str['chooseOtherText']);
+                else global.fn.sendMessage(message.from.id,  fn.str['chooseOtherText']);
             });
         }
     }
@@ -331,13 +331,13 @@ var routting = async function(message, speratedSection)
         var cat = text.split(' - ')[1];
         if(fn.m.category.checkInValidCat(cat)){
             editcategory(speratedSection[last], {'parent': cat}, message.from.id, speratedSection);
-        }else global.robot.bot.sendMessage(message.from.id, fn.str['choosethisItems']);
+        }else global.fn.sendMessage(message.from.id, fn.str['choosethisItems']);
     }
 
     //edit order
     else if(speratedSection[last-1] === fn.mstr.category.edit['order']){
         if(parseFloat(text) || text === 0) editcategory(speratedSection[last], {'order': text}, message.from.id, speratedSection);        
-        else global.robot.bot.sendMessage(message.from.id, fn.mstr.category.edit['order']);        
+        else global.fn.sendMessage(message.from.id, fn.mstr.category.edit['order']);        
     }
 
     //end attachment

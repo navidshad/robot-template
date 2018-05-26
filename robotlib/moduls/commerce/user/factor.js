@@ -6,7 +6,7 @@ var show = async function(userid, injectedText)
     
     //nothing
     if(factors.length == 0) {
-        global.robot.bot.sendMessage(userid, 'اکنون هیچ فاکتوری برای شما ثبت نشده است.');
+        global.fn.sendMessage(userid, 'اکنون هیچ فاکتوری برای شما ثبت نشده است.');
          return;
     }
 
@@ -19,7 +19,7 @@ var show = async function(userid, injectedText)
     var mess = (injectedText) ? injectedText : fn.mstr.commerce.btns_user['factor'];
     var back = fn.mstr.category['backtoParent'];
     var remarkup = global.fn.generateKeyboard({'custom': true, 'grid':false, 'list': titles, 'back':back}, false);
-    global.robot.bot.sendMessage(userid, mess, remarkup);
+    global.fn.sendMessage(userid, mess, remarkup);
 }
 
 var getNextNumber = async function()
@@ -224,7 +224,7 @@ var showFactor = async function(userid,  option)
     }
     
     //sned
-    global.robot.bot.sendMessage(userid, mess, {
+    global.fn.sendMessage(userid, mess, {
         'parse_mode':'HTML',
         "reply_markup" : {"inline_keyboard" : detailArr}
     }).then((msg) => { });

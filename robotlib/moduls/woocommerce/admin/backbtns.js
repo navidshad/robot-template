@@ -26,7 +26,7 @@ var showitem = async function (userid, name)
    `🔶 ای دی دسته مقصد: ${btn.destid} \n` +
    'لطفا برای تنظیمات و ارسال نهایی از گزینه های زیر استفاده کنید.';
  
-   global.robot.bot.sendMessage(userid, text, {"reply_markup" : {"inline_keyboard" : detailArr}});
+   global.fn.sendMessage(userid, text, {"reply_markup" : {"inline_keyboard" : detailArr}});
 }
 
 var create = async function(userid, name)
@@ -40,7 +40,7 @@ var create = async function(userid, name)
     if(!hassymbol || existedbtn)
     {
         var mess = fn.mstr['woocommerce'].mess['getbackName'];
-        global.robot.bot.sendMessage(userid, mess);
+        global.fn.sendMessage(userid, mess);
         return;
     }
 
@@ -82,7 +82,7 @@ var show = async function(userid, txt)
     var mess = (txt) ? txt : section;
     var back = fn.mstr['woocommerce'].back;
     var markup = global.fn.generateKeyboard({'custom': true, 'grid':false, 'list': titles, 'back':back}, false);
-    global.robot.bot.sendMessage(userid, mess, markup);
+    global.fn.sendMessage(userid, mess, markup);
     fn.userOper.setSection(userid, section, true);
 }
 
@@ -101,7 +101,7 @@ var routting = function(message, speratedSection, user)
     {
         var mess = fn.mstr['woocommerce'].mess['getbackName'];
         var markup = fn.generateKeyboard({'section':fn.str.goToAdmin['back']}, true);
-        global.robot.bot.sendMessage(message.from.id, mess, markup);
+        global.fn.sendMessage(message.from.id, mess, markup);
         fn.userOper.setSection(message.from.id, btns['addbackbtn'], true);
     }
     //get the title of new message
@@ -133,7 +133,7 @@ var query = async function(query, speratedQuery, user, mName)
         var mess = fn.mstr[mName].mess['getcatid'];
         var markup = fn.generateKeyboard({section: fn.mstr[mName].btns['backbtn_back']}, true);
         
-        global.robot.bot.sendMessage(query.from.id, mess, markup);
+        global.fn.sendMessage(query.from.id, mess, markup);
         fn.userOper.setSection(query.from.id, nSection, false);
     }
 
@@ -144,7 +144,7 @@ var query = async function(query, speratedQuery, user, mName)
         var mess = fn.mstr[mName].mess['getdestid'];
         var markup = fn.generateKeyboard({section: fn.mstr[mName].btns['backbtn_back']}, true);
         
-        global.robot.bot.sendMessage(query.from.id, mess, markup);
+        global.fn.sendMessage(query.from.id, mess, markup);
         fn.userOper.setSection(query.from.id, nSection, false);
     }
 

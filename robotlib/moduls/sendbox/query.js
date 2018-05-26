@@ -46,19 +46,19 @@ var sendmessage = function(userid, sendboxid){
                 if(users){
                     console.log('send mesage to found userd:', users.length);
                     users.forEach(function(user) {
-                        global.robot.bot.sendMessage(user.userid, messateText);
+                        global.fn.sendMessage(user.userid, messateText);
                     }, this);
 
                     var report = 'پیام ' + item.title + ' به ' + users.length + ' ارسال شد.';
-                    global.robot.bot.sendMessage(userid, report);
+                    global.fn.sendMessage(userid, report);
                 }
                 else{
-                    global.robot.bot.sendMessage(userid, 'هیچ کاربری برای ارسال پیام پیدا نشد');
+                    global.fn.sendMessage(userid, 'هیچ کاربری برای ارسال پیام پیدا نشد');
                     //global.fn.sendbox.editMessage(sendboxid, {}, userid);
                 }
             });
         }
-        else global.robot.bot.sendMessage(userid, 'شما هنوز متن پیام را ارسال نکرده اید.');
+        else global.fn.sendMessage(userid, 'شما هنوز متن پیام را ارسال نکرده اید.');
     });
 }
 
@@ -71,7 +71,7 @@ routting = function(query, speratedQuery){
     if(speratedQuery[1] === global.fn.mstr.sendMessage['queryAdminSndMessEditMessage']){
         console.log('get message text');
         fn.userOper.setSection(query.from.id, fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr['sendMessage'].name + '/' + fn.mstr.sendMessage['sendMessToUsersEditMess'] + '/' + speratedQuery[speratedQuery.length-1], false);
-        global.robot.bot.sendMessage(query.from.id, fn.mstr.sendMessage['sendMessToUsersEditMess'], fn.generateKeyboard({section:fn.mstr['sendMessage'].back}, true));
+        global.fn.sendMessage(query.from.id, fn.mstr.sendMessage['sendMessToUsersEditMess'], fn.generateKeyboard({section:fn.mstr['sendMessage'].back}, true));
     }
 
     //delete message

@@ -113,7 +113,7 @@ var showAttributes = async function(userid, mName, productid, optionparams)
     if(!product) return;
     else if(!product.price.length)
     {
-        global.robot.bot.sendMessage(userid, `این محصول بدون قیمت است لطفا به مدیر فروشگاه اطلاع دهید. \n 🆔 ${product.id} \n ☸️ ${product.name}`);
+        global.fn.sendMessage(userid, `این محصول بدون قیمت است لطفا به مدیر فروشگاه اطلاع دهید. \n 🆔 ${product.id} \n ☸️ ${product.name}`);
         return;
     }
 
@@ -143,7 +143,7 @@ var showAttributes = async function(userid, mName, productid, optionparams)
 
     //send
     var op = {"reply_markup" : {"inline_keyboard" : detailArr}};
-    global.robot.bot.sendMessage(userid, mess, op);
+    global.fn.sendMessage(userid, mess, op);
 }
 
 var query = async function(query, speratedQuery, user, mName)
@@ -183,7 +183,7 @@ var query = async function(query, speratedQuery, user, mName)
 
         if(wooSubmiter.attributes.length  !== product.attributes.length)
         {
-            global.robot.bot.sendMessage(userid, 'شما ابتدا باید از هر ویژگی یک گزینه انتخاب کنید.');
+            global.fn.sendMessage(userid, 'شما ابتدا باید از هر ویژگی یک گزینه انتخاب کنید.');
             showAttributes(userid, mName, speratedQuery[last]);
             return;
         }

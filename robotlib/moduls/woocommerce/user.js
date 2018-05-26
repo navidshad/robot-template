@@ -50,7 +50,7 @@ var getWooCommerceAPI = function(userid)
     var consumerSecret = fn.getModuleData(mName, 'consumerSecret');
 
     if(!url || !consumerKey || !consumerSecret) {
-        global.robot.bot.sendMessage(userid, fn.mstr[mName].mess['neddOption']);
+        global.fn.sendMessage(userid, fn.mstr[mName].mess['neddOption']);
         return;
     }
 
@@ -89,10 +89,10 @@ var getFromWoocom = async function(userid, endPoint, parameters, option={})
     {
       console.log('\x1b[31m',body.code, body.message);
       console.log('\x1b[33m%s\x1b[0m: ', tempEndpoint);
-      global.robot.bot.sendMessage(userid, body.message);
+      global.fn.sendMessage(userid, body.message);
     }
 
-    else if(body.errors) global.robot.bot.sendMessage(userid, JSON.stringify(body.errors));
+    else if(body.errors) global.fn.sendMessage(userid, JSON.stringify(body.errors));
     else return body;
 }
 
@@ -204,7 +204,7 @@ var showDirectory = async function(user, category, page, optionparam)
     var totalitems = categories.length + products.length;
     if(totalitems == 0)
     {
-        global.robot.bot.sendMessage(userid, 'هیچ محصولی پیدا نشد.');
+        global.fn.sendMessage(userid, 'هیچ محصولی پیدا نشد.');
         return;
     }
 
@@ -249,7 +249,7 @@ var showDirectory = async function(user, category, page, optionparam)
     // end backs -----------------------------
 
     var mess = (catDistnation.description.length > 0) ? catDistnation.description : catDistnation.name;
-    global.robot.bot.sendMessage(userid, mess, remarkup);
+    global.fn.sendMessage(userid, mess, remarkup);
     fn.userOper.setSection(userid, categoryid, true);
 }
 
@@ -315,7 +315,7 @@ var showProduct = async function(userid, mName, id=null, text)
 
     //send
     var op = {"reply_markup" : {"inline_keyboard" : detailArr}};
-    global.robot.bot.sendMessage(userid, mess, op);
+    global.fn.sendMessage(userid, mess, op);
 }
 
 var getProductDetail = function(product, optionparams)

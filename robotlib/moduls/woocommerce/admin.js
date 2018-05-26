@@ -45,7 +45,7 @@ var show = function(userid)
     //show list
     var mess = fn.mstr[name]['name']
     var markup = fn.generateKeyboard({'custom':true, 'grid':true, 'list': titles, 'back':fn.str.goToAdmin['back']}, false);
-    global.robot.bot.sendMessage(userid, mess, markup);
+    global.fn.sendMessage(userid, mess, markup);
     fn.userOper.setSection(userid, mess, true);
 }
 

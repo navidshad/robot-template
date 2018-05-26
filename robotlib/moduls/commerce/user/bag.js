@@ -66,7 +66,7 @@ var addToBag = async function(userid, type, productid, datas)
     }
 
     var result = await additem(userid, item, {'showbag':true}).then();
-    if(!result.status) global.robot.bot.sendMessage(userid, fn.mstr.commerce.mess['alreadyAdded']);
+    if(!result.status) global.fn.sendMessage(userid, fn.mstr.commerce.mess['alreadyAdded']);
 }
 
 var submitBag = async function(userid)
@@ -74,14 +74,14 @@ var submitBag = async function(userid)
     var userBag = await get(userid);
     if(!userBag.address.length && !userBag.phone)
     {
-        global.robot.bot.sendMessage(userid, 'لطفا ابتدا آدرس و شماره تلفن خود را وارد کنید.');
+        global.fn.sendMessage(userid, 'لطفا ابتدا آدرس و شماره تلفن خود را وارد کنید.');
         show(userid, userBag);
         return;
     }
     // no items
     else if (!userBag.items.length)
     {
-        global.robot.bot.sendMessage(userid, 'ابتدا باید چندتا محصول به سبد خرید خود اضافه کنید');
+        global.fn.sendMessage(userid, 'ابتدا باید چندتا محصول به سبد خرید خود اضافه کنید');
         return;
     }
     
@@ -131,7 +131,7 @@ var getView_coupons = function(coupons)
 
     //back btn
     var back_fn = query['commerce'] + '-' + query['user'] + '-' + query['backtobag'];
-    var back_tx = '🔙 ' + 'برگشت';
+    var back_tx = '🔙 ' + 'بازگشت';
     var bbtn  = {'text': back_tx , 'callback_data': back_fn};
     detailArr.push([bbtn]);
 
@@ -197,7 +197,7 @@ var show = async function(userid, bag,  optionparam)
 
     //send
     if(showBag) {
-        global.robot.bot.sendMessage(userid, mess, {'parse_mode':'HTML', "reply_markup" : {"inline_keyboard" : detailArr}})
+        global.fn.sendMessage(userid, mess, {'parse_mode':'HTML', "reply_markup" : {"inline_keyboard" : detailArr}})
         .then((msg) => {
 
         });

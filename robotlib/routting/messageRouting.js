@@ -63,7 +63,7 @@ var routting = function(message){
                 //console.log('user profile is not compelet', 'you should register first');
                 var name = 'کاربر گرامی ' + message.from.first_name + ' عزیر،';
                 var pm = name + '\n' + 'شما ابتدا باید پروفایل خود را تکمیل کنید تا بتوانید از امکانات ربات استفاده کنید.';
-                global.robot.bot.sendMessage(message.from.id, pm, fn.generateKeyboard({section:fn.str['mainMenu'], "isCompelet": isCompelet}, false));
+                global.fn.sendMessage(message.from.id, pm, fn.generateKeyboard({section:fn.str['mainMenu'], "isCompelet": isCompelet}, false));
             }
         });
     }

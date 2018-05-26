@@ -2,7 +2,7 @@ module.exports.commerce = {
     modulename:'commerce',
     //admin
     name:'🏷💰 ' + 'تجارت', 
-    back:'🔙 برگشت به تجارت',
+    back:'🔙 بازگشت به تجارت',
     readSym: ['📪','📭'],
 
     f_peied     : '✅',
@@ -15,7 +15,7 @@ module.exports.commerce = {
 
     btns: {
         settings : '⚙️' + ' - ' + 'تنظیمات',
-        backsetting: '🔙 برگشت به ' + '⚙️' + ' - ' + 'تنظیمات',
+        backsetting: '🔙 بازگشت به ' + '⚙️' + ' - ' + 'تنظیمات',
         couponGenerators        :'🏷 ' + 'بن ساز ها',
         couponGeneratorsBack    :'🔙 ' + 'بن ساز ها',
         addgenerator            :'➕ ' + 'افزودن بن ساز',

@@ -7,13 +7,13 @@ var start = async function(message){
     
     var newuser = await fn.userOper.registerId(message.from);
     backToMainMenu(message.from.id, newuser);
-    if(newuser.isAdmin) global.robot.bot.sendMessage(message.from.id, fn.str['youareadmin']);
+    if(newuser.isAdmin) global.fn.sendMessage(message.from.id, fn.str['youareadmin']);
 }
 
 //get user's section
 var getsection = function(message){
     fn.userOper.checkProfile(message.from.id, (user) => {
-        global.robot.bot.sendMessage(message.from.id, user.section);
+        global.fn.sendMessage(message.from.id, user.section);
     });
 }
 
@@ -22,7 +22,7 @@ var registerAdmin = function(message){
     //console.log('register someone');
     var sperate = message.text.split('-');
     fn.userOper.addAdminToWaintingList(sperate[1]);
-    global.robot.bot.sendMessage(message.from.id, fn.str['registeradmin']);
+    global.fn.sendMessage(message.from.id, fn.str['registeradmin']);
 }
 
 //back to mainMenu
@@ -34,14 +34,14 @@ var backToMainMenu = async function(userid, user, mess){
     remarkup = fn.generateKeyboard({'section':fn.str['mainMenu'], 'list':items, "isCompelet": user.isCompelet, "isAdmin": user.isAdmin}, false);
     var texttosend = (mess) ? mess : global.robot.config.firstmessage;
     if(texttosend == null) texttosend = global.fn.str['mainMenuMess'];
-    global.robot.bot.sendMessage(userid, texttosend, remarkup);
+    global.fn.sendMessage(userid, texttosend, remarkup);
 }
 
 //get word counr
 var getWordCount = async function(userid){ 
     var count = await fn.db.word.count({}).exec().then();
     var mess = 'تعداد واژه های جستجو شده توسط کاربران: ' + count;
-    global.robot.bot.sendMessage(userid, mess);
+    global.fn.sendMessage(userid, mess);
 }
 
 module.exports = {

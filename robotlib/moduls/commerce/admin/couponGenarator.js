@@ -11,7 +11,7 @@ var show = async function(userid)
     generators.forEach(item => { titles.push(item.name) });
 
     var markup = fn.generateKeyboard({'custom':true, 'list':titles, 'grid':true, 'back':back}, false);
-    global.robot.bot.sendMessage(userid, mess, markup);
+    global.fn.sendMessage(userid, mess, markup);
     fn.userOper.setSection(userid, mess, true);
 }
 
@@ -20,7 +20,7 @@ var showGenerator = async function(userid, name)
     //get generator
     var gen = await fn.db.generator.findOne({'name': name}).sort('-_id').exec().then();
     if(!gen) {
-        global.robot.bot.sendMessage(userid, fn.mstr.commerce.mess['notGenerator']);
+        global.fn.sendMessage(userid, fn.mstr.commerce.mess['notGenerator']);
         show(userid);
         return;
     }
@@ -80,7 +80,7 @@ var showGenerator = async function(userid, name)
     '\n' + detail +
     '🏷';
 
-    global.robot.bot.sendMessage(userid, mess, {"reply_markup" : {"inline_keyboard" : detailArr}});
+    global.fn.sendMessage(userid, mess, {"reply_markup" : {"inline_keyboard" : detailArr}});
 }
 
 var createGenerator = async function(userid, name, allowEdit)
@@ -121,13 +121,13 @@ var routting = async function(message, speratedSection)
         var mess = fn.mstr.commerce.mess['getnameGenerator'];
         var back = btns['couponGeneratorsBack'];
         var markup = fn.generateKeyboard({'section':back}, true);
-        global.robot.bot.sendMessage(userid, mess, markup);
+        global.fn.sendMessage(userid, mess, markup);
         fn.userOper.setSection(userid, btns['addgenerator'], true);
     }
     else if (speratedSection[last] === btns['addgenerator'])
     {
         var count = await fn.db.generator.count({'name': text}).exec().then();
-        if(count > 0) global.robot.bot.sendMessage(userid, fn.str['chooseOtherText']);
+        if(count > 0) global.fn.sendMessage(userid, fn.str['chooseOtherText']);
         else createGenerator(userid, text);
     }
 
@@ -204,7 +204,7 @@ var query = async function(query, speratedQuery)
         var nSection = fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr[mName]['name'] + '/' + fn.mstr[mName].btns['couponGenerators'] + '/' + itemSection + '/' + speratedQuery[last];
         var remarkup = fn.generateKeyboard({'custom': true, 'grid':false, 'list': list, 'back':back}, false);
     
-        global.robot.bot.sendMessage(query.from.id, mess, remarkup);
+        global.fn.sendMessage(query.from.id, mess, remarkup);
         fn.userOper.setSection(query.from.id, nSection, false);
     }
 }

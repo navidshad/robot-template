@@ -52,7 +52,7 @@ var AdminMessageCreator = function (userid, mess, calbck) {
    mess.text + '\n' + '\n' +
    'لطفا برای تنظیمات و ارسال نهایی از گزینه های زیر استفاده کنید.';
  
-   global.robot.bot.sendMessage(userid, text, {"reply_markup" : {"inline_keyboard" : detailArr}});   
+   global.fn.sendMessage(userid, text, {"reply_markup" : {"inline_keyboard" : detailArr}});   
 
    if(calbck) calbck();
 }
@@ -60,7 +60,7 @@ var AdminMessageCreator = function (userid, mess, calbck) {
 var create = function(message){
     //check title to not to added already
     fn.db.sendbox.findOne({'title': message.text}, function(err, item){
-        if(item) global.robot.bot.sendMessage(message.from.id, fn.mstr.sendMessage['wrongtitle']);
+        if(item) global.fn.sendMessage(message.from.id, fn.mstr.sendMessage['wrongtitle']);
         else{
             var newSendMess = new fn.db.sendbox({
                 //'date'     : fn.time.gettime(),
@@ -107,7 +107,7 @@ var showSendBoxsection = function(userid, txt){
         fn.userOper.setSection(userid, fn.mstr['sendMessage'].name, true);  
         var messtosend = (txt) ? txt : fn.mstr['sendMessage'].name;
         var back = fn.str.goToAdmin.back;
-        global.robot.bot.sendMessage(userid, messtosend, global.fn.generateKeyboard({'custom': true, 'grid':false, 'list': titles, 'back':back}, false));
+        global.fn.sendMessage(userid, messtosend, global.fn.generateKeyboard({'custom': true, 'grid':false, 'list': titles, 'back':back}, false));
     });
 }
 
@@ -123,7 +123,7 @@ var routting = function(message, speratedSection, user){
     else if (message.text === fn.mstr.sendMessage['sendMessToUsersNewMess']){
         console.log('getting message');
         fn.userOper.setSection(message.from.id, fn.mstr.sendMessage['sendMessToUsersNewMess'], true);        
-        global.robot.bot.sendMessage(message.from.id, fn.mstr.sendMessage['sendMessToUsersTitle'], fn.generateKeyboard({'section':fn.str.goToAdmin['back']}, true));
+        global.fn.sendMessage(message.from.id, fn.mstr.sendMessage['sendMessToUsersTitle'], fn.generateKeyboard({'section':fn.str.goToAdmin['back']}, true));
     }
     //get the title of new message
     else if(speratedSection[3] === fn.mstr.sendMessage['sendMessToUsersNewMess']){

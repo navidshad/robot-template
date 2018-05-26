@@ -9,6 +9,7 @@ module.exports = function(detail){
     this.config = detail.config;
     this.category = [];
     this.menuItems = [];
+    this.lastMessage = null;
 
     this.start = function(){ 
         this.load();
@@ -20,7 +21,13 @@ module.exports = function(detail){
         global.robot.bot.on('message', (msg) => {
             //console.log(msg.text);
             bot.sendChatAction(msg.chat.id, 'typing');
+            this.lastMessage = msg;
             global.messageRouting.routting(msg);
+        });
+
+        //text 
+        global.robot.bot.on('text', (msg) => {
+            global.fn.saveLastMessage(msg);
         });
 
         //callback 

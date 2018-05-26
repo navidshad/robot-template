@@ -43,7 +43,7 @@ var alertToAmin = function(newMess){
 
         //send to admins
         admins.forEach(admin => {
-            global.robot.bot.sendMessage(admin.userid, inboxMess);
+            global.fn.sendMessage(admin.userid, inboxMess);
         });
     });
 }
@@ -54,7 +54,7 @@ var routting = function(message, speratedSection){
     if (message.text === fn.mstr['inbox'].lable){
         console.log('getting message');
         fn.userOper.setSection(message.from.id, fn.mstr['inbox'].lable, true);        
-        global.robot.bot.sendMessage(message.from.id, fn.mstr['inbox'].getmess, fn.generateKeyboard({section:fn.str['backToMenu']}, true));
+        global.fn.sendMessage(message.from.id, fn.mstr['inbox'].getmess, fn.generateKeyboard({section:fn.str['backToMenu']}, true));
     }
     else if(speratedSection[last] === fn.mstr['inbox'].lable){
         console.log('send user message to admin');

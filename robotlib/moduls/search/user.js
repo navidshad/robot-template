@@ -37,7 +37,7 @@ var checkRoute = function(option){
 var show = function(userid){
     var remarkup = fn.generateKeyboard({'section': fn.mstr.category['backtoParent']}, true);
     var detailMess = fn.mstr.search['getmess'];
-    global.robot.bot.sendMessage(userid, detailMess, remarkup);
+    global.fn.sendMessage(userid, detailMess, remarkup);
     fn.userOper.setSection(userid, fn.mstr.search['name'], true);
 }
 
@@ -59,7 +59,7 @@ var search = async function(userid, text)
     var results = await Promise.all(promissarray).then()
     .catch((e) => { 
         console.log(e);
-        global.robot.bot.sendMessage(userid, 'دیتابیس باید برای عملیات جستجو تنظیم شود، لطفا به مسئول فنی اطلاع دهید.');
+        global.fn.sendMessage(userid, 'دیتابیس باید برای عملیات جستجو تنظیم شود، لطفا به مسئول فنی اطلاع دهید.');
     });
 
     for (let index = 0; index < results.length; index++) 
@@ -76,14 +76,14 @@ var search = async function(userid, text)
     }
 
     var markup = fn.generateKeyboard({'custom': true, 'grid':true, 'list': list, 'back':back}, false);
-    global.robot.bot.sendMessage(userid, mess, markup);
+    global.fn.sendMessage(userid, mess, markup);
     fn.userOper.setSection(userid, fn.mstr.search['result'], true);
 }
 
 var showItem = function(message, name){
     fn.m.post.user.show(message, name, () => {
         //item does not existed
-        global.robot.bot.sendMessage(message.user.id, fn.str['choosethisItems']);
+        global.fn.sendMessage(message.user.id, fn.str['choosethisItems']);
     });
 }
 

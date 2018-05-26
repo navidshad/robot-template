@@ -53,7 +53,7 @@ var alertTouser = function(coupon)
     var mess = '💟 ' + 'کاربر عزیز یک بن تخفیف برای شما صادر شد: \n';
     mess += fn.m.commerce.coupon.getDetail(coupon);
     mess += '\n⚠️ برای استفاده از بن تخفیف به بخش ثبت سفارش مراجعه کنید.';
-    global.robot.bot.sendMessage(coupon.userid, mess);
+    global.fn.sendMessage(coupon.userid, mess);
     fn.alertadmins(mess);
 }
 

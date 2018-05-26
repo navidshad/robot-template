@@ -36,16 +36,22 @@ var checkRoute = function(option){
     return result;
 }
 
-var show = function(userid, injectedtext){
+var show = function(userid, injectedtext)
+{
     fn.userOper.setSection(userid, fn.mstr.settings['name'], true);
-    var list = fn.convertObjectToArray(fn.mstr.settings['btns'], null);
+    var btns = fn.mstr.settings['btns'];
+    var list = [
+        btns['firstmess'],
+        btns['strToSticker'],
+    ];
     var back = fn.str.goToAdmin['back'];
     var mess = (injectedtext) ? injectedtext : fn.mstr.settings['name'];
     var replymarkup = fn.generateKeyboard({'custom': true, 'grid':true, 'list': list, 'back':back}, false);
-    global.robot.bot.sendMessage(userid, mess, replymarkup);        
+    global.fn.sendMessage(userid, mess, replymarkup);        
 }
 
-var routting = function(message, speratedSection){
+var routting = function(message, speratedSection, user, mName)
+{
     var text = message.text;
     var last = speratedSection.length-1;
     var btns = fn.mstr.settings.btns;
@@ -58,13 +64,13 @@ var routting = function(message, speratedSection){
     {
         var mess = fn.mstr.settings.mess['firstmess'];
         var replymarkup = fn.generateKeyboard({'section': fn.mstr.settings['back']}, true);
-        global.robot.bot.sendMessage(message.from.id, mess, replymarkup);
+        global.fn.sendMessage(message.from.id, mess, replymarkup);
         fn.userOper.setSection(message.from.id, btns['firstmess'], true);
     }
     else if (speratedSection[3] === btns['firstmess'])
     {
         if(text.length < 10) {
-            global.robot.bot.sendMessage(message.from.id, fn.mstr.settings.mess['shorttext']); 
+            global.fn.sendMessage(message.from.id, fn.mstr.settings.mess['shorttext']); 
             return;
         }
 
@@ -78,7 +84,7 @@ var routting = function(message, speratedSection){
     {
         var mess = fn.mstr.settings.mess['getdomain'];
         var replymarkup = fn.generateKeyboard({'section': fn.mstr.settings['back']}, true);
-        global.robot.bot.sendMessage(message.from.id, mess, replymarkup);
+        global.fn.sendMessage(message.from.id, mess, replymarkup);
         fn.userOper.setSection(message.from.id, btns['domain'], true);
     }
     else if (speratedSection[3] === btns['domain'])
@@ -87,6 +93,14 @@ var routting = function(message, speratedSection){
         global.robot.save();
         show(message.from.id, fn.str['seccess']);
     }
+
+    //string to sticker
+    else if (text === btns['strToSticker'] || speratedSection[3] === btns['strToSticker'])
+        strToSticker.routting(message, speratedSection, user, mName);
 }
 
-module.exports = { name, checkRoute, routting, show }
+var strToSticker = require('./strToSticker');
+var query = require('./query');
+var upload = require('./upload');
+
+module.exports = { name, checkRoute, query, upload, routting, show, strToSticker }

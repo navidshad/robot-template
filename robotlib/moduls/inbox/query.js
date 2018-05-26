@@ -41,7 +41,7 @@ var routting = function(query, speratedQuery){
     //answer
     if(speratedQuery[1] === fn.mstr.inbox.query['answer']) {
         fn.userOper.setSection(query.from.id, fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr['inbox'].name + '/' + fn.mstr.inbox.mess['answer'] + '/' + speratedQuery[speratedQuery.length-1], false);
-        global.robot.bot.sendMessage(query.from.id, fn.mstr.inbox.mess['answer'], fn.generateKeyboard({section:fn.mstr['inbox'].back}, true));
+        global.fn.sendMessage(query.from.id, fn.mstr.inbox.mess['answer'], fn.generateKeyboard({section:fn.mstr['inbox'].back}, true));
     }
     //delete message
     else if(speratedQuery[1] === fn.mstr.inbox.query['delete']) deleteMessage(query.from.id, {'id': speratedQuery[last]});

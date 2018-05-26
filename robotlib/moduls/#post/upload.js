@@ -106,7 +106,8 @@ var uploadAttachment = function(message, speratedSection){
 }
 
 
-var routting = function(message, speratedSection){
+var routting = function(message, speratedSection)
+{
     var last = speratedSection.length-1;
 
     if(speratedSection[last-1] === fn.mstr.post['endupload']) uploadPostFile(message, speratedSection);

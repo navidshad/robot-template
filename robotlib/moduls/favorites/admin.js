@@ -67,7 +67,7 @@ var show = function(userid, newcat){
     + 'اولویت در منو: ' + moduleOption.option.btn_order + '\n'
     + 'وضعیت: ' + moduleOption.option.active;
 
-    global.robot.bot.sendMessage(userid, detailMess, remarkup);
+    global.fn.sendMessage(userid, detailMess, remarkup);
     fn.userOper.setSection(userid,  fn.mstr.favorites['name'], true);
 }
 
@@ -79,7 +79,7 @@ var category = function (message, speratedQuery){
     global.robot.category.forEach((element) => {
         list.push(element.parent + ' - ' + element.name);
     });
-    global.robot.bot.sendMessage(message.from.id, fn.mstr.post.edit['category'], 
+    global.fn.sendMessage(message.from.id, fn.mstr.post.edit['category'], 
     fn.generateKeyboard({'custom': true, 'grid':false, 'list': list, 'back':back}, false));
 }
 
@@ -109,18 +109,18 @@ var routting = function(message, speratedSection){
         console.log('get new category for favorites');
         var cat = text.split(' - ')[1];
         if(fn.m.category.checkInValidCat(cat)) show (message.from.id,  cat);
-        else global.robot.bot.sendMessage(message.from.id, fn.str['choosethisItems']);
+        else global.fn.sendMessage(message.from.id, fn.str['choosethisItems']);
     }
 
     //change order
     else if (text === fn.str['editOrder']){
         var remarkup = fn.generateKeyboard({'section': fn.mstr.favorites['backsetting']}, true);
-        global.robot.bot.sendMessage(message.from.id, fn.str['editOrderMess'], remarkup);
+        global.fn.sendMessage(message.from.id, fn.str['editOrderMess'], remarkup);
         fn.userOper.setSection(message.from.id,  fn.str['editOrder'], true);
     }
     else if(speratedSection[last] === fn.str['editOrder']){
         var order = parseInt(text);
-        if(!typeof order === 'number') global.robot.bot.sendMessage(message.from.id, fn.str['editOrder']);
+        if(!typeof order === 'number') global.fn.sendMessage(message.from.id, fn.str['editOrder']);
 
         var moduleOption = fn.getModuleOption(fn.mstr.favorites['modulename']);
         global.robot.config.moduleOptions[moduleOption.index].btn_order = order;

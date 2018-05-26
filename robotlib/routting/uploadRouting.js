@@ -2,9 +2,9 @@ module.exports = function(message, speratedSection, user){
 
     //define query route
     global.mRoutes.forEach(route => {
-        var result = (route.upload) ? route.upload({'speratedSection': speratedSection}) : {'status': false};
+        var result = (route.upload) ? route.upload({'speratedSection': speratedSection}, route.name) : {'status': false};
         if(result.status) {
-            result.routting(message, speratedSection, user);
+            result.routting(message, speratedSection, user, route.name);
             nothingToRoute = false;
             return;
         }

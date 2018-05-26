@@ -91,7 +91,7 @@ var InviteUser = function(userid){
         chanel = moduleOption.datas[0].more[0].name;
 
     var mess = 'کاربر گرامی شما ابتدا باید در کانال زیر عضو شوید.' + '\n @' + chanel;
-    global.robot.bot.sendMessage(userid, mess);
+    global.fn.sendMessage(userid, mess);
 }
 
 var routting = function(message, speratedSection, user){

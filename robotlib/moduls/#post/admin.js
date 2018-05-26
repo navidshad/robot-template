@@ -46,7 +46,7 @@ var showPostList = function(userid, injectedtext){
         if(cats && cats.length > 0) cats.forEach(function(element) { 
             var itemname = element.category + ' - ' + element.name;
             list.push(itemname); }, this);
-        global.robot.bot.sendMessage(userid, mess, fn.generateKeyboard({'custom': true, 'grid':false, 'list': list, 'back':back}, false));        
+        global.fn.sendMessage(userid, mess, fn.generateKeyboard({'custom': true, 'grid':false, 'list': list, 'back':back}, false));        
     });
 }
 
@@ -167,9 +167,9 @@ var createpostMess = function(userid, post){
     'ــــــــــــــــــــــــــــــــ' + '\n' + 
     '⚠️' + 'برای ویرایش مطلب از دکمه های پیوست شده استفاده کنید.';
 
-    //global.robot.bot.sendMessage(userid, fn.str.query['seccess'], fn.generateKeyboard({section:fn.str.goTopost[0]}, false));    
+    //global.fn.sendMessage(userid, fn.str.query['seccess'], fn.generateKeyboard({section:fn.str.goTopost[0]}, false));    
     showPostList(userid);
-    global.robot.bot.sendMessage(userid, text, {"reply_markup" : {"inline_keyboard" : detailArr}});
+    global.fn.sendMessage(userid, text, {"reply_markup" : {"inline_keyboard" : detailArr}});
 }
 
 var ceatePost = function(message){
@@ -191,7 +191,7 @@ var editpost = async function(id, detail, userid, ecCallBack){
     var sendKey = true;
     //console.log('edit a post', id);
     var post = await fn.db.post.findOne({"_id": id}).exec().then();
-    if(!post) global.robot.bot.sendMessage(userid, 'این مطلب دیگر وجود ندارد');
+    if(!post) global.fn.sendMessage(userid, 'این مطلب دیگر وجود ندارد');
 
     if(detail.name) post.name                       = detail.name;
     if(detail.category) post.category               = detail.category;
@@ -228,7 +228,7 @@ var editpost = async function(id, detail, userid, ecCallBack){
 
     post.save((e) => {
         if(e) console.log(e);
-        if(!detail.clearalbum) global.robot.bot.sendMessage(userid, fn.str.query['seccess']);
+        if(!detail.clearalbum) global.fn.sendMessage(userid, fn.str.query['seccess']);
         if(sendKey) {
             var nSection = fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr.post['name'];
             fn.userOper.setSection(userid, nSection, false);
@@ -239,7 +239,7 @@ var editpost = async function(id, detail, userid, ecCallBack){
     });
 }
 
-var upload = require('./upload.js');
+var upload = require('./upload');
 var user   = require('./user');
 var query = require('./query');
 
@@ -256,27 +256,27 @@ var routting = function(message, speratedSection){
         var back = fn.mstr.post['back'];
         
         fn.userOper.setSection(message.from.id, fn.mstr.post.postOptions[1], true);        
-        global.robot.bot.sendMessage(message.from.id, mess, fn.generateKeyboard({'section': back}, true));
+        global.fn.sendMessage(message.from.id, mess, fn.generateKeyboard({'section': back}, true));
     }
     else if(speratedSection[last] === fn.mstr.post.postOptions[1]){
-        if(fn.m.category.checkInValidCat(text)) global.robot.bot.sendMessage(message.from.id, fn.mstr.post.scErrors[0]);
-        else if(fn.checkValidMessage(text)) global.robot.bot.sendMessage(message.from.id, fn.str.query['chooseOtherText']);
+        if(fn.m.category.checkInValidCat(text)) global.fn.sendMessage(message.from.id, fn.mstr.post.scErrors[0]);
+        else if(fn.checkValidMessage(text)) global.fn.sendMessage(message.from.id, fn.str.query['chooseOtherText']);
         else{
             fn.db.post.findOne({'name': text}).exec((e, post) => {
                 if(!post) ceatePost(message);
-                else global.robot.bot.sendMessage(message.from.id, fn.mstr.post.scErrors[1]);
+                else global.fn.sendMessage(message.from.id, fn.mstr.post.scErrors[1]);
             });
         }
     }
 
     //edit name
     else if(speratedSection[last-1] === fn.mstr.post.edit['name']){
-        if(fn.m.category.checkInValidCat(text)) global.robot.bot.sendMessage(message.from.id, fn.mstr.post.scErrors[0]);
-        else if(fn.checkValidMessage(text)) global.robot.bot.sendMessage(message.from.id, fn.str.query['chooseOtherText']);
+        if(fn.m.category.checkInValidCat(text)) global.fn.sendMessage(message.from.id, fn.mstr.post.scErrors[0]);
+        else if(fn.checkValidMessage(text)) global.fn.sendMessage(message.from.id, fn.str.query['chooseOtherText']);
         else{
             fn.db.post.findOne({'name': text}).exec((e, post) => {
                 if(!post) editpost(speratedSection[last], {'name': text}, message.from.id);
-                else global.robot.bot.sendMessage(message.from.id, fn.mstr.post.scErrors[1]);
+                else global.fn.sendMessage(message.from.id, fn.mstr.post.scErrors[1]);
             });
         }
     }
@@ -289,21 +289,21 @@ var routting = function(message, speratedSection){
     else if (speratedSection[last-1] === fn.mstr.post.edit['category']){
         var cat = text.split(' - ')[1];
         if(fn.m.category.checkInValidCat(cat)) editpost(speratedSection[last], {'category': cat}, message.from.id);
-        else global.robot.bot.sendMessage(message.from.id, fn.str.query['choosethisItems']);
+        else global.fn.sendMessage(message.from.id, fn.str.query['choosethisItems']);
     }
 
     //edit order
     else if (speratedSection[last-1] === fn.mstr.post.edit['order']) {
         var order = parseInt(text);
         if(!isNaN(order)) editpost(speratedSection[last], {'order': text}, message.from.id);
-        else global.robot.bot.sendMessage(message.from.id, fn.mstr.post.edit['order']); 
+        else global.fn.sendMessage(message.from.id, fn.mstr.post.edit['order']); 
     }  
         
     //edit price
     else if (speratedSection[last-1] === fn.mstr.post.edit['price']) {
         var price = parseInt(text);
         if(!isNaN(price) && price > 99) editpost(speratedSection[last], {'price': text}, message.from.id);
-        else global.robot.bot.sendMessage(message.from.id, fn.mstr.post.edit['price']); 
+        else global.fn.sendMessage(message.from.id, fn.mstr.post.edit['price']); 
     }
 
     //end upload
@@ -325,7 +325,7 @@ var routting = function(message, speratedSection){
         var postname = text.split(' - ')[1];
         fn.db.post.findOne({'name': postname}).exec((e, post) => {
             if(post) createpostMess(message.from.id, post);
-            else global.robot.bot.sendMessage(message.from.id, fn.str.query['choosethisItems']);            
+            else global.fn.sendMessage(message.from.id, fn.str.query['choosethisItems']);            
         });
     }
 }

@@ -56,11 +56,11 @@ var show = async function(userid)
 
     //no favorit
     if(favorites.length === 0) {
-        global.robot.bot.sendMessage(userid, fn.mstr.favorites.mess['notFound']);
+        global.fn.sendMessage(userid, fn.mstr.favorites.mess['notFound']);
         return;
     }
 
-    global.robot.bot.sendMessage(userid, mess, markup);
+    global.fn.sendMessage(userid, mess, markup);
     fn.userOper.setSection(userid,  mess, true);
 }
 
