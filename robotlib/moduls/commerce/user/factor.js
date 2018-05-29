@@ -88,6 +88,13 @@ var create = async function(userid,  items, optionPram)
     totalPerDis = DisResult.total;
     var removeids = DisResult.usedcoupons.map(item => { return item.id });
     fn.m.commerce.coupon.removeCoupon(removeids);
+
+    // shipping -----------
+    var shippingOption = fn.getModuleData('commerce', 'shipping').value();
+    var shippingCost = fn.getModuleData('commerce', 'shippingCost').value();
+    var shippingLable = `🚚 هزینه ارسال: ${shippingCost} تومان`;
+    if(shippingOption == 'true') totalAmount =+ parseInt(shippingCost);
+    // --------------------
     
     //prepare messag
     var mess = '🛍 ' + 'فاکتور شماره ' + newNumber + '\n' +
@@ -96,6 +103,7 @@ var create = async function(userid,  items, optionPram)
     'ـــــــــــــــــ' + '\n' +
     'جمع قیمت: ' + totalAmount + ' تومان' + '</code> \n';
     mess += (totalPerDis) ? '💶 ' + 'تخفیف: ' + totalPerDis + ' تومان' : '';
+    mess += (shippingOption == 'true') ? shippingLable : '';
 
     //create
     var newFactor = new fn.db.factor({

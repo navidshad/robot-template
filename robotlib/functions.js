@@ -210,7 +210,7 @@ var getModuleOption = function(mName, option)
 
 var getModuleData = function(mName, dName)
 {
-    var data = null;
+    var data = {};
     //get module detail and data
     var moduleOption = getModuleOption(mName, {'create': true});
     if(moduleOption) moduleOption.option.datas.forEach(element => {

@@ -179,6 +179,12 @@ var show = async function(userid, bag,  optionparam)
 
     var usedcouponsText = fn.m.commerce.coupon.getUsedCouponsDetail(DisResult.usedcoupons);
 
+    // shipping -----------
+    var shippingOption = fn.getModuleData('commerce', 'shipping').value();
+    var shippingCost = fn.getModuleData('commerce', 'shippingCost').value();
+    var shippingLable = `🚚 هزینه ارسال: ${shippingCost} تومان`;
+    // --------------------
+
     //message
     var mess = '🛍 ' + 'سبد خرید شما' + '\n' +
     '<code>ـــــــــــــــــ</code>' +
@@ -186,6 +192,7 @@ var show = async function(userid, bag,  optionparam)
     '<code>ـــــــــــــــــ</code>' + '\n' +
     '💶 ' + 'جمع قیمت: ' + total + ' تومان' + '\n';
     mess += '💶 ' + 'اعمال تخفیف: ' + totalPerDis + ' تومان';
+    mess += (shippingOption == 'true') ? shippingLable : '';
     mess += '\n' + '<code>ـــــــــــــــــ</code>' + '\n' +
     'بن ها استفاده شده: ' + '\n' + usedcouponsText +
     'بن های تخفیف شما: ' + '\n' + couponsText +
