@@ -2,7 +2,7 @@ module.exports.category = {
     modulename:'category',
     asoption : 'منو',
     //admin
-    name:'🗂 '+'منو',
+    name:'🗂 '+'منو ساز',
     back:'⤴️ برگش به منو مطالب',
     message:'لطفا منو که میخواهید این قابلیت در آن نمایش داده ود را انتخاب کنید.',
     maincategory: 'دسته اصلی',  //don't change it, it has been stored in categories collection
