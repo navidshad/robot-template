@@ -180,8 +180,8 @@ var show = async function(userid, bag,  optionparam)
     var usedcouponsText = fn.m.commerce.coupon.getUsedCouponsDetail(DisResult.usedcoupons);
 
     // shipping -----------
-    var shippingOption = fn.getModuleData('commerce', 'shipping').value();
-    var shippingCost = fn.getModuleData('commerce', 'shippingCost').value();
+    var shippingOption = fn.getModuleData('commerce', 'shipping').value;
+    var shippingCost = fn.getModuleData('commerce', 'shippingCost').value;
     var shippingLable = `🚚 هزینه ارسال: ${shippingCost} تومان`;
     // --------------------
 
