@@ -118,7 +118,7 @@ var createpostMess = function(userid, post){
     if(post.type !== 'text') detailArr.push([{'text': tx_upload, 'callback_data': fn_upload}]);
 
     detailArr.push([ 
-        {'text': 'دسته بندی', 'callback_data': fn_category},
+        {'text': 'منو', 'callback_data': fn_category},
         {'text': 'توضیح', 'callback_data': fn_description},
         {'text': 'نام', 'callback_data': fn_name}
     ]);
@@ -155,7 +155,7 @@ var createpostMess = function(userid, post){
     var text = 'اطلاعات مطلب' + '\n' +
     'ــــــــــــــــــــــــــــــــ' + '\n' +
     '⏺ ' + 'عنوان: ' + title + '\n' +
-    '⏺ ' + 'دسته بندی: ' + category + '\n' +
+    '⏺ ' + 'منو: ' + category + '\n' +
     '⏺ ' + 'اولویت: ' + order + '\n' +
     '⏺ ' + 'وضعیت: ' + publish + '\n';
 

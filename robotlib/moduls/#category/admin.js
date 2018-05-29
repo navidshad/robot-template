@@ -225,7 +225,7 @@ var editcategory = async function(id, detail, userid, speratedSection, ecCallBac
         if(ecCallBack) ecCallBack();
     }
     else{
-        global.fn.sendMessage(userid, 'این دسته بندی دیگر وجود ندارد', fn.generateKeyboard({section:fn.str['goTocategory']}));
+        global.fn.sendMessage(userid, 'این منو دیگر وجود ندارد', fn.generateKeyboard({section:fn.str['goTocategory']}));
     }
 
 }
