@@ -183,7 +183,7 @@ var show = async function(userid, bag,  optionparam)
     var shippingOption = fn.getModuleData('commerce', 'shipping').value;
     var shippingCost = fn.getModuleData('commerce', 'shippingCost').value;
     var shippingLable = `\n 🚚 هزینه ارسال: ${shippingCost} تومان`;
-    if(shippingOption == 'true') total =+ parseInt(shippingCost);
+    if(shippingOption == 'true') total += parseInt(shippingCost);
     // --------------------
 
     //message

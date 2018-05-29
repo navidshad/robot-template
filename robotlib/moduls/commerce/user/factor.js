@@ -93,7 +93,7 @@ var create = async function(userid,  items, optionPram)
     var shippingOption = fn.getModuleData('commerce', 'shipping').value;
     var shippingCost = fn.getModuleData('commerce', 'shippingCost').value;
     var shippingLable = `\n 🚚 هزینه ارسال: ${shippingCost} تومان`;
-    if(shippingOption == 'true') totalAmount =+ parseInt(shippingCost);
+    if(shippingOption == 'true') totalAmount += parseInt(shippingCost);
     // --------------------
     
     //prepare messag
