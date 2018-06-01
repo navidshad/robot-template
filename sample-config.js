@@ -17,7 +17,7 @@ module.exports = {
         'settings'          :true,
         'search'            :true,
         'ticket'            :true,
-        'contacttousers'    :true,
+        'sendbox'    :true,
         'chanelChecker'     :true,
         'favorites'         :true,
         'woocommerce'       :true,
