@@ -89,7 +89,7 @@ var submitBag = async function(userid)
 
 }
 
-var getView_main = function()
+var getView_main = function(coupons)
 {
     var detailArr = [];
     var query = fn.mstr.commerce.query;
@@ -99,10 +99,10 @@ var getView_main = function()
     var fn_close    = query['commerce'] + '-' + query['close'];
 
     //controller btns
-    detailArr.push([ 
-        {'text': '✅ ' + 'ثبت و پرداخت', 'callback_data': fn_submit},
-        {'text': '🏷 ' + 'اعمال بن', 'callback_data': fn_usecoupon}
-    ].reverse());
+    detailArr.push([ {'text': '✅ ' + 'ثبت و پرداخت', 'callback_data': fn_submit} ]);
+    
+    if(coupons.length) 
+        detailArr[1].push({'text': '🏷 ' + 'اعمال بن', 'callback_data': fn_usecoupon});
 
     //personal info 
     var fn_address = query['commerce'] + '-' + query['user'] + '-' + query['address'];
@@ -160,7 +160,7 @@ var show = async function(userid, bag,  optionparam)
     
     var detailArr = [];
     if(option.view === 'coupons') detailArr = getView_coupons(coupons);
-    else detailArr = getView_main();
+    else detailArr = getView_main(coupons);
 
 
     //products
