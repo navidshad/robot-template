@@ -19,35 +19,59 @@ var settingUp = function()
 {
     return new Promise(async (resolve, reject) => 
     {
-        //get approot path
+        // 
+        global.afterStart = [];
+        // get approot path
         global.appRoot = __dirname;
-        //get config
+        // get config
         global.config = require('../config');
-        //setting test run
+        // setting test run
         if(global.config.testRun)
         {
         global.config.dbpath = global.config.dbpath_test;
         global.config.token = global.config.token_test;
         }
         
-        ///must be declear first
+        /// must be declear first
         events = require('events');
         global.fn = { eventEmitter: new events.EventEmitter() };
         global.mRoutes = [];
         global.searchRoutes = [];
 
+        // event runafterstart
+        global.fn.eventEmitter.on('runafterstart', (params, callback) => {
+            var task = {'patams': params, 'callback': callback};
+            global.afterStart.push(task)
+        });
+
+
         await getMstrs().then();
         await getModuls().then();
         await getFunctions().then();
+
+        // start schedule
+        var schedule = require('./base/schedule');
+        schedule.runcCycle();
+
         await getDbModels().then();
 
-        // //function
+        // function
         global.fn.strArr = global.fn.convertObjectToArray(fn.str, {'nested': true});
         global.fn.mstrArr = global.fn.convertObjectToArray(fn.mstr, {'nested': true});
 
-        //start robot;
+        // start robot;
         await create();
+        // runafterstart
+        runafterstart();
+
         resolve();
+    });
+}
+
+var runafterstart = function()
+{
+    global.afterStart.forEach(element => {
+        element.callback(element.params);
     });
 }
 

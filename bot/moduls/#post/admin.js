@@ -69,6 +69,7 @@ var createpostMess = function(userid, post){
     var fn_delete       = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['delete'] + '-' + post._id;
     var fn_publication  = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['publication'] + '-' + post._id;
     var fn_order        = querTag['post'] + '-' + querTag['admin'] + '-' + fn.str.query['order'] + '-' + post._id;            
+    var fn_allowLike    = querTag['post'] + '-' + querTag['admin'] + '-' + querTag['allowlike'] + '-' + post._id;            
     var fn_close        = querTag['post'] + '-' + querTag['admin'] + '-close';
 
     var tx_text =fn.mstr.post.types['text'].icon,
@@ -123,8 +124,12 @@ var createpostMess = function(userid, post){
         {'text': 'نام', 'callback_data': fn_name}
     ]);
 
-    //priority
-    detailArr.push([{'text': 'اولویت', 'callback_data': fn_order}]);
+    //priority and allow like
+    var tx_allowlike = (post.allowlike) ? '◻️' + 'حذف دکمه لایک' : '✅' + 'حذف دکمه لایک';
+    detailArr.push([
+        {'text': 'اولویت', 'callback_data': fn_order},
+        {'text': tx_allowlike, 'callback_data': fn_allowLike},
+    ]);
 
     detailArr.push([
         {'text': 'حذف', 'callback_data': fn_delete},
@@ -187,7 +192,8 @@ var ceatePost = function(message){
     });
 }
 
-var editpost = async function(id, detail, userid, ecCallBack){
+var editpost = async function(id, detail, userid, ecCallBack)
+{
     var sendKey = true;
     //console.log('edit a post', id);
     var post = await fn.db.post.findOne({"_id": id}).exec().then();
@@ -201,6 +207,7 @@ var editpost = async function(id, detail, userid, ecCallBack){
     if(detail.audioid) post.audioid      = detail.audioid;
     if(detail.videoid) post.videoid      = detail.videoid;
     if(detail.thumbLink) post.thumbLink  = detail.thumbLink;
+    if(detail.allowlike) post.allowlike  = !post.allowlike;
 
     if(detail.isproduct) post.isproduct  = !post.isproduct;
     if(detail.price) post.price      = detail.price;
@@ -243,7 +250,8 @@ var upload = require('./upload');
 var user   = require('./user');
 var query = require('./query');
 
-var routting = function(message, speratedSection){
+var routting = function(message, speratedSection)
+{
     var text = message.text;
     var last = speratedSection.length-1;
     

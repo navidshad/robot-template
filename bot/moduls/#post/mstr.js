@@ -63,6 +63,7 @@ module.exports.post = {
         isproduct:'isproduct',
         price:'prc',
         publication:'publish',
+        allowlike:'alk',
 
         text       :'format' + 'text',
         file       :'format' + 'file',

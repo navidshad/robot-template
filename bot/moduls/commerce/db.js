@@ -18,6 +18,7 @@ var bagSchema = new Schema({
     'boughtItems'   : [bagitem],
     'address'       : {type:String, default:''},
     'phone'         : {type:Number, default:0},
+    'fullname'      : {type:String, default:''},
     //coupon code
     cid             : String,
     usedcoupons     : []

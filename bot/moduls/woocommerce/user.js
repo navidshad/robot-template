@@ -208,7 +208,10 @@ var showDirectory = async function(user, category, page, optionparam)
         return;
     }
 
-    var back = fn.mstr['category']['backtoParent'];
+    var speratedSection = user.section.split('/');
+    //speratedSection = speratedSection.slice(0, speratedSection.length-1);
+    var parent = speratedSection[speratedSection.length-1];
+    var back = (parent === fn.str['mainMenu']) ? fn.str['backToMenu'] : fn.mstr.category['backtoParent'];
     var remarkup = fn.generateKeyboard({'custom':true, 'grid':true, 'list':list}, false, columns);
 
     // navigator
@@ -221,9 +224,6 @@ var showDirectory = async function(user, category, page, optionparam)
     // begin backs ---------------------------
     var backbtns = await fn.db.wooBackbtn.find().exec().then();
     var wooSection = fn.getModuleData('woocommerce', 'menuItem').value;
-
-    var speratedSection = user.section.split('/');
-    //speratedSection = speratedSection.slice(0, speratedSection.length-1);
 
     var extractedBacks = [];
     backbtns.map(item =>

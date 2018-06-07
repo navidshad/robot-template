@@ -183,6 +183,11 @@ var routting = async function(query, speratedQuery)
     //attaching
     else if(speratedQuery[2] === global.fn.str.query['attach']) attachSection(query,speratedQuery)
     else if(speratedQuery[2] === fn.str.query['removeAttachment']) removeattachment(query,speratedQuery);
+
+    //allow like
+    else if(speratedQuery[2] === queryTag['allowlike']) 
+        fn.m.post.editpost(speratedQuery[last], {'allowlike': 'switch'}, query.from.id);
+
 }
 
 module.exports = { checkQuery, routting } 

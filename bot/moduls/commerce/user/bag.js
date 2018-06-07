@@ -72,9 +72,9 @@ var addToBag = async function(userid, type, productid, datas)
 var submitBag = async function(userid)
 {
     var userBag = await get(userid);
-    if(!userBag.address.length && !userBag.phone)
+    if(!userBag.address.length && !userBag.phone && !userBag.fullname)
     {
-        global.fn.sendMessage(userid, 'لطفا ابتدا آدرس و شماره تلفن خود را وارد کنید.');
+        global.fn.sendMessage(userid, 'لطفا ابتدا نام کامل، آدرس و شماره تلفن خود را وارد کنید.');
         show(userid, userBag);
         return;
     }
@@ -107,13 +107,16 @@ var getView_main = function()
     //personal info 
     var fn_address = query['commerce'] + '-' + query['user'] + '-' + query['address'];
     var fn_phone = query['commerce'] + '-' + query['user'] + '-' + query['phone'];
+    var fn_fullname = query['commerce'] + '-' + query['user'] + '-' + query['fullname'];
     var fn_showPostalInfo = query['commerce'] + '-' + query['user'] + '-' + query['postalInfo'];
 
     detailArr.push([ 
         {'text': '🏠' + 'آدرس', 'callback_data': fn_address},
         {'text': '📱' + 'موبایل', 'callback_data': fn_phone},
-        {'text': '📱🏠' + 'نمایش', 'callback_data': fn_showPostalInfo},
-    ].reverse());
+        {'text': '👤' + 'نام کامل', 'callback_data': fn_fullname},
+    ]);
+
+    detailArr.push([{'text': '👤📱🏠' + 'نمایش', 'callback_data': fn_showPostalInfo}]);
 
     //close
     detailArr.push([
@@ -164,7 +167,7 @@ var show = async function(userid, bag,  optionparam)
     var total = 0;
     var titles = '';
     bag.items.forEach((item, i) => {
-        titles += '\n 🔸 ' + item.name + ' ' + item.price + ' تومان';
+        titles += '\n🆔 ' + item.name + ' | 💶: ' + item.price + ' تومان';
         total += item.price;
     });
 
@@ -181,10 +184,16 @@ var show = async function(userid, bag,  optionparam)
 
     // shipping -----------
     var shippingOption = fn.getModuleData('commerce', 'shipping').value;
-    var shippingCost = fn.getModuleData('commerce', 'shippingCost').value;
+    var shippingCost = 0;
+    fn.getModuleData('commerce', 'shippingCost').value;
     var shippingLable = `\n 🚚 هزینه ارسال: ${shippingCost} تومان`;
-    if(shippingOption == 'true') total += parseInt(shippingCost);
+    if(shippingOption == 'true') {
+        var shippingCost = fn.getModuleData('commerce', 'shippingCost').value;
+        shippingCost = parseInt(shippingCost);
+    }
     // --------------------
+
+    var finalprice = totalPerDis + shippingCost;
 
     //message
     var mess = '🛍 ' + 'سبد خرید شما' + '\n' +
@@ -194,11 +203,13 @@ var show = async function(userid, bag,  optionparam)
     '💶 ' + 'جمع قیمت: ' + total + ' تومان' + '\n';
     mess += '💶 ' + 'اعمال تخفیف: ' + totalPerDis + ' تومان';
     mess += (shippingOption == 'true') ? shippingLable : '';
+    mess += '\n💶 ' + 'جمع کل: ' + finalprice + ' تومان';
     mess += '\n' + '<code>ـــــــــــــــــ</code>' + '\n' +
-    'بن ها استفاده شده: ' + '\n' + usedcouponsText +
-    'بن های تخفیف شما: ' + '\n' + couponsText +
+    '⏰ وضعیت تخفیف ها:\n' +
+    '\n🏷 بن های اعمال شده: ' + usedcouponsText +
+    '\n🏷 بن های تخفیف شما: ' + couponsText +
     '<code>ـــــــــــــــــ</code>' + '\n' +
-    fn.mstr.commerce.mess['editbag'];
+    fn.mstr.commerce.mess['editbag'] + '\n.';
 
     var showBag = true;
     if(option && option.show != null) showBag = option.show;

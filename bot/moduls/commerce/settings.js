@@ -63,8 +63,7 @@ var show = function(userid, mName, newcat)
     //defin new category
     if(newcat) {
         moduleOption.option.category = newcat;
-        var button = fn.getModuleData(mName, 'menuItem');
-        if(button) moduleOption.option.buttons = [button.value];
+        moduleOption.option.buttons = fn.convertObjectToArray(fn.mstr[mName].btns_user);
         global.robot.config.moduleOptions[moduleOption.index] = moduleOption.option;
         //save configuration
         global.robot.save();

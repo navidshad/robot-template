@@ -33,7 +33,8 @@ var checkRoute = function(option){
     return result;
 }
 
-var routting = async function(message, speratedSection, user){
+var routting = async function(message, speratedSection, user)
+{
     var text = message.text;
     var last = speratedSection.length-1;
     var checkRouteText = checkRoute({'text':text});
@@ -60,7 +61,10 @@ var routting = async function(message, speratedSection, user){
         userbag.address = text;
         await userbag.save().then();
         bag.show(message.from.id, userbag);
-    }
+
+        //rim section to be prepare for parent category
+        speratedSection.splice(last-1, 1);
+        fn.menu.backtoParent (message, speratedSection, user);    }
 
     //get phone
     else if (speratedSection[last] === fn.mstr.commerce.mess['getPhone'] && message.contact){
@@ -73,6 +77,17 @@ var routting = async function(message, speratedSection, user){
         speratedSection.splice(last-1, 1);
         fn.menu.backtoParent (message, speratedSection, user);
     }
+
+    // get fullname
+    else if (speratedSection[last] === fn.mstr.commerce.mess['getfullname']){
+        var userbag = await bag.get(message.from.id);
+        userbag.fullname = text;
+        await userbag.save().then();
+        bag.show(message.from.id, userbag);
+
+        //rim section to be prepare for parent category
+        speratedSection.splice(last-1, 1);
+        fn.menu.backtoParent (message, speratedSection, user);    }
 }
 
 var query = async function(query, speratedQuery, user)
@@ -121,13 +136,25 @@ var query = async function(query, speratedQuery, user)
         global.fn.sendMessage(query.from.id, mess, markup);
     }
 
+    //fullname
+    else if (speratedQuery[2] === querytag['fullname'])
+    {
+        var mess = fn.mstr.commerce.mess['getfullname'];
+        var nSection = fn.str['mainMenu'] + '/' + fn.mstr.commerce.btns_user['bagshop'] + '/' + mess;
+        var markup = fn.generateKeyboard({'section': fn.str['backToMenu']}, true);
+
+        fn.userOper.setSection(query.from.id, nSection, false);
+        global.fn.sendMessage(query.from.id, mess, markup);
+    }
+
     //postalInfo
     else if (speratedQuery[2] === querytag['postalInfo']){
         var userBag = await bag.get(query.from.id);
         var address = (userBag.address) ? userBag.address   : '...', 
-        phone       = (userBag.phone)   ? userBag.phone     : '...';
+        phone       = (userBag.phone)   ? userBag.phone     : '...',
+        fullname    = (userBag.fullname)? userBag.fullname     : '...';
 
-        var mess = '🚚 ' + 'مشخصات پستی شما \n\n' + '📱 ' + phone + '\n' + '🏠 ' + address;
+        var mess = '🚚 ' + 'مشخصات پستی شما \n\n' + '👤 ' + fullname + '\n' + '📱 ' + phone + '\n' + '🏠 ' + address;
         global.fn.sendMessage(query.from.id, mess);
     }
 

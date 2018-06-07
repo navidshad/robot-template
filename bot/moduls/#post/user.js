@@ -21,8 +21,11 @@ var show = async function(message, postName, user, optionPrams, callback)
     }
 
     //like button 
-    var like = await fn.m.favorites.user.getbutton(user.userid, 'post', post.id);
-    if(like) detailArr.push([like]);
+    if(post.allowlike)
+    {
+        var like = await fn.m.favorites.user.getbutton(user.userid, 'post', post.id);
+        if(like) detailArr.push([like]);
+    }
 
     var description = post.description + '\n @' +  global.robot.username;
     var markup = {'inline_keyboard': detailArr};

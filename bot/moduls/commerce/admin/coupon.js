@@ -1,3 +1,19 @@
+async function scheduleAlertExpiration ()
+{
+    var coupons = await global.fn.db.coupon.find({}).exec().then();
+    coupons.forEach(coupon => 
+    {
+        //schedule a task
+        var taskoOption = {
+            'code': coupon.code, 
+            'date':coupon.endDate.addDays(-1), 
+            'params': coupon, 
+        };
+        global.fn.eventEmitter.emit('addtoschedule', taskoOption.code, taskoOption.date, taskoOption.params, alertExpiration);
+    });
+}
+global.fn.eventEmitter.emit('runafterstart', {}, scheduleAlertExpiration);
+
 var create = async function(option)
 {
     //option must contains:
@@ -45,16 +61,33 @@ var create = async function(option)
     }
 
     //alert to user
-    alertTouser(coupon)
+    alertTouser(coupon);
+
+    //schedule a task
+    var taskoOption = {
+        'code': coupon.code, 
+        'date':coupon.endDate.addDays(-1), 
+        'params': coupon, 
+    };
+    global.fn.eventEmitter.emit('addtoschedule', taskoOption.code, taskoOption.date, taskoOption.params, alertExpiration);
 }
 
 var alertTouser = function(coupon)
 {
     var mess = '💟 ' + 'کاربر عزیز یک بن تخفیف برای شما صادر شد: \n';
-    mess += fn.m.commerce.coupon.getDetail(coupon);
+    mess += getDetail(coupon);
     mess += '\n⚠️ برای استفاده از بن تخفیف به بخش ثبت سفارش مراجعه کنید.';
     global.fn.sendMessage(coupon.userid, mess);
     fn.alertadmins(mess);
+}
+
+var alertExpiration = function(coupon)
+{
+    var userid = coupon.userid;
+    var mess = '🔴 ' + 'کاربر عزیز بن تخفیف شما به زودی منقضی میشود: \n';
+    mess += getDetail(coupon);
+    mess += '\n❇️️ هم اکنون میتوانید برای استفاده از آن خرید نمائید.';
+    global.fn.sendMessage(userid, mess);
 }
 
 global.fn.eventEmitter.on('createCoupon', create);
@@ -88,19 +121,32 @@ var getusercoupons = async function(userid)
 
 var getCouponsDetail = function(coupons)
 {
-    var couponsText = '';
+    var couponsText = '\n';
+
+    if(!coupons.length){
+        couponsText = 'وجود ندارد. \n';
+        return couponsText;
+    }
+
     coupons.forEach((coup, i) => {
         var num = i+1;
         var code = coup.code;
         var dis = (coup.discountmode == 'amount') ? coup.amount + ' تومان ' : coup.percent + ' درصد ';
-        couponsText += num + ' 🏷 ' + ', ' + dis + 'تخفیف \n'; 
+        var des = `تا تاریخ ${coup.endDate.toString('M/d/yyyy')} و ساعت ${coup.endDate.toString('H:mm')}`;
+        couponsText += num + ', تخفیف ' + dis + `, ${des}` + '\n'; 
     });
     return couponsText;
 }
 
 var getUsedCouponsDetail = function(usedcoupons)
 {
-    var couponsText = '';
+    var couponsText = '\n';
+
+    if(!usedcoupons.length){
+        couponsText = 'هیچ بنی اعمال نشده است. \n';
+        return couponsText;
+    }
+
     usedcoupons.forEach(coup => { couponsText += `- ${coup.name} \n` });
     return couponsText;
 }
@@ -149,7 +195,7 @@ var getDetail = function(coupon)
     mess += '✴️ ' + `کد بن: ${coupon.code} \n`;
     mess += '✴️ ' + `کد کاربر: ${coupon.userid} \n`;
     mess += '✴️ ' + `تاریخ امروز: ${coupon.startDate.toString('M/d/yyyy')} \n`;
-    mess += '✴️ ' + `تاریخ پایان: ${coupon.endDate.toString('M/d/yyyy')} \n`;
+    mess += '✴️ ' + `تاریخ انقضا: ${coupon.endDate.toString('M/d/yyyy h:mm tt')} \n`;
     mess += '✴️ ' + `مقدار: ${amount} تخفیف \n`;
     return mess;
 }

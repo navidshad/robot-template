@@ -308,6 +308,8 @@ var getLastMessage = async function(userid)
 
 var sendMessage = async function(userid, text, option)
 {
+    if(!text) return;
+    
     //send message
     var msg = await global.robot.bot.sendMessage(userid, text, option).then();
 
