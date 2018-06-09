@@ -38,7 +38,7 @@ var attachSection = function(query, speratedQuery)
 {
     console.log('get attachment');
     var last = speratedQuery.length-1;
-    var markup = fn.generateKeyboard({section:fn.mstr.post['endAttach']}, true);
+    var markup = fn.generateKeyboard({section:fn.str['endAttach']}, true);
     var newSection = fn.str['mainMenu'] + '/' + fn.str.goToAdmin['name'] + '/' + fn.mstr.sendbox['name'] + '/' + fn.str['endAttach'] + '/' + speratedQuery[last];
     fn.userOper.setSection(query.from.id, newSection, false);
     global.fn.sendMessage(query.from.id, fn.str['getattachment'], markup);
