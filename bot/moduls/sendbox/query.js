@@ -1,6 +1,6 @@
 var checkQuery = function(option){
 
-    var btnsArr  = [ 
+    var btnsArr  = [
         fn.mstr['sendbox'].query['sendbox']
     ];
 
@@ -8,10 +8,10 @@ var checkQuery = function(option){
     //check seperate section
     if(option.speratedSection){
         option.speratedSection.forEach(section => {
-            btnsArr.forEach(btn => 
-            { 
+            btnsArr.forEach(btn =>
+            {
                 if(section === btn){
-                    result.status = true; 
+                    result.status = true;
                     result.button = btn;
                     result.routting = routting;
                 }
@@ -84,7 +84,7 @@ routting = async function(query, speratedQuery, user, mName)
 }
 
 //#region send
-global.fn.eventEmitter.on('sendtoall', async (userid, title, text, attachments, markup={}) => 
+global.fn.eventEmitter.on('sendtoall', async (userid, title, text, attachments, markup={}) =>
 {
     var usercount = await global.fn.db.user.count({}).exec().then();
     var option = {
@@ -111,18 +111,19 @@ global.fn.eventEmitter.on('sendtoall', async (userid, title, text, attachments, 
     sendMessToNextUser(option);
 });
 
-var sendMessToNextUser = async (op) => 
+var sendMessToNextUser = async (op) =>
 {
     //send to user
     var skip  = op.next;
     var user  = await global.fn.db.user.findOne().sort({'userid':1}).skip(skip).exec().then();
-    var msent = await global.fn.sendMessage(user.userid, op.mess, op.markup).then();
+    var msent = await global.fn.sendMessage(user.userid, op.mess, op.markup).then().catch(e => {
+      console.log(e);
+    });
 
     //attachment
-    if(op.attachments.length > 0)
-        await prepareAttachments(msent.chat.id, op.attachments, 0);
+    if(msent && op.attachments.length > 0) await prepareAttachments(msent.chat.id, op.attachments, 0);
 
-    //waite for seconds 
+    //waite for seconds
     await global.fn.sleep(1100);
 
     //next
@@ -133,14 +134,14 @@ var sendMessToNextUser = async (op) =>
     rMess += 'تعداد کل کاربران: ' + op.total + '\n';
     rMess += 'ارسال شده: ' + op.next + '\n\n';
 
-    if(op.next < op.total) 
+    if(op.next < op.total)
     {
         rMess += '⚠️ ' + 'لطفا این پیام را حذف نکنید...';
         global.fn.editMessageText(rMess, {'chat_id': op.chat_id, 'message_id': op.message_id}).then();
         sendMessToNextUser(op);
         return;
     }
-    
+
     //done
     rMess += '✅ ' + 'به همه ارسال شد';
     global.fn.editMessageText(rMess, {'chat_id': op.chat_id, 'message_id': op.message_id}).then();
@@ -149,10 +150,10 @@ var sendMessToNextUser = async (op) =>
 var prepareAttachments = async function(chat_id, attachments, number)
 {
     var nextItem = number +1;
-    
+
     await global.fn.sendDocument(chat_id, attachments[number].id, attachments[number].type, {'caption':attachments[number].caption});
     //next attachment
-    if(attachments.length > nextItem) 
+    if(attachments.length > nextItem)
         await prepareAttachments(chat_id, attachments, nextItem);
 }
 //#endregion
