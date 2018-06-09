@@ -189,7 +189,7 @@ var routting = async function(message, speratedSection, user)
     }
 
     //ednd attachment
-    else if(speratedSection[last] == fn.str['endAttach'] && text == fn.str['endAttach'])
+    else if(speratedSection[last-1] == fn.str['endAttach'] && text == fn.str['endAttach'])
     {
         show(userid);
         var senderid = speratedSection[last];
