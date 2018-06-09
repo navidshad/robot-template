@@ -148,6 +148,7 @@ var routting = async function(message, speratedSection, user)
     var mess = fn.mstr[name].mess;
     var userid = message.from.id;
     var text = message.text;
+    var last = speratedSection.length-1;
 
     //ask to sendBox section
     if (text === fn.mstr[name].name || text === fn.mstr[name].back){
@@ -185,6 +186,15 @@ var routting = async function(message, speratedSection, user)
         //find sender
         var sender = await fn.db.sendbox.findOne({'title': sendboxMessTitle}).exec().then();
         if(sender) showSender(userid, sender);
+    }
+
+    //ednd attachment
+    else if(speratedSection[last] == fn.str['endAttach'] && text == fn.str['endAttach'])
+    {
+        show(userid);
+        var senderid = speratedSection[last];
+        var sender = await fn.db.sendbox.findOne({'_id': senderid}).exec().then();
+        showSender(userid, sender);
     }
 }
 
