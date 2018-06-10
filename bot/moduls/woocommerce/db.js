@@ -1,11 +1,15 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var attribute = new Schema({'name': String, 'value': String});
+var attribute = new Schema({
+  'name': String, 
+  'value': String,
+});
 var wooSubmiterSchema = new Schema({
   userid    : Number,
   productid : Number,
   attributes: [attribute],
+  price     : Number,
 });
 
 var wooBackbtns = new Schema({

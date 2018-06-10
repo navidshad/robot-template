@@ -116,7 +116,10 @@ var searchRoute = function (userid, text)
 {
     return new Promise(async (resolve, reject) => 
     {
-        var posts = await fn.db.post.find({ $text: {$search: text}}).limit(30).exec().then();
+        var posts = await fn.db.post.find({ $text: {$search: text}}).limit(30).exec().then()
+        .catch(e => {
+            console.log(e);
+        });
         var reesult = {
             items: posts, 
             mName:'post', 

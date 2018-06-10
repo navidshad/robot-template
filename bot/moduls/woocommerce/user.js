@@ -343,6 +343,8 @@ var getProductDetail = function(product, optionparams)
     description = striptags(description);
     
     var price = (product.price.length) ? product.price : 0;
+    if(option.price) price = option.price;
+    
     var mess = title;
     mess += '\n' + description.trim();
     mess += '\n' + atrrsDetail;

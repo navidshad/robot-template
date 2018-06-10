@@ -92,18 +92,21 @@ var create = async function(userid,  items, optionPram)
     // shipping -----------
     var shippingOption = fn.getModuleData('commerce', 'shipping').value;
     var shippingCost = fn.getModuleData('commerce', 'shippingCost').value;
-    var shippingLable = `\n 🚚 هزینه ارسال: ${shippingCost} تومان`;
-    if(shippingOption == 'true') totalAmount += parseInt(shippingCost);
+    var shippingLable = `\n🚚 هزینه ارسال: ${shippingCost} تومان`;
+    shippingCost = (shippingOption == 'true') ? parseInt(shippingCost) : 0;
     // --------------------
     
+    var finalprice = totalPerDis + parseInt(shippingCost);
+
     //prepare messag
     var mess = '🛍 ' + 'فاکتور شماره ' + newNumber + '\n' +
     '<code>ـــــــــــــــــ' +
     titles + '\n' +
     'ـــــــــــــــــ' + '\n' +
-    'جمع قیمت: ' + totalAmount + ' تومان' + '</code> \n';
-    mess += (totalPerDis) ? '💶 ' + 'تخفیف: ' + totalPerDis + ' تومان' : '';
+    '📊 جمع قیمت: ' + totalAmount + ' تومان' + '</code> \n';
+    mess += (totalPerDis) ? '🎁 ' + 'تخفیف: ' + totalPerDis + ' تومان' : '';
     mess += (shippingOption == 'true') ? shippingLable : '';
+    mess += '\n💶 ' + 'جمع کل: ' + finalprice + ' تومان';
 
     //create
     var newFactor = new fn.db.factor({
@@ -114,6 +117,7 @@ var create = async function(userid,  items, optionPram)
         'products'  : updatedBagitems,
         'amount'    : totalAmount,
         'discount'  : totalPerDis,
+        'shipping'  : (shippingOption == 'true') ? shippingCost : 0,
     }).save((e, factor) => {
         if(e) console.log(e);
         fn.m.commerce.user.bag.clear(userid);
@@ -227,6 +231,7 @@ var showFactor = async function(userid,  option)
 
         //gates buttons
         var price = (factor.discount) ? factor.discount : factor.amount;
+        price += factor.shipping;
         var nextpaylink = await fn.m.commerce.gates.nextpay.getPaylink(factor.number, price);
         detailArr.push([{'text': 'پرداخت با نکست پی', 'url': nextpaylink}]);
     }

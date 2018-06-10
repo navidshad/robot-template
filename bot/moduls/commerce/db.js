@@ -32,6 +32,7 @@ var factorSchema = new Schema({
     'products'  : [bagitem],
     'amount'    : Number,
     'discount'  : Number,
+    'shipping'  : {type:Number, default:0},
     'message_id': Number,
     'chatid'    : Number,
     'ispaid'    : Boolean,

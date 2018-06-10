@@ -67,12 +67,13 @@ var search = async function(userid, text)
         const result = results[index];
         var mName = result.mName;
         var symbol = symbols[mName];
-        result.items.map(item => 
-        {
-            var title = result.makebtntitle(item);
-            var btn = `${symbol} ${title}`;
-            list.push(btn);
-        });
+        if(result.items)
+            result.items.map(item => 
+            {
+                var title = result.makebtntitle(item);
+                var btn = `${symbol} ${title}`;
+                list.push(btn);
+            });
     }
 
     var markup = fn.generateKeyboard({'custom': true, 'grid':true, 'list': list, 'back':back}, false);

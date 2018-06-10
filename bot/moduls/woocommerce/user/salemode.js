@@ -13,7 +13,7 @@ var getwooSubmiter = async function(userid, productid)
     return wooSubmiter;
 }
 
-var addRemoveAttr = async function(userid, mName, productid, attrindex, optionindex)
+var addRemoveAttr = async function(userid, mName, productid, attrindex, optionindex, price)
 {
     var product = await fn.m.woocommerce.user.getFromWoocom(userid, 'products/' + productid);
     if(!product) return;
@@ -47,9 +47,16 @@ var addRemoveAttr = async function(userid, mName, productid, attrindex, optionin
         //add one
         newAttributes.push({'name': attribute.name, 'value': option});
         wooSubmiter.attributes = newAttributes;
+
+        //set price
+        wooSubmiter.price = price;
     }
     //remove
-    else if(waIndex !== null) wooSubmiter.attributes.splice(waIndex, 1);
+    else if(waIndex !== null) 
+    {
+        wooSubmiter.attributes.splice(waIndex, 1);
+        wooSubmiter.price = product.price;
+    }
 
     await wooSubmiter.save().then();
     showAttributes(userid, mName, productid, {'attrindex': attrindex});
@@ -83,8 +90,12 @@ var getView_main = function(mName, product)
     return detailArr;
 }
 
-var getView_attribute = function(mName, product, wooSubmiter, attrindex)
+var getView_attribute = async function(userid, mName, product, wooSubmiter, attrindex)
 {
+    //get currentcy
+    var currencyData = fn.getModuleData('woocommerce', 'currency');
+    var currency = (currencyData.value) ? currencyData.value : 'تومان';
+
     var detailArr = [];
     var qt = fn.mstr[mName].query;
     //back btn
@@ -94,14 +105,39 @@ var getView_attribute = function(mName, product, wooSubmiter, attrindex)
 
     //attr options
     var attribute = product.attributes[attrindex];
-    attribute.options.forEach((op, i) => 
+    var variationKey = attribute.variation;
+    var variationPromisList = [];
+    var variationProducts = [];
+
+    //get variatetion products
+    if(variationKey)
     {
+        product.variations.map(id => 
+        {
+            var getVarietionPromise = fn.m.woocommerce.user.getFromWoocom(userid, 'products/' + product.id + '/variations/' + id);
+            variationPromisList.push(getVarietionPromise);
+        });
+
+        variationProducts = await Promise.all(variationPromisList).then();
+    }
+
+    for (let i = 0; i < attribute.options.length; i++) 
+    {
+        const op = attribute.options[i];
+        
+        var variationPrice = product.price;
+        var variationProduct = variationProducts[i];
+        if(variationProduct) variationPrice = variationProduct.price;
+
         var added = checkAttrOption(wooSubmiter, {'name':attribute.name, 'value': op});
-        var fx_op = qt[mName] + '-' + qt['user'] + '-' + qt['salemode'] + '-' + qt['attributeOption'] + '-' + attrindex + '-' + i + '-' + product.id;
+        var fx_op = qt[mName] + '-' + qt['user'] + '-' + qt['salemode'] + '-' + qt['attributeOption'] + '-' + attrindex + '-' + i + '-' + variationPrice + '-' + product.id;
+        
         var tx_op = (added) ? '✅ ' + op : op;
+        tx_op += ` | ${variationPrice} ${currency}`;
+
         var opBtn = [{'text': tx_op, 'callback_data': fx_op}];
         detailArr.push(opBtn);
-    });
+    }
 
     return detailArr;
 }
@@ -126,7 +162,7 @@ var showAttributes = async function(userid, mName, productid, optionparams)
 
     var detailArr = [];
     if(option.view == 'options') 
-         detailArr = getView_attribute(mName, product, wooSubmiter, option.attrindex);
+         detailArr = await getView_attribute(userid, mName, product, wooSubmiter, option.attrindex);
     else detailArr = getView_main(mName, product);
 
     //user attr
@@ -136,7 +172,7 @@ var showAttributes = async function(userid, mName, productid, optionparams)
     });
 
     //mess
-    var mess = fn.m.woocommerce.user.getProductDetail(product);
+    var mess = fn.m.woocommerce.user.getProductDetail(product, {'price':wooSubmiter.price});
     mess += '\n\n' + fn.mstr[mName].mess['selectattr'];
     mess += '\n\n' + '✴️ ' + 'ویژگی های انتخاب شده شما: \n' + userattributes;
     mess += '\n\n' + '🛍';
@@ -167,9 +203,10 @@ var query = async function(query, speratedQuery, user, mName)
     //choose attr option
     else if (speratedQuery[3] === queryTag['attributeOption'])
     {
-        var attrindex = parseInt(speratedQuery[last-2]);
-        var optionindex = parseInt(speratedQuery[last-1]);
-        addRemoveAttr(userid, mName, speratedQuery[last], attrindex, optionindex)
+        var attrindex = parseInt(speratedQuery[last-3]);
+        var optionindex = parseInt(speratedQuery[last-2]);
+        var price = parseInt(speratedQuery[last-1]);
+        addRemoveAttr(userid, mName, speratedQuery[last], attrindex, optionindex, price);
     }
 
     //add to bagshop
@@ -196,7 +233,7 @@ var query = async function(query, speratedQuery, user, mName)
         var productItem = {
             'name'  :product.name + ' ' + product.id, 
             'id'    :product.id, 
-            'price' :product.price, 
+            'price' :wooSubmiter.price, 
             'type'  :mName,
             'data'  :datas,
         }
