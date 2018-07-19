@@ -1,28 +1,15 @@
 {
-  "name": "robot-template",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "start": "node ./bin/www"
-  },
+  "name": "telegram_bot_template",
+  "version": "1.0.0",
+  "description": "this is a starter point to use Telegram-cms module",
+  "main": "app.js",
   "dependencies": {
-    "body-parser": "~1.18.2",
-    "cookie-parser": "~1.4.3",
-    "datejs": "^1.0.0-rc3",
-    "debug": "~2.6.9",
-    "express": "~4.15.5",
-    "moment-timezone": "^0.5.13",
-    "mongoose": "^4.7.2",
-    "morgan": "~1.9.0",
-    "musicmetadata": "^2.0.5",
-    "node-telegram-bot-api": "*",
-    "pug": "2.0.0-beta11",
-    "query-string": "^6.0.0",
-    "replace-string": "^1.1.0",
-    "request-promise": "^4.2.2",
-    "serve-favicon": "~2.4.5",
-    "soap": "^0.23.0",
-    "striptags": "^3.1.1",
-    "woocommerce-api": "^1.4.2"
-  }
+    "telegram-cms": "*"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "navid shad (navidshad72@gmail.com)",
+  "license": "free"
 }

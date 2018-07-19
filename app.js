@@ -1,10 +1,10 @@
-var bot = require('./bot/bot');
-var web = require('./express/bin/www');
+var tcms = require('telegram-cms');
 
-async function start()
-{
-    await bot.settingUp().then();
-    web.start();
-}
+var option = require('./config');
+option.fn = {}
 
-start();
+// start bot
+tcms.start(option);
+
+// start express
+//require('./express/bin/www');
