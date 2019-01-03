@@ -13,14 +13,14 @@ module.exports = {
         'category'          :true,
         'post'              :true,
         'profile'           :true,
-        'commerce'          :true,
+        //'commerce'          :true,
         'settings'          :true,
         'search'            :true,
-        'ticket'            :true,
-        'sendbox'    :true,
+        'inbox'             :true,
+        'sendbox'           :true,
         'chanelChecker'     :true,
         'favorites'         :true,
-        'woocommerce'       :true,
+        //'woocommerce'       :true,
     },
     
     //web
